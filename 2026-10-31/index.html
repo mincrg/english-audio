@@ -112,6 +112,18 @@ label.tg input{width:22px;height:22px}
 #mini .bar{margin:5px 0 1px;height:5px}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
+/* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
+.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.ctl .crow{display:flex;align-items:center;gap:6px}
+.ctl .crow button{min-height:38px;padding:6px 9px;font-size:14px;flex:0 0 auto}
+.ctl .crow .pp{min-width:46px}
+.ctl .now{flex:1;min-width:0;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctl .crow2{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:6px;font-size:13px}
+.ctl .crow2 .seg{margin:0}
+.ctl .crow2 .seg button{min-height:32px;padding:4px 7px;font-size:13px}
+@media (max-width:400px){.ctl .crow2{gap:4px}.ctl .crow2 .seg button{padding:4px 5px}}
+.ctl .crow2 .lab{color:var(--tx2)}
+.ctl .bar{height:3px;margin:8px -12px 0;border-radius:0}
 figure.hero{margin:6px 0 14px}
 figure.hero img{display:block;width:100%;height:auto;border-radius:10px;background:var(--line)}
 figure.hero figcaption{font-size:13px;color:var(--tx2);margin-top:6px;line-height:1.45;word-break:keep-all}
@@ -231,7 +243,6 @@ function seqToggle(key){
   playSeq(key, S.idx, false);
 }
 function seqJump(key, d){ const S=seqs[key]; const n=Math.max(0,Math.min(S.list.length-1,S.idx+d)); if(seq&&seq.key===key) playSeq(key,n,false); else { S.idx=n; renderSeq(key); } }
-function gapRow(){ return `<span class="row" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg" style="margin:0">${GAPS.map(g=>`<button class="gp${g===gapSec()?" on":""}" data-g="${g}" onclick="setGap(${g})">${g}초</button>`).join("")}</span><span class="note">반복</span><span class="seg" style="margin:0">${NREPS.map(n=>`<button class="rp${n===repsN()?" on":""}" data-n="${n}" onclick="setReps(${n})">${n}회</button>`).join("")}</span></span>`; }
 function seqRep(key){ const S=seqs[key]; S.rep=REPS[(REPS.indexOf(S.rep||0)+1)%REPS.length]; if(seq&&seq.key===key) seq.done=0; renderSeq(key); }
 function setGap(g){ if(HAS_WB) WB.setGap(g); else { try{ localStorage.setItem("ea-gap-v1",String(g)); }catch(e){} } Object.keys(seqs).forEach(renderSeq); }
 function seqRate(key, r){ seqs[key].rate=r; if(seq&&seq.key===key) clipEl.playbackRate=r; renderSeq(key); }
@@ -240,8 +251,11 @@ function renderSeq(key){
   const S=seqs[key], el=document.getElementById("p-"+key); if(!el) return;
   const active = seq && seq.key===key, playing = active && (!clipEl.paused || !!seq.timer);
   const it=S.list[S.idx];
-  el.querySelector(".now").innerHTML = `<b>${S.idx+1} / ${S.list.length} ${S.unit}</b> · ${esc(it.title)}${it.detail?`<br>${esc(it.detail)}`:""}${active?(playing?" · 재생 중":" · 일시정지"):""}`;
-  el.querySelector(".pp").textContent = playing ? "⏸ 일시정지" : (active ? "▶ 이어 듣기" : "▶ 재생");
+  const ctl = el.classList.contains("ctl");
+  if(ctl){ el.querySelector(".now").innerHTML = `<b>${S.idx+1}/${S.list.length}</b> ${esc(it.title)}`;
+    el.querySelector(".pp").textContent = playing ? "⏸" : "▶"; const rc=el.querySelector(".rtc"); if(rc) rc.textContent=(S.rate||1).toFixed(1)+"x"; }
+  else { el.querySelector(".now").innerHTML = `<b>${S.idx+1} / ${S.list.length} ${S.unit}</b> · ${esc(it.title)}${it.detail?`<br>${esc(it.detail)}`:""}${active?(playing?" · 재생 중":" · 일시정지"):""}`;
+  el.querySelector(".pp").textContent = playing ? "⏸ 일시정지" : (active ? "▶ 이어 듣기" : "▶ 재생"); }
   el.querySelectorAll(".rt").forEach(b => b.classList.toggle("on", Number(b.dataset.r)===S.rate));
   document.querySelectorAll(`.rep-${key}`).forEach(b => { b.textContent = "🔂 문장 반복 " + repLabel(S.rep||0); b.classList.toggle("pri", !!S.rep); });
   document.querySelectorAll(".rp").forEach(b => b.classList.toggle("on", Number(b.dataset.n)===repsN()));
@@ -252,6 +266,23 @@ function renderSeq(key){
 }
 clipEl.addEventListener("play", () => seq && renderSeq(seq.key));
 clipEl.addEventListener("pause", () => { if(seq && seq.skipPause){ seq.skipPause=false; return; } seq && renderSeq(seq.key); });
+function ctlBar(key, unit){
+  return `<div class="player ctl" id="p-${key}">
+  <div class="crow">
+    <button class="pri pp" aria-label="전체 재생/일시정지" onclick="seqToggle('${key}')">▶</button>
+    <button aria-label="정지" onclick="stopSeq()">⏹</button>
+    <button aria-label="이전 ${unit}" onclick="seqJump('${key}',-1)">⏮</button>
+    <button aria-label="다음 ${unit}" onclick="seqJump('${key}',1)">⏭</button>
+    <button class="rtc" aria-label="속도" onclick="seqRateCycle('${key}')">1.0x</button>
+    <div class="now"></div>
+  </div>
+  <div class="crow2"><span class="lab">반복</span><span class="seg">${NREPS.map(n=>`<button class="rp${n===repsN()?" on":""}" data-n="${n}" onclick="setReps(${n})">${n}회</button>`).join("")}</span>
+    <span class="lab">간격(초)</span><span class="seg">${GAPS.map(g=>`<button class="gp${g===gapSec()?" on":""}" data-g="${g}" onclick="setGap(${g})">${g}</button>`).join("")}</span></div>
+  <div class="cue" id="cue-${key}"></div>
+  <div class="bar"><i id="bar-${key}"></i></div>
+</div>`;
+}
+function seqRateCycle(key){ const R=[0.8,0.9,1,1.2]; seqRate(key, R[(R.indexOf(seqs[key].rate)+1)%R.length]); }
 function seqPlayer(key, unit, opts={}){
   return `<div class="player" id="p-${key}">
   <div class="now"></div><div class="bar"><i id="bar-${key}"></i></div>
@@ -266,7 +297,6 @@ function seqPlayer(key, unit, opts={}){
     <button onclick="playSeq('${key}',0,false)">↺ 처음부터</button>
   </div>
   <div class="row"><span class="seg">${[0.8,0.9,1,1.2].map(r=>`<button class="rt" data-r="${r}" onclick="seqRate('${key}',${r})">${r.toFixed(1)}x</button>`).join("")}</span>
-  ${opts.gap?`</div><div class="row">${gapRow()}`:""}
   ${opts.rep?`<button class="rep-${key}" onclick="seqRep('${key}')">🔂 문장 반복 끔</button>`:""}
   ${opts.shadow?`<label class="tg"><input type="checkbox" onchange="seqs['${key}'].shadow=this.checked"> 따라 말하기 (문장마다 잠시 멈춤)</label>`:""}</div>
 </div>`;
@@ -402,19 +432,16 @@ function articleHTML(A){
   </div>
   <div class="pn pn-voc">
   <h3>주요 어휘</h3>
-  <div class="note">🔊 영어 → 뜻을 번갈아 읽어 줍니다 (반복 횟수·간격은 아래에서 설정).</div>
-  ${gapRow()}
+  ${ctlBar(id+"v","어휘")}
+  <div class="note">▶ 전체 듣기 또는 🔊 하나씩: 영어 → 뜻 (반복·간격은 위에서 설정).</div>
   <div class="items"><div class="item ihdr"><div class="w">단어</div><div class="mean">뜻</div><div class="ex">기사 속 문장</div><div class="acts"></div></div>
   ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}v',${i},true)">🔊</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
-  ${seqPlayer(id+"v","어휘",{gap:true})}
   </div>
   <div class="pn pn-exp">
   <h3>중요 표현</h3>
-  ${gapRow()}
+  ${ctlBar(id+"x","표현")}
   <div class="items"><div class="item ihdr"><div class="w">표현</div><div class="mean">뜻</div><div class="ex">기사 속 쓰임</div><div class="acts"></div></div>
   ${A.exprs.map((x,i)=>`<div class="item" data-row="${id}x-${i}"><div class="w"><b>${esc(x.en)}</b></div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}x',${i},true)">🔊</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
-  ${seqPlayer(id+"x","표현",{gap:true})}
-  ${fullPlayer(id+"X", FULLX[id], "🎧 중요 표현 한 번에 듣기 (영어 → 뜻 → 영어)")}
   </div>
   <div class="pn pn-quiz">
   <h3>퀴즈</h3><div id="quiz-${id}"></div>
@@ -434,7 +461,7 @@ document.getElementById("arts").innerHTML = articleHTML(D.A1)+articleHTML(D.A2);
 document.getElementById("mini").innerHTML = [D.A1,D.A2].map((A,n)=>miniPlayer(A.id, FULL[A.id], `🎧 기사 ${n+1} 전체 듣기`)).join("");
 Object.values(seqs).forEach(S=>S.list.forEach(it=>{ if(typeof it.parts!=="string") return; const n=it.parts; delete it.parts;
   Object.defineProperty(it,"parts",{get(){ const e=clip(n+"-en"), k=clip(n+"-ko"); return Array.from({length:repsN()},()=>[e,k]).flat(); }}); }));
-["a1","a2"].forEach(id=>{ initFull(id, MARKS[id]); initFull(id+"X", null); drawLines(id); });
+["a1","a2"].forEach(id=>{ initFull(id, MARKS[id]); drawLines(id); });
 Object.keys(seqs).forEach(k=>renderSeq(k));
 drawQuiz(); drawRQ();
 /* ---------- tabs: article switcher + 원문|직해|어휘|표현|퀴즈 (remembered per browser) ---------- */
@@ -446,6 +473,8 @@ const TAB=(()=>{ let t={}; try{ t=JSON.parse(localStorage.getItem(TAB_KEY)||"{}"
   return {art, last:(t.last==="a2"?"a2":"a1"), tab:TABS.some(x=>x[0]===t.tab)?t.tab:"en"}; })();
 if(TAB.art!=="rv") TAB.last=TAB.art;
 function saveTab(){ try{ localStorage.setItem(TAB_KEY, JSON.stringify(TAB)); }catch(e){} }
+{ const sb=document.getElementById("sbar"), set=()=>document.documentElement.style.setProperty("--sbh", sb.offsetHeight+"px");
+  set(); if(window.ResizeObserver) new ResizeObserver(set).observe(sb); else addEventListener("resize", set); }
 function drawTabs(){
   document.getElementById("artsw").innerHTML=["a1","a2"].map((a,n)=>`<button class="${TAB.art===a?"on":""}" onclick="selArt('${a}')"><b>기사 ${n+1}</b>${esc(META.short[n])}</button>`).join("")
     + `<button class="pv${TAB.art==="rv"?" on":""}" onclick="selArt('rv')"><b>🔁 복습</b></button>`;

@@ -112,6 +112,18 @@ label.tg input{width:22px;height:22px}
 #mini .bar{margin:5px 0 1px;height:5px}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
+/* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
+.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.ctl .crow{display:flex;align-items:center;gap:6px}
+.ctl .crow button{min-height:38px;padding:6px 9px;font-size:14px;flex:0 0 auto}
+.ctl .crow .pp{min-width:46px}
+.ctl .now{flex:1;min-width:0;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctl .crow2{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:6px;font-size:13px}
+.ctl .crow2 .seg{margin:0}
+.ctl .crow2 .seg button{min-height:32px;padding:4px 7px;font-size:13px}
+@media (max-width:400px){.ctl .crow2{gap:4px}.ctl .crow2 .seg button{padding:4px 5px}}
+.ctl .crow2 .lab{color:var(--tx2)}
+.ctl .bar{height:3px;margin:8px -12px 0;border-radius:0}
 figure.hero{margin:6px 0 14px}
 figure.hero img{display:block;width:100%;height:auto;border-radius:10px;background:var(--line)}
 figure.hero figcaption{font-size:13px;color:var(--tx2);margin-top:6px;line-height:1.45;word-break:keep-all}
@@ -127,13 +139,23 @@ figure.hero .credit a{color:var(--tx2)}
 <header class="mast">
   <div class="date"><a href="./index.html" style="color:inherit">← 전체 학습 목록</a></div>
   <h1>⭐ 나만의 단어장</h1>
-  <p>날짜별 페이지에서 ☆로 저장한 단어와 중요 표현이 모여요. 🔊는 영어 → 뜻을 번갈아 읽어 줍니다 (반복 1~3회·간격은 아래에서 설정).</p>
+  <p>날짜별 페이지에서 ☆로 저장한 단어와 중요 표현이 모여요. 🔊는 영어 → 뜻을 번갈아 읽어 줍니다. 맨 위 막대에서 ▶ 전체 듣기, 반복 1~3회·간격을 정할 수 있어요.</p>
 </header>
 <section class="box">
   <span class="seg" id="filt"><button data-f="all" class="on">전체</button><button data-f="word">단어</button><button data-f="expr">표현</button></span>
   <span class="seg" id="modes"><button data-m="list" class="on">📋 목록</button><button data-m="quiz">📝 복습 퀴즈</button></span>
-  <div id="gapbox"></div>
   <div id="cnt" class="note"></div>
+  <div class="player ctl" id="wbctl" style="top:0">
+    <div class="crow">
+      <button class="pri pp" id="wbpp" aria-label="전체 재생/일시정지">▶</button>
+      <button id="wbstop" aria-label="정지">⏹</button>
+      <button id="wbprev" aria-label="이전">⏮</button>
+      <button id="wbnext" aria-label="다음">⏭</button>
+      <div class="now" id="wbnow"></div>
+    </div>
+    <div class="crow2" id="gapbox"></div>
+    <div class="bar"><i></i></div>
+  </div>
   <div id="list"></div>
   <div id="quiz" hidden></div>
 </section>
@@ -150,12 +172,24 @@ figure.hero .credit a{color:var(--tx2)}
 const esc = WB.esc;
 let filt="all", mode="list", qz=null;
 document.getElementById("gapbox").innerHTML = WB.gapHTML();
+// play-all bar: plays the list as currently shown (filter applied), top to bottom
+const shown = () => WB.all().filter(x=>filt==="all"||x.type===filt).map(x=>({id:x.id, url:x.clip}));
+document.getElementById("wbpp").onclick = () => WB.toggleList(shown());
+document.getElementById("wbstop").onclick = () => WB.stop();
+document.getElementById("wbprev").onclick = () => WB.jump(shown(), -1);
+document.getElementById("wbnext").onclick = () => WB.jump(shown(), 1);
+function drawCtl(){ const st=WB.listState(), items=WB.all().filter(x=>filt==="all"||x.type===filt), n=items.filter(x=>x.clip).length;
+  document.getElementById("wbctl").hidden = mode!=="list" || !n;
+  document.getElementById("wbpp").textContent = st.active && !st.paused ? "⏸" : "▶";
+  const it = st.active ? items.find(x=>x.id===st.id) : null;
+  document.getElementById("wbnow").innerHTML = it ? `<b>${st.li+1}/${st.n}</b> ${esc(it.en)}` : `<b>전체 ${n}개</b> 듣기`;
+  document.querySelectorAll("#list .item[data-id]").forEach(r=>r.classList.toggle("on", WB.isPlaying(r.dataset.id))); }
 const typeName = t => t==="expr"?"표현":"단어";
 function drawList(){
   const all=WB.all(), items=all.filter(x=>filt==="all"||x.type===filt);
   document.getElementById("cnt").textContent = `저장 ${all.length}개 (단어 ${all.filter(x=>x.type==="word").length} · 표현 ${all.filter(x=>x.type==="expr").length})`;
   if(mode!=="list") return;
-  document.getElementById("list").innerHTML = items.length ? `<div class="items"><div class="item ihdr"><div class="w">영어</div><div class="mean">뜻</div><div class="ex">기사 · 날짜</div><div class="acts"></div></div>` + items.map(x=>`<div class="item">
+  document.getElementById("list").innerHTML = items.length ? `<div class="items"><div class="item ihdr"><div class="w">영어</div><div class="mean">뜻</div><div class="ex">기사 · 날짜</div><div class="acts"></div></div>` + items.map(x=>`<div class="item" data-id="${esc(x.id)}">
     <div class="w"><b>${esc(x.en)}</b><span class="pos">${typeName(x.type)}${x.pos?" · "+esc(x.pos):""}</span></div>
     <div class="acts"><button class="ico" data-play="${esc(x.id)}" aria-label="듣기">${WB.isPlaying(x.id)?"⏸":"🔊"}</button><button class="ico" data-del="${esc(x.id)}" aria-label="삭제">🗑</button></div>
     <div class="mean">${esc(x.ko)}</div>
@@ -167,18 +201,18 @@ document.getElementById("list").addEventListener("click", e=>{ const b=e.target.
   if(b.dataset.play){ const x=all.find(i=>i.id===b.dataset.play); if(x) WB.play(x.clip, x.id); }
   if(b.dataset.del){ const x=all.find(i=>i.id===b.dataset.del); if(x && confirm(`'${x.en}'을(를) 단어장에서 뺄까요?`)) WB.remove(x.id); } });
 document.getElementById("filt").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; filt=b.dataset.f;
-  document.querySelectorAll("#filt button").forEach(x=>x.classList.toggle("on",x===b)); if(qz) qz.setType(filt); drawList(); });
+  document.querySelectorAll("#filt button").forEach(x=>x.classList.toggle("on",x===b)); if(qz) qz.setType(filt); drawList(); drawCtl(); });
 document.getElementById("modes").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; mode=b.dataset.m;
   document.querySelectorAll("#modes button").forEach(x=>x.classList.toggle("on",x===b));
   document.getElementById("list").hidden = mode!=="list"; document.getElementById("quiz").hidden = mode!=="quiz";
   if(mode==="quiz"){ if(!qz) qz=WB.quiz(document.getElementById("quiz"),{limit:10,type:filt}); else qz.setType(filt); }
-  drawList(); });
+  drawList(); drawCtl(); });
 const io=document.getElementById("io"), msg=t=>document.getElementById("iomsg").textContent=t;
 document.getElementById("exp").onclick=()=>{ io.value=WB.exportText(); io.select(); msg(`${WB.all().length}개를 내보냈어요. 복사해서 보관하세요.`); };
 document.getElementById("copy").onclick=()=>{ if(!io.value) io.value=WB.exportText(); io.select();
   (navigator.clipboard?navigator.clipboard.writeText(io.value):Promise.reject()).then(()=>msg("복사했어요."),()=>{ document.execCommand&&document.execCommand("copy"); msg("글자를 선택했어요. 복사해 주세요."); }); };
 document.getElementById("imp").onclick=()=>{ try{ const n=WB.importText(io.value.trim()); msg(`${n}개를 새로 가져왔어요 (이미 있던 항목은 건너뜀).`); }catch(e){ msg("가져오기 실패: "+e.message); } };
-WB.onChange(drawList); drawList();
+WB.onChange(drawList); WB.onChange(drawCtl); drawList(); drawCtl();
 </script>
 </body>
 </html>

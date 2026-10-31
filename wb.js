@@ -20,15 +20,21 @@ const REPS_KEY = "ea-reps-v1", REPS = [1, 2, 3];
 function getReps(){ try{ const v=parseInt(localStorage.getItem(REPS_KEY),10); return REPS.includes(v)?v:3; }catch(e){ return 3; } }
 const enkoParts = (e, k) => Array.from({length:getReps()}, () => [e, k]).flat();
 function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vx]\d+|rq\d+))\.mp3$/); if(!m) return [url]; return enkoParts(m[1]+"-en.mp3", m[1]+"-ko.mp3"); }
-let cur = null;                      // {id, url, parts, i, timer}
+let cur = null;                      // {id, url, parts, i, timer, list?, li?, paused?, held?}  list = play-all queue [{id,url}]
 let playingId = null;
+const ITEM_GAP = 0.9;                // pause between items when playing the whole list
 function finish(){ if(cur && cur.timer) clearTimeout(cur.timer); cur=null; playingId=null; changed(); }
-function playPart(){ audio.src=cur.parts[cur.i]; audio.play().catch(()=>{}); }
+function playPart(){ if(!audio.paused) skipPause=true; audio.src=cur.parts[cur.i]; audio.play().catch(()=>{}); }
+function loadItem(li){ const it=cur.list[li]; cur.li=li; cur.id=it.id; cur.url=it.url; cur.parts=partsFor(it.url); cur.i=0; playingId=it.id; playPart(); changed(); }
+function advance(){ if(!cur) return; cur.timer=null;
+  if(cur.i+1 < cur.parts.length){ cur.i++; playPart(); }
+  else if(cur.list && cur.li+1 < cur.list.length) loadItem(cur.li+1);
+  else finish(); }
 audio.addEventListener("ended", () => { if(!cur) return;
-  if(cur.i+1 < cur.parts.length){ cur.timer=setTimeout(()=>{ if(!cur) return; cur.timer=null; cur.i++; playPart(); }, getGap()*1000); }
-  else finish(); });
+  const more = cur.i+1 < cur.parts.length, next = cur.list && cur.li+1 < cur.list.length;
+  if(more || next) cur.timer=setTimeout(advance, (more ? getGap() : ITEM_GAP)*1000); else finish(); });
 let skipPause = false;
-audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && !audio.ended && !cur.timer) finish(); });
+audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && cur.list) return; if(cur && !audio.ended && !cur.timer) finish(); });
 audio.addEventListener("error", () => { if(cur && cur.parts.length>1){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
 window.addEventListener("storage", e => { if(e.key===GAP_KEY||e.key===REPS_KEY) WB.refreshGap(); });
 
@@ -47,8 +53,18 @@ const WB = {
     const pid=id||url;
     if(cur && cur.id===pid){ WB.stop(); return; }
     if(cur && cur.timer) clearTimeout(cur.timer);
-    if(!audio.paused) skipPause=true;
     cur={id:pid, url, parts:partsFor(url), i:0, timer:null}; playingId=pid; playPart(); changed(); },
+  /* play-all: list = [{id,url}] in display order */
+  playList(list, li=0){ list=(list||[]).filter(x=>x.url); if(!list.length) return; if(WB.onPlay) WB.onPlay();
+    if(cur && cur.timer) clearTimeout(cur.timer);
+    cur={list, li:0, timer:null}; loadItem(Math.max(0, Math.min(list.length-1, li))); },
+  toggleList(list){ if(!cur || !cur.list){ WB.playList(list, 0); return; }
+    if(cur.paused){ cur.paused=false; if(cur.held){ cur.held=false; advance(); } else audio.play().catch(()=>{}); }
+    else { cur.paused=true; if(cur.timer){ clearTimeout(cur.timer); cur.timer=null; cur.held=true; } else audio.pause(); }
+    changed(); },
+  jump(list, d){ if(cur && cur.list){ if(cur.timer){ clearTimeout(cur.timer); cur.timer=null; } cur.paused=false; cur.held=false;
+      loadItem(Math.max(0, Math.min(cur.list.length-1, cur.li+d))); } else WB.playList(list, d>0 ? 1 : 0); },
+  listState: () => cur && cur.list ? {active:true, paused:!!cur.paused, li:cur.li, n:cur.list.length, id:cur.id} : {active:false},
   stop(){ if(!cur) return; finish(); audio.pause(); },
   isPlaying: id => !!cur && cur.id===id,
   partsFor,
@@ -57,7 +73,8 @@ const WB = {
   onGap: null,
   REPS, reps: getReps, enkoParts,
   setReps(n){ try{ localStorage.setItem(REPS_KEY, String(n)); }catch(e){} WB.refreshGap(); if(WB.onGap) WB.onGap(); },
-  gapHTML: () => `<span class="row wbgaprow" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg wbgap" style="margin:0">${GAPS.map(g=>`<button data-gap="${g}" class="${g===getGap()?"on":""}" onclick="WB.setGap(${g})">${g}초</button>`).join("")}</span><span class="note">반복</span><span class="seg wbreps" style="margin:0">${REPS.map(n=>`<button data-reps="${n}" class="${n===getReps()?"on":""}" onclick="WB.setReps(${n})">${n}회</button>`).join("")}</span></span>`,
+  gapHTML: () => `<span class="lab">반복</span><span class="seg wbreps">${REPS.map(n=>`<button data-reps="${n}" class="${n===getReps()?"on":""}" onclick="WB.setReps(${n})">${n}회</button>`).join("")}</span>
+  <span class="lab">간격(초)</span><span class="seg wbgap">${GAPS.map(g=>`<button data-gap="${g}" class="${g===getGap()?"on":""}" onclick="WB.setGap(${g})">${g}</button>`).join("")}</span>`,
   refreshGap(root=document){ const g=getGap(); root.querySelectorAll(".wbgap button").forEach(b=>b.classList.toggle("on", Number(b.dataset.gap)===g));
     const n=getReps(); root.querySelectorAll(".wbreps button").forEach(b=>b.classList.toggle("on", Number(b.dataset.reps)===n)); },
   exportText(){ return JSON.stringify({app:"english-audio-wordbook",v:1,items:load()}, null, 1); },
