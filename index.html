@@ -180,6 +180,16 @@ body.sheet-open{overflow:hidden}
 .tabs button .ck{color:var(--ok);font-size:12px;margin-left:2px;font-weight:700}
 .ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .srep{margin:6px 0 2px}
+/* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
+html{background:var(--bg)}
+.wrap{overflow-x:clip}
+.stk{top:0!important}
+.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
+.sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
+#wbctl{--bleed:17px}
+.dprog{font-weight:600;color:var(--ok)}
+.wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
 </style>
 </head>
 <body>
@@ -197,7 +207,7 @@ body.sheet-open{overflow:hidden}
 </section>
 </div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="dc33aeb48f") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="92ff3e3c8e") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}
