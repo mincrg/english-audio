@@ -187,7 +187,7 @@ html{background:var(--bg)}
 .stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
 .sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
 #wbctl{--bleed:17px}
-.dprog{font-weight:600;color:var(--ok)}
+.dprog,.wprog{font-weight:600;color:var(--ok)}
 .wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
 </style>
@@ -200,6 +200,10 @@ html{background:var(--bg)}
   <p>날짜를 눌러 그날의 기사, 직해, 듣기, 퀴즈를 열어요.</p>
 </header>
 <a class="card" href="./wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount">저장한 단어·표현 보기, 복습 퀴즈, 백업</small></a>
+<section class="box" id="weekly">
+  <h3 style="border:0;margin-top:0;padding-top:0">📚 주말 복습</h3>
+  <a class="card" href="./weekly/2026-11-01.html"><b>주말 복습 (10/26~10/31) · 핵심 표현 10개 + 퀴즈</b><small>2026-11-01<span class="wprog" data-date="2026-11-01" data-n="10"></span></small></a>
+</section>
 <section class="box">
   <h3 style="border:0;margin-top:0;padding-top:0">📚 전체 학습 (최신순)</h3>
   <a class="card" href="./2026-11-01/index.html"><b>11월 1일(일) · 새끼 니알라 두 마리 / 낯선 이 11명의 '비결혼식'</b><small>2026-11-01<span class="dprog" data-date="2026-11-01"></span></small></a>
@@ -207,13 +211,17 @@ html{background:var(--bg)}
 </section>
 </div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="92ff3e3c8e") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="9a17ed245f") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}
   const P=["en","jik","voc","exp","quiz"];
   document.querySelectorAll(".dprog[data-date]").forEach(el=>{ const x=o[el.dataset.date]||{}, n=["a1","a2"].reduce((s,a)=>s+P.filter(t=>Array.isArray(x[a])&&x[a].includes(t)).length,0);
     el.textContent = n>=10 ? " · ✅ 완료" : n ? ` · 📖 ${n}/10` : ""; }); })();
+/* weekly review progress: {date:{heard:[...],quiz:bool}} → ✅ 완료 or 📖 n/(N+1) */
+(function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-wprog-v1")||"{}")||{}; }catch(e){}
+  document.querySelectorAll(".wprog[data-date]").forEach(el=>{ const x=o[el.dataset.date]||{}, N=+el.dataset.n, h=(x.heard||[]).filter(i=>i<N).length+(x.quiz?1:0);
+    el.textContent = h>=N+1 ? " · ✅ 완료" : h ? ` · 📖 ${h}/${N+1}` : ""; }); })();
 if(window.WB){ const n=WB.all().length; if(n) document.getElementById("wbcount").textContent=`저장 ${n}개 · 복습 퀴즈 · 백업`; }
 </script>
 </body>

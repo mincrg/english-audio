@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache">
+<script>function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get("v")===v) return; u.searchParams.set("v",v); location.replace(u.href); }catch(e){} }</script>
+<script>try{const f=parseFloat(localStorage.getItem("ea-fs-v1"));if([0.9,1,1.15,1.3].includes(f))document.documentElement.style.setProperty("--fs",f)}catch(e){}</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<title>주말 복습 (10/26~10/31) · 영어 직독직해</title>
+<style>
+:root{--bg:#fafaf8;--card:#fff;--tx:#1b1b1b;--tx2:#5f6368;--line:#e4e4e0;--acc:#1a5fd6;--accs:#e8f0fe;--ok:#1e8e3e;--bad:#d93025;--btn:#f1f3f4}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1c1c1e;--tx:#ececec;--tx2:#a0a4a8;--line:#2e2e30;--acc:#8ab4f8;--accs:#1f2a3d;--ok:#81c995;--bad:#f28b82;--btn:#2a2a2d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px calc(80px + env(safe-area-inset-bottom))}
+header.mast{border-bottom:3px double var(--tx);padding:6px 0 10px;margin-bottom:14px}
+.mast .date{font-size:13px;color:var(--tx2);letter-spacing:.04em}
+.mast h1{font:700 28px/1.2 Georgia,"Times New Roman",serif;margin:4px 0}
+.mast p{margin:4px 0 0;color:var(--tx2);font-size:15px}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 18px}
+nav.toc a{font-size:14px;padding:5px 10px;border:1px solid var(--line);border-radius:999px;color:var(--tx);text-decoration:none;background:var(--card)}
+section.art,section.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:18px 0}
+.kicker{font-size:13px;color:var(--acc);font-weight:600;letter-spacing:.03em}
+h2{font:700 24px/1.25 Georgia,serif;margin:4px 0 2px}
+.sub{color:var(--tx2);font-size:15px;margin-bottom:10px}
+h3{font-size:18px;margin:22px 0 8px;padding-top:12px;border-top:1px solid var(--line)}
+button{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--btn);color:var(--tx);border-radius:10px;padding:8px 12px;min-height:40px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+@media (prefers-color-scheme:dark){button.pri{color:#111}}
+button:disabled{opacity:.4}
+button.ico{padding:6px 9px;min-width:40px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:6px 0 10px}
+.seg button{border:0;border-radius:0;background:transparent;min-height:38px}
+.seg button.on{background:var(--acc);color:#fff}
+@media (prefers-color-scheme:dark){.seg button.on{color:#111}}
+.sent{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid transparent;transition:background .2s}
+.sent.on{background:var(--accs);border-color:var(--acc)}
+.sent .t{flex:1;min-width:0}
+.ko{color:var(--tx2);margin-top:3px}
+.eo-t{cursor:pointer}
+.player{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}
+.player .now{font-size:14px;color:var(--tx2)}
+.player .now b{color:var(--tx)}
+.player .sen-en{font-size:17px;line-height:1.5;color:var(--tx);margin:6px 0 2px;word-break:keep-all;overflow-wrap:break-word}
+.player .sen-ko{font-size:15px;line-height:1.5;color:var(--acc);word-break:keep-all;overflow-wrap:break-word}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:8px 0;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc)}
+.cue{color:var(--acc);font-weight:600;margin:4px 0;display:none}
+.cue.show{display:block;animation:pulse 1s infinite alternate}
+@keyframes pulse{from{opacity:.55}to{opacity:1}}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px}
+label.tg input{width:22px;height:22px}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl td,.tbl th{word-break:keep-all;overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual;border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+.tbl th{font-size:13px;color:var(--tx2);font-weight:600}
+.tbl tr.on td{background:var(--accs)}
+/* word / expression lists: grid rows on desktop, one card per item on phones; never split words */
+.items{margin:6px 0;font-size:15px}
+.items,.items *{word-break:keep-all;overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual}
+.item{display:grid;grid-template-columns:minmax(9em,1.2fr) minmax(7em,1fr) 2fr auto;grid-template-areas:"w mean ex acts";gap:2px 12px;align-items:start;padding:9px 8px;border-bottom:1px solid var(--line);border-radius:8px;transition:background .2s}
+.item.ihdr{font-size:13px;color:var(--tx2);font-weight:600;padding-top:4px;padding-bottom:4px}
+.item.on{background:var(--accs)}
+.item .w{grid-area:w;min-width:0}.item .w b{font-size:16px}
+.item .pos{color:var(--tx2);font-size:13px;margin-left:6px;white-space:nowrap}
+.item .mean{grid-area:mean;min-width:0}
+.item .ex{grid-area:ex;min-width:0}
+.item .acts{grid-area:acts;display:flex;gap:6px;justify-content:flex-end;white-space:nowrap}
+.item .acts button{min-width:40px}
+@media (max-width:600px){
+  .item{grid-template-columns:1fr auto;grid-template-areas:"w acts" "mean mean" "ex ex";border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;gap:4px 8px}
+  .item.ihdr{display:none}
+  .item .w{align-self:center}
+  .item .mean{font-size:16px}
+  .item .ex{font-size:13.5px}
+}
+.ex{color:var(--tx2);font-size:14px}
+.card{display:block;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--tx);margin:8px 0}
+.card small{color:var(--tx2);display:block}
+.q{margin:14px 0;padding-top:6px}
+.q .opt{margin:2px 0}
+.fb{margin:6px 0}
+.okc{color:var(--ok);font-weight:600}.badc{color:var(--bad);font-weight:600}
+.note{font-size:14px;color:var(--tx2)}
+.time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--tx2)}
+.wbstar{font-size:18px}
+/* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
+#study{margin:18px 0}
+.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0 -4px;padding-left:4px;padding-right:4px;border-bottom:1px solid var(--line)}
+.artsw{display:flex;gap:6px;margin-bottom:6px}
+.artsw button{flex:1;min-width:0;text-align:left;font-size:14px;line-height:1.3;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artsw button b{margin-right:4px}
+.artsw button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+@media (prefers-color-scheme:dark){.artsw button.on{color:#111}}
+.tabs{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.tabs button{flex:1;border:0;border-radius:0;background:transparent;min-height:42px;padding:6px 2px;font-weight:600;color:var(--tx2)}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button.on{background:var(--accs);color:var(--acc);box-shadow:inset 0 -3px 0 var(--acc)}
+#study section.art{margin:12px 0}
+#pagev section.box{margin:12px 0}
+.artsw button.pv{flex:0 0 auto}
+#study section.art:not(.cur){display:none}
+.art .pn{display:none}
+.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
+.pn>h3:first-child{margin-top:4px;padding-top:0;border-top:0}
+.sent{scroll-margin-top:130px;scroll-margin-bottom:110px}
+/* compact sticky mini-player for the full article */
+#mini{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(0,0,0,.08);padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
+#mini .mp{max-width:720px;margin:0 auto}
+#mini .mp:not(.cur){display:none}
+#mini .player{border:0;margin:0;padding:0}
+#mini .mrow{display:flex;align-items:center;gap:6px}
+#mini .mrow .lbl{flex:1;min-width:0;font-size:13px;color:var(--tx2);line-height:1.3;overflow:hidden}
+#mini .mrow .lbl b{display:block;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mini button{min-height:38px;padding:6px 9px;font-size:14px}
+#mini .fpp{min-width:46px}
+#mini .bar{margin:5px 0 1px;height:5px}
+.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+#tabs[hidden],#pagev[hidden]{display:none}
+/* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
+.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.srep{align-items:center;gap:6px;margin:8px 0 2px}
+.srep .seg{margin:0}.srep .seg button{min-height:34px;padding:4px 10px;font-size:14px}
+.srep .lab{font-size:13px;color:var(--tx2)}
+.ctl .crow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
+.ctl .crow button{min-height:38px;padding:6px 9px;font-size:14px;flex:0 0 auto}
+.ctl .crow .pp{min-width:46px}
+.ctl .now{font-size:13px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}
+.ctl .now b{color:var(--tx)}
+@media (max-width:400px){.ctl .crow{gap:4px}.ctl .crow button{padding:6px 7px;font-size:13px}.ctl .crow .pp{min-width:42px}}
+.ctl .crow2{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:6px;font-size:13px}
+.ctl .crow2 .seg{margin:0}
+.ctl .crow2 .seg button{min-height:32px;padding:4px 7px;font-size:13px}
+@media (max-width:400px){.ctl .crow2{gap:4px}.ctl .crow2 .seg button{padding:4px 5px}}
+.ctl .crow2 .lab{color:var(--tx2)}
+.ctl .bar{height:3px;margin:8px -12px 0;border-radius:0}
+figure.hero{margin:6px 0 14px}
+figure.hero img{display:block;width:100%;height:auto;border-radius:10px;background:var(--line)}
+figure.hero figcaption{font-size:13px;color:var(--tx2);margin-top:6px;line-height:1.45;word-break:keep-all}
+figure.hero .credit{white-space:nowrap}
+figure.hero .credit a{color:var(--tx2)}
+@media (max-width:600px){figure.hero{margin-left:-16px;margin-right:-16px}figure.hero img{border-radius:0}figure.hero figcaption{padding:0 16px}}
+.toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.toplinks a{flex:1;min-width:140px;text-align:center}
+/* ---------- ⚙️ settings bottom sheet + summary chip ---------- */
+.chip{display:inline-flex;align-items:center;max-width:100%;min-height:32px;padding:4px 12px;font-size:13px;border-radius:999px;color:var(--tx2);background:var(--card);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sheetbg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .2s}
+#sheetbg.open{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:720px;margin:0 auto;max-height:86vh;overflow:auto;overscroll-behavior:contain;background:var(--card);color:var(--tx);border-radius:16px 16px 0 0;box-shadow:0 -8px 28px rgba(0,0,0,.22);padding:6px 16px calc(14px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .22s ease,visibility 0s .22s;visibility:hidden}
+#sheet.open{transform:none;visibility:visible;transition:transform .22s ease}
+#sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 4px}
+#sheet .shd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
+#sheet h4{margin:0;font-size:18px}
+#sheet .shd button{min-height:36px;padding:4px 12px;font-size:14px}
+#sheet .sg{border-top:1px solid var(--line);padding:8px 0 2px}
+#sheet .sg.hi{animation:sghi 1.2s ease}
+@keyframes sghi{from{background:var(--accs)}to{background:transparent}}
+#sheet .sl{font-size:13px;color:var(--tx2);font-weight:700;letter-spacing:.02em}
+#sheet .sr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 8px}
+#sheet .sr .lab{font-size:14px;min-width:4.6em}
+#sheet .seg{margin:0}
+#sheet .seg button{min-height:36px;padding:4px 11px;font-size:14px}
+#sheet .sr>button{min-height:36px;padding:4px 12px;font-size:14px}
+#sheet .fsz{font-size:14px;min-width:4.5em;text-align:center;font-weight:600}
+#sheet label.tg{font-size:14px}
+body.sheet-open{overflow:hidden}
+/* ---------- 글자 크기 (가-/가+): reading text, lists, sentence player ---------- */
+.items{font-size:calc(15px*var(--fs,1))}
+.item .w b{font-size:calc(16px*var(--fs,1))}
+.ex{font-size:calc(14px*var(--fs,1))}
+@media (max-width:600px){.item .mean{font-size:calc(16px*var(--fs,1))}.item .ex{font-size:calc(13.5px*var(--fs,1))}}
+.sent .t,.pn-read #lines-a1>p,.pn-read #lines-a2>p,.q{font-size:calc(17px*var(--fs,1))}
+.player .sen-en{font-size:calc(17px*var(--fs,1))}
+.player .sen-ko{font-size:calc(15px*var(--fs,1))}
+/* ---------- progress: n/5 per article, ✓ per tab, thin overall bar ---------- */
+.artsw button .pc{font-size:12px;font-weight:700;margin-right:5px;padding:0 5px;border-radius:999px;background:rgba(127,127,127,.16)}
+.artsw button.on .pc{background:rgba(255,255,255,.25)}
+.artsw button.gear{flex:0 0 auto;padding:4px 10px;font-size:17px;text-align:center}
+.pbar{height:3px;background:var(--line);border-radius:2px;margin:0 0 6px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.tabs button .ck{color:var(--ok);font-size:12px;margin-left:2px;font-weight:700}
+.ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
+.srep{margin:6px 0 2px}
+/* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
+html{background:var(--bg)}
+.wrap{overflow-x:clip}
+.stk{top:0!important}
+.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
+.sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
+#wbctl{--bleed:17px}
+.dprog,.wprog{font-weight:600;color:var(--ok)}
+.wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
+</style>
+<style>
+.witem{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--card)}
+.witem.on{background:var(--accs);border-color:var(--acc)}
+.witem .wh{display:flex;align-items:flex-start;gap:8px}
+.witem .wh .en{flex:1;min-width:0;font-size:calc(17px*var(--fs,1));font-weight:700;word-break:keep-all}
+.witem .wh .no{color:var(--tx2);font-size:13px;font-weight:600;margin-right:4px}
+.witem .wh .ck{color:var(--ok);font-weight:700;margin-left:4px}
+.witem .acts{display:flex;gap:6px;flex:0 0 auto}.witem .acts button{min-width:40px}
+.witem .ko{font-size:calc(16px*var(--fs,1));margin:4px 0 6px}
+.witem .src{margin:6px 0 4px;padding:6px 10px;border-left:3px solid var(--line);color:var(--tx);font-size:calc(15px*var(--fs,1));line-height:1.55}
+.witem .src mark{background:var(--accs);color:var(--acc);font-weight:600;border-radius:4px;padding:0 2px}
+.witem .from{font-size:calc(13px*var(--fs,1));color:var(--tx2)}
+.wq{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--card)}
+.wq .qk{font-size:calc(16px*var(--fs,1));font-weight:600;margin-bottom:6px}
+.wq .opts{display:flex;flex-direction:column;gap:6px}
+.wq .opts button{text-align:left;font-size:calc(15px*var(--fs,1))}
+.wq .opts button.right{background:var(--ok);color:#fff;border-color:var(--ok)}
+.wq .opts button.wrong{background:var(--bad);color:#fff;border-color:var(--bad);opacity:.8}
+.wq .res{font-size:13px;margin-top:6px}
+.sbar .wtitle{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.sbar .wtitle .back{flex:0 0 auto;padding:4px 10px;font-size:14px;text-decoration:none}
+.sbar .wtitle .wt{flex:1;min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbar .wtitle .pc{font-size:12px;font-weight:700;padding:0 6px;border-radius:999px;background:rgba(127,127,127,.16);margin-left:4px}
+.sbar .wtitle .gear{flex:0 0 auto;padding:4px 10px;font-size:17px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="mast">
+  <div class="date" id="mdate"></div>
+  <h1>📚 주말 복습</h1>
+  <p>이번 주에 배운 핵심 표현을 다시 듣고, 뜻을 확인하고, 퀴즈로 마무리해요. 🔊는 영어 → 뜻을 ⚙️에서 정한 횟수·간격대로 읽어 주고, ☆를 누르면 나만의 단어장에 저장돼요.</p>
+</header>
+<div class="sbar stk" id="sbar">
+  <div class="wtitle"><a class="back" href="./../index.html" role="button">← 목록</a><span class="wt" id="wt"></span><button class="gear" id="gear" aria-label="설정">⚙️</button></div>
+  <div class="pbar" id="pbar" role="progressbar" aria-label="복습 진도" aria-valuemin="0" aria-valuemax="11"><i></i></div>
+  <div class="tabs" id="tabs" role="tablist"><button data-t="list" class="on" role="tab">📋 표현 <span id="ckl" class="ck"></span></button><button data-t="quiz" role="tab">📝 퀴즈 <span id="ckq" class="ck"></span></button></div>
+</div>
+<section class="box" id="listv">
+  <div class="player ctl" id="wctl">
+    <div class="crow">
+      <button class="pri pp" id="wpp" aria-label="전체 재생/일시정지">▶</button>
+      <button id="wstop" aria-label="정지">⏹</button>
+      <button id="wprev" aria-label="이전">⏮</button>
+      <button id="wnext" aria-label="다음">⏭</button>
+      <div class="now" id="wnow"></div>
+    </div>
+    <div class="crow2"><button class="chip" id="wchip" aria-label="재생 설정 열기"></button></div>
+  </div>
+  <div id="list"></div>
+</section>
+<section class="box" id="quizv" hidden>
+  <div class="note">한국어 뜻을 보고 알맞은 영어 표현을 고르세요. 틀리면 다시 고를 수 있어요. 모두 맞히면 ✓ 표시가 붙어요.</div>
+  <div id="quiz"></div>
+  <div class="row"><button id="qnew">🔀 새 문제</button></div>
+</section>
+<section class="box">
+  <div class="toplinks"><a class="card" href="../index.html"><b>📚 전체 학습 목록</b></a><a class="card" href="../wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount"></small></a></div>
+  <div class="row"><button id="preset">↺ 이 복습 진도 초기화</button></div>
+</section>
+<p class="note">음성: Microsoft Edge 신경망 음성(영어 Ava, 한국어 SunHi)으로 미리 만든 mp3입니다.</p>
+</div>
+<div id="sheetbg"></div>
+<div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
+<script src="../wb.js?v=ab1a2742e1"></script>
+<script>
+const W = {"date": "2026-11-01", "from": "2026-10-26", "to": "2026-10-31", "label": "주말 복습 (10/26~10/31)", "range": "10/26~10/31", "dateLine": "2026년 11월 1일 일요일 · 10/26~10/31 핵심 표현 10개", "items": [{"en": "better-than-expected", "ko": "예상보다 좋은", "date": "2026-10-26", "dlabel": "10/26(월)", "art": 1, "title": "Tesla Beats Expectations, but Car Sales Slow Down", "sentence": "Tesla reported better-than-expected results for the third quarter on Wednesday, even though money from selling cars fell by 3% compared with a year earlier.", "hl": "", "url": ""}, {"en": "the largest deal of its kind", "ko": "(같은 종류 중) 가장 큰 거래", "date": "2026-10-27", "dlabel": "10/27(화)", "art": 1, "title": "SpaceX Gets 40 Billion Dollars for AI Chips", "sentence": "SpaceX said on Monday that it had agreed to a deal worth about 40 billion dollars to get new computer chips for artificial intelligence, and the company called it the largest deal of its kind ever.", "hl": "", "url": ""}, {"en": "room to grow", "ko": "성장할 여지", "date": "2026-10-28", "dlabel": "10/28(수)", "art": 1, "title": "Palantir Gets a Higher Price Target Before Its Earnings", "sentence": "That new target is about 31 percent above Monday's closing price, so the firm believes the shares still have room to grow.", "hl": "", "url": ""}, {"en": "come in below expectations", "ko": "예상에 못 미치다", "date": "2026-10-29", "dlabel": "10/29(목)", "art": 2, "title": "Google's Parent Company Grows Fast but Spends Heavily on AI", "sentence": "Search revenue also came in below expectations, so Alphabet's shares fell more than seven percent after the report.", "hl": "came in below expectations", "url": ""}, {"en": "at a yearly pace of", "ko": "연간 ~의 속도로", "date": "2026-10-30", "dlabel": "10/30(금)", "art": 1, "title": "The US Economy Grows Faster Than Expected", "sentence": "The American economy grew at a yearly pace of three point four percent from July to September, which was faster than the three point two percent that economists had expected and much faster than the two point two percent in the spring.", "hl": "", "url": ""}, {"en": "a rate hike", "ko": "금리 인상", "date": "2026-10-30", "dlabel": "10/30(금)", "art": 1, "title": "The US Economy Grows Faster Than Expected", "sentence": "The Federal Reserve kept interest rates between three point seven five and four percent on Wednesday, but two officials wanted to raise them, so many traders now expect a rate hike in December.", "hl": "", "url": ""}, {"en": "pay off", "ko": "성과를 내다, 결실을 맺다", "date": "2026-10-30", "dlabel": "10/30(금)", "art": 2, "title": "Amazon's Cloud Grows Fast, but Its Shares Fall", "sentence": "Since Google's parent company had disappointed investors just one day earlier, many people are now asking whether the giant AI spending by big tech companies will really pay off.", "hl": "", "url": ""}, {"en": "just in time for", "ko": "~에 딱 맞춰", "date": "2026-10-31", "dlabel": "10/31(토)", "art": 1, "title": "The World's Heaviest Jack-o'-Lantern", "sentence": "Just in time for Halloween, the heaviest pumpkin ever grown has become the heaviest jack-o'-lantern in the world.", "hl": "", "url": "../2026-10-31/index.html"}, {"en": "beat the record", "ko": "기록을 깨다", "date": "2026-10-31", "dlabel": "10/31(토)", "art": 1, "title": "The World's Heaviest Jack-o'-Lantern", "sentence": "It easily beat the old record from twenty twenty-three, which was two thousand seven hundred forty-nine pounds, so the new jack-o'-lantern is now about as heavy as a small car.", "hl": "beat the old record", "url": "../2026-10-31/index.html"}, {"en": "would not have been possible without", "ko": "~없이는 불가능했을 것이다", "date": "2026-10-31", "dlabel": "10/31(토)", "art": 2, "title": "AI Helps Scientists Count Rare Bats", "sentence": "Scientists in Britain have finished the country's largest ever survey of woodland bats, and they say it would not have been possible without artificial intelligence.", "hl": "", "url": "../2026-10-31/index.html"}]};
+fetch("../days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const me=j&&(j.weeklies||[]).find(x=>x.date===W.date); if(me&&me.build&&me.build!=="6686c6f896") freshen(me.build); }).catch(()=>{});
+const esc = WB.esc, $ = id => document.getElementById(id);
+const clipUrl = i => new URL(`${W.date}/clips/rq${i+1}.mp3`, location.href).href;   // WB plays rqN-en.mp3 then rqN-ko.mp3
+const idOf = i => "wk"+W.date+"-"+(i+1);
+/* ---- progress: {date:{heard:[i...], quiz:true}} */
+const PKEY="ea-wprog-v1";
+function pAll(){ try{ return JSON.parse(localStorage.getItem(PKEY)||"{}")||{}; }catch(e){ return {}; } }
+function pMe(){ const p=pAll()[W.date]||{}; return {heard:Array.isArray(p.heard)?p.heard:[], quiz:!!p.quiz}; }
+function pSet(fn){ const a=pAll(), m=pMe(); fn(m); a[W.date]=m; try{ localStorage.setItem(PKEY, JSON.stringify(a)); }catch(e){} drawProg(); }
+function heard(i){ if(!pMe().heard.includes(i)) pSet(m=>m.heard.push(i)); }
+function drawProg(){ const m=pMe(), n=W.items.length, h=m.heard.filter(i=>i<n).length, tot=h+(m.quiz?1:0), all=n+1;
+  $("wt").innerHTML = `📚 복습 ${esc(W.range)}<span class="pc">${tot>=all?"✅":tot+"/"+all}</span>`;
+  $("pbar").querySelector("i").style.width = (tot/all*100)+"%"; $("pbar").setAttribute("aria-valuenow", tot); $("pbar").setAttribute("aria-valuemax", all);
+  $("ckl").textContent = h>=n ? "✓" : ""; $("ckq").textContent = m.quiz ? "✓" : "";
+  document.querySelectorAll(".witem").forEach(el=>{ const c=el.querySelector(".ck"); if(c) c.textContent = m.heard.includes(+el.dataset.i) ? "✓" : ""; }); }
+$("preset").onclick=()=>{ if(confirm("이 주말 복습의 진도 표시를 지울까요?")){ const a=pAll(); delete a[W.date]; try{ localStorage.setItem(PKEY, JSON.stringify(a)); }catch(e){} drawProg(); newQuiz(); } };
+/* ---- list */
+function hl(s, h){ const t=esc(s); if(!h) return t; const k=t.toLowerCase().indexOf(esc(h).toLowerCase()); return k<0 ? t : t.slice(0,k)+"<mark>"+t.slice(k,k+esc(h).length)+"</mark>"+t.slice(k+esc(h).length); }
+function from(x){ const where=`${esc(x.dlabel)} 기사 ${x.art}`; return x.url ? `${where} · <a href="${esc(x.url)}">${esc(x.title)}</a>` : `${where} · ${esc(x.title)}`; }
+function drawList(){
+  $("list").innerHTML = W.items.map((x,i)=>`<div class="witem" data-i="${i}" id="w${i+1}">
+    <div class="wh"><div class="en"><span class="no">${i+1}</span>${esc(x.en)}<span class="ck"></span></div>
+      <div class="acts"><button class="ico" data-play="${i}" aria-label="듣기">${WB.isPlaying(idOf(i))?"⏸":"🔊"}</button>${WB.starHTML({type:"expr",en:x.en,ko:x.ko,ex:x.sentence||"",date:x.date,article:x.title,clip:clipUrl(i),page:x.url?new URL(x.url,location.href).href:location.href.split("#")[0]})}</div></div>
+    <div class="ko">${esc(x.ko)}</div>
+    ${x.sentence?`<div class="src">${hl(x.sentence, x.hl||x.en)}</div>`:""}
+    <div class="from">${from(x)}</div></div>`).join("");
+  drawProg(); drawCtl(); }
+const plist = () => W.items.map((x,i)=>({id:idOf(i), url:clipUrl(i)}));
+$("list").addEventListener("click", e=>{ const b=e.target.closest("button[data-play]"); if(!b) return; const i=+b.dataset.play; WB.play(clipUrl(i), idOf(i)); });
+$("wpp").onclick=()=>WB.toggleList(plist()); $("wstop").onclick=()=>WB.stop();
+$("wprev").onclick=()=>WB.jump(plist(),-1); $("wnext").onclick=()=>WB.jump(plist(),1);
+function drawCtl(){ const st=WB.listState(); $("wpp").textContent = st.active&&!st.paused ? "⏸" : "▶";
+  const i = st.active ? plist().findIndex(x=>x.id===st.id) : -1;
+  $("wnow").innerHTML = i>=0 ? `<b>${st.li+1}/${st.n}</b> ${esc(W.items[i].en)}` : `<b>전체 ${W.items.length}개</b> 듣기`;
+  document.querySelectorAll(".witem").forEach(el=>{ const on=WB.isPlaying(idOf(+el.dataset.i)); el.classList.toggle("on",on);
+    const b=el.querySelector("button[data-play]"); if(b) b.textContent = on ? "⏸" : "🔊"; });
+  // anything that started playing counts as heard
+  W.items.forEach((x,i)=>{ if(WB.isPlaying(idOf(i))) heard(i); }); }
+/* ---- quiz: KO → EN multiple choice */
+const QN=Math.min(5, W.items.length); let Q=[];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function newQuiz(){ const idx=shuffle(W.items.map((_,i)=>i)).slice(0,QN);
+  Q = idx.map(i=>({i, opts:shuffle([i, ...shuffle(W.items.map((_,k)=>k).filter(k=>k!==i)).slice(0,2)]), tried:[], ok:false})); drawQuiz(); }
+function drawQuiz(){ const done=Q.filter(q=>q.ok).length, first=Q.filter(q=>q.ok&&q.tried.length===1).length;
+  $("quiz").innerHTML = Q.map((q,n)=>`<div class="wq" data-q="${n}"><div class="qk">${n+1}. ${esc(W.items[q.i].ko)}</div>
+    <div class="opts">${q.opts.map(k=>`<button data-k="${k}" class="${q.tried.includes(k)?(k===q.i?"right":"wrong"):""}" ${q.ok?"disabled":""}>${esc(W.items[k].en)}</button>`).join("")}</div>
+    ${q.ok?`<div class="res okc">⭕ 정답 <button class="ico" data-play="${q.i}" aria-label="듣기">🔊</button></div>`:q.tried.length?`<div class="res badc">❌ 다시 골라 보세요</div>`:""}</div>`).join("")
+    + (done===Q.length ? `<div class="note okc">🎉 ${Q.length}문제 모두 맞혔어요 (한 번에 맞힌 문제 ${first}개)</div>` : `<div class="note">${done}/${Q.length} 정답</div>`); }
+$("quiz").addEventListener("click", e=>{ const p=e.target.closest("button[data-play]"); if(p){ const i=+p.dataset.play; WB.play(clipUrl(i), idOf(i)); return; }
+  const b=e.target.closest("button[data-k]"); if(!b) return; const q=Q[+b.closest(".wq").dataset.q], k=+b.dataset.k; if(q.ok||q.tried.includes(k)) return;
+  q.tried.push(k); if(k===q.i) q.ok=true; drawQuiz(); if(Q.every(x=>x.ok)) pSet(m=>m.quiz=true); });
+$("qnew").onclick=newQuiz;
+/* ---- tabs */
+$("tabs").addEventListener("click", e=>{ const b=e.target.closest("button[data-t]"); if(!b) return;
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  $("listv").hidden = b.dataset.t!=="list"; $("quizv").hidden = b.dataset.t!=="quiz";
+  window.scrollTo({top: Math.max(0, $("sbar").offsetTop - 0), behavior:"auto"}); });
+/* ---- ⚙️ sheet: speed, text size, EN→KO repeat/gap (shared keys with the day pages) */
+const FS_KEY="ea-fs-v1", FSS=[0.9,1,1.15,1.3], FSL=["작게","보통","크게","아주 크게"];
+function fsG(){ try{ const v=parseFloat(localStorage.getItem(FS_KEY)); return FSS.includes(v)?v:1; }catch(e){ return 1; } }
+function stepFs(d){ const i=Math.max(0,Math.min(FSS.length-1,FSS.indexOf(fsG())+d)); try{ localStorage.setItem(FS_KEY,String(FSS[i])); }catch(e){} document.documentElement.style.setProperty("--fs",FSS[i]); syncSettings(); }
+const sheet=$("sheet"), sheetbg=$("sheetbg"), sheetOpen=()=>sheet.classList.contains("open");
+function drawSheet(){ const fi=FSS.indexOf(fsG()), m=pMe();
+  const seg=(cls,arr,cur,lab,fn)=>`<span class="seg">${arr.map(v=>`<button class="${cls}${v===cur?" on":""}" aria-pressed="${v===cur}" onclick="${fn}(${v})">${lab(v)}</button>`).join("")}</span>`;
+  sheet.innerHTML=`<div class="grab"></div><div class="shd"><h4>⚙️ 설정</h4><button onclick="closeSheet()">✕ 닫기</button></div>
+  <div class="sg"><div class="sl">공통</div>
+    <div class="sr"><span class="lab">재생 속도</span>${seg("srt",WB.RATES,WB.rate(),v=>v.toFixed(1)+"x","WB.setRate")}</div>
+    <div class="sr"><span class="lab">글자 크기</span><button class="fsm" aria-label="글자 작게" onclick="stepFs(-1)" ${fi<=0?"disabled":""}>가-</button><span class="fsz">${FSL[fi]}</span><button class="fsp" aria-label="글자 크게" onclick="stepFs(1)" ${fi>=FSS.length-1?"disabled":""}>가+</button></div></div>
+  <div class="sg"><div class="sl">표현 듣기 (영어 → 뜻)</div>
+    <div class="sr"><span class="lab">반복</span>${seg("rp",WB.REPS,WB.reps(),v=>v+"회","WB.setReps")}</div>
+    <div class="sr"><span class="lab">간격(초)</span>${seg("gp",WB.GAPS,WB.gap(),v=>String(v),"WB.setGap")}</div></div>
+  <div class="sg"><div class="sl">진도</div><div class="note">들은 표현 ${m.heard.length}/${W.items.length} · 퀴즈 ${m.quiz?"✓ 완료":"아직"}</div></div>`; }
+function openSheet(){ drawSheet(); sheet.classList.add("open"); sheetbg.classList.add("open"); document.body.classList.add("sheet-open"); }
+function closeSheet(){ sheet.classList.remove("open"); sheetbg.classList.remove("open"); document.body.classList.remove("sheet-open"); }
+function syncSettings(){ $("wchip").textContent=`⚙️ 반복 ${WB.reps()}회 · 간격 ${WB.gap()}초 · ${WB.rate().toFixed(1)}x`; if(sheetOpen()) drawSheet(); }
+sheetbg.onclick=closeSheet; $("gear").onclick=()=>openSheet(); $("wchip").onclick=()=>openSheet();
+addEventListener("keydown",e=>{ if(e.key==="Escape"&&sheetOpen()) closeSheet(); });
+addEventListener("storage",e=>{ if(e.key===FS_KEY) document.documentElement.style.setProperty("--fs",fsG()); if(e.key===PKEY) drawProg(); });
+WB.onGap=syncSettings; syncSettings();
+{ const sb=$("sbar"), set=()=>{ $("wctl").style.top=sb.offsetHeight+"px"; }; set(); addEventListener("resize",set); }
+$("mdate").textContent = W.dateLine;
+const cnt=()=>{ const n=WB.all().length; $("wbcount").textContent = n? `저장 ${n}개` : "아직 비어 있어요"; };
+WB.onChange(()=>{ cnt(); WB.refreshStars(); drawCtl(); }); cnt();
+drawList(); newQuiz();
+</script>
+<script>/* cover above sticky bars only while they are stuck */
+(function(){ const els=[...document.querySelectorAll(".stk")]; const f=()=>els.forEach(e=>e.classList.toggle("stuck", !e.hidden && e.getBoundingClientRect().top<=1 && scrollY>0)); addEventListener("scroll",f,{passive:true}); addEventListener("resize",f); f(); })();</script>
+</body>
+</html>

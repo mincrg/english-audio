@@ -190,7 +190,7 @@ html{background:var(--bg)}
 .stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
 .sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
 #wbctl{--bleed:17px}
-.dprog{font-weight:600;color:var(--ok)}
+.dprog,.wprog{font-weight:600;color:var(--ok)}
 .wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
 </style>
@@ -231,7 +231,7 @@ html{background:var(--bg)}
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="c1c0865a5e") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="514a383aef") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 let filt="all", mode="list", qz=null;
