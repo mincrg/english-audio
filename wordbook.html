@@ -47,9 +47,28 @@ button.ico{padding:6px 9px;min-width:40px}
 label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px}
 label.tg input{width:22px;height:22px}
 .tbl{width:100%;border-collapse:collapse;font-size:15px}
-.tbl td,.tbl th{word-break:keep-all;overflow-wrap:anywhere;border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+.tbl td,.tbl th{word-break:keep-all;overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual;border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
 .tbl th{font-size:13px;color:var(--tx2);font-weight:600}
 .tbl tr.on td{background:var(--accs)}
+/* word / expression lists: grid rows on desktop, one card per item on phones; never split words */
+.items{margin:6px 0;font-size:15px}
+.items,.items *{word-break:keep-all;overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual}
+.item{display:grid;grid-template-columns:minmax(9em,1.2fr) minmax(7em,1fr) 2fr auto;grid-template-areas:"w mean ex acts";gap:2px 12px;align-items:start;padding:9px 8px;border-bottom:1px solid var(--line);border-radius:8px;transition:background .2s}
+.item.ihdr{font-size:13px;color:var(--tx2);font-weight:600;padding-top:4px;padding-bottom:4px}
+.item.on{background:var(--accs)}
+.item .w{grid-area:w;min-width:0}.item .w b{font-size:16px}
+.item .pos{color:var(--tx2);font-size:13px;margin-left:6px;white-space:nowrap}
+.item .mean{grid-area:mean;min-width:0}
+.item .ex{grid-area:ex;min-width:0}
+.item .acts{grid-area:acts;display:flex;gap:6px;justify-content:flex-end;white-space:nowrap}
+.item .acts button{min-width:40px}
+@media (max-width:600px){
+  .item{grid-template-columns:1fr auto;grid-template-areas:"w acts" "mean mean" "ex ex";border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;gap:4px 8px}
+  .item.ihdr{display:none}
+  .item .w{align-self:center}
+  .item .mean{font-size:16px}
+  .item .ex{font-size:13.5px}
+}
 .ex{color:var(--tx2);font-size:14px}
 .card{display:block;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--tx);margin:8px 0}
 .card small{color:var(--tx2);display:block}
@@ -60,7 +79,6 @@ label.tg input{width:22px;height:22px}
 .note{font-size:14px;color:var(--tx2)}
 .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--tx2)}
 .wbstar{font-size:18px}
-.cell2{display:flex;gap:4px;flex-wrap:wrap}
 .toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .toplinks a{flex:1;min-width:140px;text-align:center}
 </style>
@@ -96,11 +114,11 @@ function drawList(){
   const all=WB.all(), items=all.filter(x=>filt==="all"||x.type===filt);
   document.getElementById("cnt").textContent = `저장 ${all.length}개 (단어 ${all.filter(x=>x.type==="word").length} · 표현 ${all.filter(x=>x.type==="expr").length})`;
   if(mode!=="list") return;
-  document.getElementById("list").innerHTML = items.length ? `<table class="tbl"><tr><th></th><th>영어</th><th>뜻</th><th></th></tr>` + items.map(x=>`<tr>
-    <td><button class="ico" data-play="${esc(x.id)}">${WB.isPlaying(x.id)?"⏸":"🔊"}</button></td>
-    <td><b>${esc(x.en)}</b><br><span class="ex">${typeName(x.type)}${x.pos?" · "+esc(x.pos):""}${x.date?" · "+(x.page?`<a href="${esc(x.page)}">${esc(x.date)}</a>`:esc(x.date)):""}</span>${x.ex?`<div class="ex">${esc(x.ex)}</div>`:""}</td>
-    <td>${esc(x.ko)}${x.article?`<div class="ex">${esc(x.article)}</div>`:""}</td>
-    <td><button class="ico" data-del="${esc(x.id)}" aria-label="삭제">🗑</button></td></tr>`).join("") + `</table>`
+  document.getElementById("list").innerHTML = items.length ? `<div class="items"><div class="item ihdr"><div class="w">영어</div><div class="mean">뜻</div><div class="ex">기사 · 날짜</div><div class="acts"></div></div>` + items.map(x=>`<div class="item">
+    <div class="w"><b>${esc(x.en)}</b><span class="pos">${typeName(x.type)}${x.pos?" · "+esc(x.pos):""}</span></div>
+    <div class="acts"><button class="ico" data-play="${esc(x.id)}" aria-label="듣기">${WB.isPlaying(x.id)?"⏸":"🔊"}</button><button class="ico" data-del="${esc(x.id)}" aria-label="삭제">🗑</button></div>
+    <div class="mean">${esc(x.ko)}</div>
+    <div class="ex">${x.ex?esc(x.ex)+"<br>":""}${x.article?esc(x.article)+" · ":""}${x.date?(x.page?`<a href="${esc(x.page)}">${esc(x.date)}</a>`:esc(x.date)):""}</div></div>`).join("") + `</div>`
     : `<div class="note">${all.length?"이 종류로 저장한 항목이 없어요.":"아직 비어 있어요. 날짜별 페이지의 주요 어휘·중요 표현 표에서 ☆를 눌러 저장해 보세요."}</div>`;
 }
 document.getElementById("list").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return;
