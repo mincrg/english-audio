@@ -18,13 +18,16 @@ function getGap(){ try{ const v=parseFloat(localStorage.getItem(GAP_KEY)); retur
 /* how many EN→KO rounds per vocab / expression item (1–3), shared like the gap */
 const REPS_KEY = "ea-reps-v1", REPS = [1, 2, 3];
 function getReps(){ try{ const v=parseInt(localStorage.getItem(REPS_KEY),10); return REPS.includes(v)?v:3; }catch(e){ return 3; } }
+/* global playback speed, shared with every day page */
+const RATE_KEY = "ea-rate-v1", RATES = [0.8, 0.9, 1, 1.2];
+function getRate(){ try{ const v=parseFloat(localStorage.getItem(RATE_KEY)); return RATES.includes(v)?v:1; }catch(e){ return 1; } }
 const enkoParts = (e, k) => Array.from({length:getReps()}, () => [e, k]).flat();
 function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vx]\d+|rq\d+))\.mp3$/); if(!m) return [url]; return enkoParts(m[1]+"-en.mp3", m[1]+"-ko.mp3"); }
 let cur = null;                      // {id, url, parts, i, timer, list?, li?, paused?, held?}  list = play-all queue [{id,url}]
 let playingId = null;
 const ITEM_GAP = 0.9;                // pause between items when playing the whole list
 function finish(){ if(cur && cur.timer) clearTimeout(cur.timer); cur=null; playingId=null; changed(); }
-function playPart(){ if(!audio.paused) skipPause=true; audio.src=cur.parts[cur.i]; audio.play().catch(()=>{}); }
+function playPart(){ if(!audio.paused) skipPause=true; audio.src=cur.parts[cur.i]; audio.defaultPlaybackRate=audio.playbackRate=getRate(); audio.play().catch(()=>{}); }
 function loadItem(li){ const it=cur.list[li]; cur.li=li; cur.id=it.id; cur.url=it.url; cur.parts=partsFor(it.url); cur.i=0; playingId=it.id; playPart(); changed(); }
 function advance(){ if(!cur) return; cur.timer=null;
   if(cur.i+1 < cur.parts.length){ cur.i++; playPart(); }
@@ -36,7 +39,7 @@ audio.addEventListener("ended", () => { if(!cur) return;
 let skipPause = false;
 audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && cur.list) return; if(cur && !audio.ended && !cur.timer) finish(); });
 audio.addEventListener("error", () => { if(cur && cur.parts.length>1){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
-window.addEventListener("storage", e => { if(e.key===GAP_KEY||e.key===REPS_KEY) WB.refreshGap(); });
+window.addEventListener("storage", e => { if(e.key===GAP_KEY||e.key===REPS_KEY||e.key===RATE_KEY){ if(e.key===RATE_KEY) audio.playbackRate=getRate(); WB.refreshGap(); if(WB.onGap) WB.onGap(); } });
 
 const WB = {
   KEY, esc,
@@ -71,6 +74,8 @@ const WB = {
   GAPS, gap: getGap,
   setGap(v){ try{ localStorage.setItem(GAP_KEY, String(v)); }catch(e){} WB.refreshGap(); if(WB.onGap) WB.onGap(v); },
   onGap: null,
+  RATES, rate: getRate,
+  setRate(r){ try{ localStorage.setItem(RATE_KEY, String(r)); }catch(e){} audio.defaultPlaybackRate=audio.playbackRate=r; if(WB.onGap) WB.onGap(); },
   REPS, reps: getReps, enkoParts,
   setReps(n){ try{ localStorage.setItem(REPS_KEY, String(n)); }catch(e){} WB.refreshGap(); if(WB.onGap) WB.onGap(); },
   gapHTML: () => `<span class="lab">반복</span><span class="seg wbreps">${REPS.map(n=>`<button data-reps="${n}" class="${n===getReps()?"on":""}" onclick="WB.setReps(${n})">${n}회</button>`).join("")}</span>

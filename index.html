@@ -41,6 +41,8 @@ button.ico{padding:6px 9px;min-width:40px}
 .player{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}
 .player .now{font-size:14px;color:var(--tx2)}
 .player .now b{color:var(--tx)}
+.player .sen-en{font-size:17px;line-height:1.5;color:var(--tx);margin:6px 0 2px;word-break:keep-all;overflow-wrap:break-word}
+.player .sen-ko{font-size:15px;line-height:1.5;color:var(--acc);word-break:keep-all;overflow-wrap:break-word}
 .bar{height:6px;background:var(--line);border-radius:3px;margin:8px 0;overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--acc)}
 .cue{color:var(--acc);font-weight:600;margin:4px 0;display:none}
@@ -116,6 +118,9 @@ label.tg input{width:22px;height:22px}
 #tabs[hidden],#pagev[hidden]{display:none}
 /* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
 .ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.srep{align-items:center;gap:6px;margin:8px 0 2px}
+.srep .seg{margin:0}.srep .seg button{min-height:34px;padding:4px 10px;font-size:14px}
+.srep .lab{font-size:13px;color:var(--tx2)}
 .ctl .crow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
 .ctl .crow button{min-height:38px;padding:6px 9px;font-size:14px;flex:0 0 auto}
 .ctl .crow .pp{min-width:46px}
@@ -136,6 +141,45 @@ figure.hero .credit a{color:var(--tx2)}
 @media (max-width:600px){figure.hero{margin-left:-16px;margin-right:-16px}figure.hero img{border-radius:0}figure.hero figcaption{padding:0 16px}}
 .toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .toplinks a{flex:1;min-width:140px;text-align:center}
+/* ---------- ⚙️ settings bottom sheet + summary chip ---------- */
+.chip{display:inline-flex;align-items:center;max-width:100%;min-height:32px;padding:4px 12px;font-size:13px;border-radius:999px;color:var(--tx2);background:var(--card);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sheetbg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .2s}
+#sheetbg.open{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:720px;margin:0 auto;max-height:86vh;overflow:auto;overscroll-behavior:contain;background:var(--card);color:var(--tx);border-radius:16px 16px 0 0;box-shadow:0 -8px 28px rgba(0,0,0,.22);padding:6px 16px calc(14px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .22s ease,visibility 0s .22s;visibility:hidden}
+#sheet.open{transform:none;visibility:visible;transition:transform .22s ease}
+#sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 4px}
+#sheet .shd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
+#sheet h4{margin:0;font-size:18px}
+#sheet .shd button{min-height:36px;padding:4px 12px;font-size:14px}
+#sheet .sg{border-top:1px solid var(--line);padding:8px 0 2px}
+#sheet .sg.hi{animation:sghi 1.2s ease}
+@keyframes sghi{from{background:var(--accs)}to{background:transparent}}
+#sheet .sl{font-size:13px;color:var(--tx2);font-weight:700;letter-spacing:.02em}
+#sheet .sr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 8px}
+#sheet .sr .lab{font-size:14px;min-width:4.6em}
+#sheet .seg{margin:0}
+#sheet .seg button{min-height:36px;padding:4px 11px;font-size:14px}
+#sheet .sr>button{min-height:36px;padding:4px 12px;font-size:14px}
+#sheet .fsz{font-size:14px;min-width:4.5em;text-align:center;font-weight:600}
+#sheet label.tg{font-size:14px}
+body.sheet-open{overflow:hidden}
+/* ---------- 글자 크기 (가-/가+): reading text, lists, sentence player ---------- */
+.items{font-size:calc(15px*var(--fs,1))}
+.item .w b{font-size:calc(16px*var(--fs,1))}
+.ex{font-size:calc(14px*var(--fs,1))}
+@media (max-width:600px){.item .mean{font-size:calc(16px*var(--fs,1))}.item .ex{font-size:calc(13.5px*var(--fs,1))}}
+.sent .t,.pn-read #lines-a1>p,.pn-read #lines-a2>p,.q{font-size:calc(17px*var(--fs,1))}
+.player .sen-en{font-size:calc(17px*var(--fs,1))}
+.player .sen-ko{font-size:calc(15px*var(--fs,1))}
+/* ---------- progress: n/5 per article, ✓ per tab, thin overall bar ---------- */
+.artsw button .pc{font-size:12px;font-weight:700;margin-right:5px;padding:0 5px;border-radius:999px;background:rgba(127,127,127,.16)}
+.artsw button.on .pc{background:rgba(255,255,255,.25)}
+.artsw button.gear{flex:0 0 auto;padding:4px 10px;font-size:17px;text-align:center}
+.pbar{height:3px;background:var(--line);border-radius:2px;margin:0 0 6px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.tabs button .ck{color:var(--ok);font-size:12px;margin-left:2px;font-weight:700}
+.ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
+.srep{margin:6px 0 2px}
 </style>
 </head>
 <body>
@@ -148,12 +192,17 @@ figure.hero .credit a{color:var(--tx2)}
 <a class="card" href="./wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount">저장한 단어·표현 보기, 복습 퀴즈, 백업</small></a>
 <section class="box">
   <h3 style="border:0;margin-top:0;padding-top:0">📚 전체 학습 (최신순)</h3>
-  <a class="card" href="./2026-10-31/index.html"><b>10월 31일(토) · 잭오랜턴 세계 기록 / AI 박쥐 조사</b><small>2026-10-31</small></a>
+  <a class="card" href="./2026-10-31/index.html"><b>10월 31일(토) · 잭오랜턴 세계 기록 / AI 박쥐 조사</b><small>2026-10-31<span class="dprog" data-date="2026-10-31"></span></small></a>
 </section>
 </div>
-<script src="./wb.js?v=e4b9d9c2fe"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="0611ec81c1") freshen(v); }).catch(()=>{});</script>
+<script src="./wb.js?v=ab1a2742e1"></script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="e27b2b9279") freshen(v); }).catch(()=>{});</script>
 <script>
+/* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
+(function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}
+  const P=["en","jik","voc","exp","quiz"];
+  document.querySelectorAll(".dprog[data-date]").forEach(el=>{ const x=o[el.dataset.date]||{}, n=["a1","a2"].reduce((s,a)=>s+P.filter(t=>Array.isArray(x[a])&&x[a].includes(t)).length,0);
+    el.textContent = n>=10 ? " · ✅ 완료" : n ? ` · 📖 ${n}/10` : ""; }); })();
 if(window.WB){ const n=WB.all().length; if(n) document.getElementById("wbcount").textContent=`저장 ${n}개 · 복습 퀴즈 · 백업`; }
 </script>
 </body>
