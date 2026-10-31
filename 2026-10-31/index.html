@@ -79,6 +79,36 @@ label.tg input{width:22px;height:22px}
 .note{font-size:14px;color:var(--tx2)}
 .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--tx2)}
 .wbstar{font-size:18px}
+/* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
+#study{margin:18px 0}
+.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0 -4px;padding-left:4px;padding-right:4px;border-bottom:1px solid var(--line)}
+.artsw{display:flex;gap:6px;margin-bottom:6px}
+.artsw button{flex:1;min-width:0;text-align:left;font-size:14px;line-height:1.3;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artsw button b{margin-right:4px}
+.artsw button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+@media (prefers-color-scheme:dark){.artsw button.on{color:#111}}
+.tabs{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.tabs button{flex:1;border:0;border-radius:0;background:transparent;min-height:42px;padding:6px 2px;font-weight:600;color:var(--tx2)}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button.on{background:var(--accs);color:var(--acc);box-shadow:inset 0 -3px 0 var(--acc)}
+#study section.art{margin:12px 0}
+#study section.art:not(.cur){display:none}
+.art .pn{display:none}
+.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
+.pn>h3:first-child{margin-top:4px;padding-top:0;border-top:0}
+.sent{scroll-margin-top:130px;scroll-margin-bottom:110px}
+/* compact sticky mini-player for the full article */
+#mini{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(0,0,0,.08);padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
+#mini .mp{max-width:720px;margin:0 auto}
+#mini .mp:not(.cur){display:none}
+#mini .player{border:0;margin:0;padding:0}
+#mini .mrow{display:flex;align-items:center;gap:6px}
+#mini .mrow .lbl{flex:1;min-width:0;font-size:13px;color:var(--tx2);line-height:1.3;overflow:hidden}
+#mini .mrow .lbl b{display:block;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mini button{min-height:38px;padding:6px 9px;font-size:14px}
+#mini .fpp{min-width:46px}
+#mini .bar{margin:5px 0 1px;height:5px}
+.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 .toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .toplinks a{flex:1;min-width:140px;text-align:center}
 </style>
@@ -96,7 +126,13 @@ label.tg input{width:22px;height:22px}
   <div class="toplinks"><a class="card" href="../index.html"><b>📚 전체 학습 목록</b></a><a class="card" href="../wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount"></small></a></div>
   <div id="pastlist"></div>
 </section>
-<div id="arts"></div>
+<div id="study">
+  <div class="sbar" id="sbar">
+    <div class="artsw" id="artsw"></div>
+    <div class="tabs" id="tabs" role="tablist"></div>
+  </div>
+  <div id="arts"></div>
+</div>
 <section class="box" id="mywb" hidden>
   <h3 style="border:0;margin-top:0;padding-top:0">⭐ 내 단어장 복습 (일요일)</h3>
   <div class="note">이번 주까지 저장한 단어·표현에서 최대 10개를 무작위로 냅니다. 🔊는 영어→뜻을 세 번 읽어 줘요. 이 기기·브라우저에 저장된 단어장만 보여요.</div>
@@ -114,6 +150,7 @@ label.tg input{width:22px;height:22px}
 </section>
 <p class="note">음성: Microsoft Edge 신경망 음성(영어 Ava, 한국어 SunHi)으로 미리 만든 mp3입니다.</p>
 </div>
+<div id="mini"></div>
 <audio id="clip" preload="none" playsinline></audio>
 <script src="../wb.js"></script>
 <script>
@@ -137,30 +174,42 @@ function stopSeq(){ if(seq){ clearTimeout(seq.timer); const k=seq.key; seq=null;
 function hideCue(k){ const c=document.getElementById("cue-"+k); if(c) c.classList.remove("show"); }
 
 /* ---------- clip sequence players (sentences / expressions / vocab / review) ---------- */
+const GAPS=[0,0.3,0.6,1,1.5];
+function gapSec(){ if(HAS_WB) return WB.gap(); try{ const v=parseFloat(localStorage.getItem("ea-gap-v1")); return GAPS.includes(v)?v:0.3; }catch(e){ return 0.3; } }
+const REPS=[0,Infinity,3,5];     // tap cycle: off → ∞ (until turned off) → 3회 → 5회
+const repLabel = n => n===0 ? "끔" : (n===Infinity ? "∞" : n+"회");
+function playPart(){ const it=seqs[seq.key].list[seqs[seq.key].idx]; const src=it.parts?it.parts[seq.part]:it.src;
+  if(!clipEl.paused) seq.skipPause=true;
+  clipEl.src=src; clipEl.playbackRate=seqs[seq.key].rate; clipEl.defaultPlaybackRate=seqs[seq.key].rate; clipEl.play().catch(()=>{}); }
 function playSeq(key, i, single){
   stopFulls(); stopWB(); if(seq && seq.key!==key) stopSeq();
   const S = seqs[key]; S.idx = i;
   if(seq) clearTimeout(seq.timer);
-  seq = {key, single:!!single, timer:null, paused:false};
+  seq = {key, single:!!single, timer:null, paused:false, part:0, done:0};
   hideCue(key);
-  clipEl.src = S.list[i].src; clipEl.playbackRate = S.rate; clipEl.defaultPlaybackRate = S.rate;
-  clipEl.play().catch(()=>{});
+  playPart();
   renderSeq(key); highlight();
 }
 clipEl.addEventListener("ended", () => {
-  if(!seq) return; const key=seq.key, S=seqs[key];
+  if(!seq) return; const key=seq.key, S=seqs[key], it=S.list[S.idx];
+  // EN → (gap) → KO → (gap) → EN … inside one vocab / expression item
+  if(it.parts && seq.part+1 < it.parts.length){
+    seq.timer=setTimeout(()=>{ if(!seq||seq.key!==key) return; seq.timer=null; seq.part++; playPart(); }, gapSec()*1000); return; }
+  const sh = S.shadow;
+  const later = (fn, ms) => { if(sh && key.endsWith("s")){ const c=document.getElementById("cue-"+key); if(c) c.classList.add("show");
+      ms = Math.round((clipEl.duration||3)/S.rate*1300)+300; }
+    seq.timer=setTimeout(()=>{ if(!seq||seq.key!==key) return; seq.timer=null; hideCue(key); fn(); }, ms); };
+  // 🔂 repeat this sentence
+  if(S.rep && seq.done+1 < S.rep){ later(()=>{ seq.done++; seq.part=0; playPart(); renderSeq(key); }, 600); return; }
   const hasNext = !seq.single && S.idx+1 < S.list.length;
-  const sh = !seq.single && S.shadow;
-  const go = () => { if(!seq || seq.key!==key) return; hideCue(key); if(hasNext) playSeq(key, S.idx+1, false); else { seq=null; renderSeq(key); highlight(); } };
-  if(sh){ const c=document.getElementById("cue-"+key); if(c) c.classList.add("show");
-    const ms = Math.round((clipEl.duration||3)/S.rate*1300)+300; seq.timer=setTimeout(go, ms); }
-  else if(hasNext){ seq.timer=setTimeout(go, 450); } else go();
+  const go = () => { if(hasNext) playSeq(key, S.idx+1, false); else { seq=null; renderSeq(key); highlight(); } };
+  if(sh || hasNext) later(go, 450); else go();
 });
-clipEl.addEventListener("timeupdate", () => { if(seq){ const b=document.getElementById("bar-"+seq.key); if(b&&clipEl.duration) b.style.width=(clipEl.currentTime/clipEl.duration*100)+"%"; } });
+clipEl.addEventListener("timeupdate", () => { if(seq){ const b=document.getElementById("bar-"+seq.key); if(b&&clipEl.duration){ const it=seqs[seq.key].list[seqs[seq.key].idx], n=it.parts?it.parts.length:1; b.style.width=((seq.part+clipEl.currentTime/clipEl.duration)/n*100)+"%"; } } });
 function seqToggle(key){
   const S=seqs[key];
   if(seq && seq.key===key){
-    if(clipEl.paused && !seq.timer){ clipEl.play(); seq.paused=false; }
+    if(clipEl.paused && !seq.timer){ if(clipEl.ended){ const it=seqs[key].list[seqs[key].idx]; if(it.parts && seq.part+1<it.parts.length) seq.part++; playPart(); } else clipEl.play(); seq.paused=false; }
     else if(clipEl.paused && seq.timer){ /* waiting during shadow cue */ clearTimeout(seq.timer); seq.timer=null; seq.paused=true; hideCue(key); }
     else { clipEl.pause(); seq.paused=true; }
     renderSeq(key); return;
@@ -168,21 +217,26 @@ function seqToggle(key){
   playSeq(key, S.idx, false);
 }
 function seqJump(key, d){ const S=seqs[key]; const n=Math.max(0,Math.min(S.list.length-1,S.idx+d)); if(seq&&seq.key===key) playSeq(key,n,false); else { S.idx=n; renderSeq(key); } }
+function gapRow(){ return `<span class="row" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg" style="margin:0">${GAPS.map(g=>`<button class="gp${g===gapSec()?" on":""}" data-g="${g}" onclick="setGap(${g})">${g}초</button>`).join("")}</span></span>`; }
+function seqRep(key){ const S=seqs[key]; S.rep=REPS[(REPS.indexOf(S.rep||0)+1)%REPS.length]; if(seq&&seq.key===key) seq.done=0; renderSeq(key); }
+function setGap(g){ if(HAS_WB) WB.setGap(g); else { try{ localStorage.setItem("ea-gap-v1",String(g)); }catch(e){} } Object.keys(seqs).forEach(renderSeq); }
 function seqRate(key, r){ seqs[key].rate=r; if(seq&&seq.key===key) clipEl.playbackRate=r; renderSeq(key); }
 function seqSeek(key, s){ if(seq&&seq.key===key&&clipEl.duration){ clipEl.currentTime=Math.max(0,Math.min(clipEl.duration-0.05,clipEl.currentTime+s)); } }
 function renderSeq(key){
   const S=seqs[key], el=document.getElementById("p-"+key); if(!el) return;
-  const active = seq && seq.key===key, playing = active && !clipEl.paused;
+  const active = seq && seq.key===key, playing = active && (!clipEl.paused || !!seq.timer);
   const it=S.list[S.idx];
   el.querySelector(".now").innerHTML = `<b>${S.idx+1} / ${S.list.length} ${S.unit}</b> · ${esc(it.title)}${it.detail?`<br>${esc(it.detail)}`:""}${active?(playing?" · 재생 중":" · 일시정지"):""}`;
   el.querySelector(".pp").textContent = playing ? "⏸ 일시정지" : (active ? "▶ 이어 듣기" : "▶ 재생");
   el.querySelectorAll(".rt").forEach(b => b.classList.toggle("on", Number(b.dataset.r)===S.rate));
+  document.querySelectorAll(`.rep-${key}`).forEach(b => { b.textContent = "🔂 문장 반복 " + repLabel(S.rep||0); b.classList.toggle("pri", !!S.rep); });
+  document.querySelectorAll(".gp").forEach(b => b.classList.toggle("on", Number(b.dataset.g)===gapSec()));
   if(!active){ const b=document.getElementById("bar-"+key); if(b) b.style.width="0"; }
   // row highlight for tables
   document.querySelectorAll(`[data-row^="${key}-"]`).forEach(r => r.classList.toggle("on", active && r.dataset.row===key+"-"+S.idx));
 }
 clipEl.addEventListener("play", () => seq && renderSeq(seq.key));
-clipEl.addEventListener("pause", () => seq && renderSeq(seq.key));
+clipEl.addEventListener("pause", () => { if(seq && seq.skipPause){ seq.skipPause=false; return; } seq && renderSeq(seq.key); });
 function seqPlayer(key, unit, opts={}){
   return `<div class="player" id="p-${key}">
   <div class="now"></div><div class="bar"><i id="bar-${key}"></i></div>
@@ -197,6 +251,8 @@ function seqPlayer(key, unit, opts={}){
     <button onclick="playSeq('${key}',0,false)">↺ 처음부터</button>
   </div>
   <div class="row"><span class="seg">${[0.8,0.9,1,1.2].map(r=>`<button class="rt" data-r="${r}" onclick="seqRate('${key}',${r})">${r.toFixed(1)}x</button>`).join("")}</span>
+  ${opts.gap?`</div><div class="row">${gapRow()}`:""}
+  ${opts.rep?`<button class="rep-${key}" onclick="seqRep('${key}')">🔂 문장 반복 끔</button>`:""}
   ${opts.shadow?`<label class="tg"><input type="checkbox" onchange="seqs['${key}'].shadow=this.checked"> 따라 말하기 (문장마다 잠시 멈춤)</label>`:""}</div>
 </div>`;
 }
@@ -218,19 +274,40 @@ function fullPlayer(key, file, label, marks){
   <audio id="fa-${key}" preload="metadata" playsinline src="${file}"></audio>
 </div>`;
 }
+const RATES=[0.8,0.9,1,1.2];
+function miniPlayer(key, file, label){
+  return `<div class="mp" id="mp-${key}"><div class="player" id="f-${key}">
+  <div class="mrow">
+    <button class="pri fpp" aria-label="재생/일시정지" onclick="fToggle('${key}')">▶</button>
+    <div class="lbl"><b>${label}</b><span class="time" id="ft-${key}">0:00 / 0:00</span></div>
+    <button aria-label="5초 뒤로" onclick="fSeek('${key}',-5)">«5</button>
+    <button aria-label="5초 앞으로" onclick="fSeek('${key}',5)">5»</button>
+    <button class="mrate" aria-label="속도" onclick="fRateCycle('${key}')">1.0x</button>
+    <button class="frep" aria-label="전체 반복" onclick="fRep('${key}')">🔁</button>
+  </div>
+  <div class="bar"><i id="fb-${key}"></i></div>
+  <audio id="fa-${key}" preload="metadata" playsinline src="${file}"></audio>
+</div></div>`;
+}
+function fRep(k){ const a=fulls[k]; a._rep=REPS[(REPS.indexOf(a._rep||0)+1)%REPS.length]; a._done=0; drawRep(k); }
+function drawRep(k){ const a=fulls[k], b=document.querySelector(`#f-${k} .frep`); if(!b) return; const n=a._rep||0;
+  b.textContent = n ? "🔁"+(n===Infinity?"∞":n) : "🔁"; b.classList.toggle("pri", !!n); b.title = "전체 반복: "+repLabel(n); }
+function fRateCycle(k){ const a=fulls[k]; const r=RATES[(RATES.indexOf(a.playbackRate)+1)%RATES.length]||1; fRate(k,r); }
 function initFull(key, marks){
   const a=document.getElementById("fa-"+key); fulls[key]=a; a._marks=marks||null;
   const upd=()=>{ document.getElementById("ft-"+key).textContent=fmt(a.currentTime)+" / "+fmt(a.duration);
     document.getElementById("fb-"+key).style.width=(a.duration?a.currentTime/a.duration*100:0)+"%";
-    document.querySelector(`#f-${key} .fpp`).textContent = a.paused ? (a.currentTime>0?"▶ 이어 듣기":"▶ 재생") : "⏸ 일시정지"; highlight(); };
+    const mini=!!document.getElementById("mp-"+key); document.querySelector(`#f-${key} .fpp`).textContent = mini ? (a.paused?"▶":"⏸") : (a.paused ? (a.currentTime>0?"▶ 이어 듣기":"▶ 재생") : "⏸ 일시정지"); highlight(); };
   ["timeupdate","play","pause","loadedmetadata","ended","seeked"].forEach(e=>a.addEventListener(e,upd));
   a.addEventListener("play",()=>{ stopSeq(); stopFulls(key); stopWB(); });
+  // 🔁 repeat the whole article N times (∞ = until turned off)
+  a.addEventListener("ended",()=>{ if(a._rep && (a._done||0)+1 < a._rep){ a._done=(a._done||0)+1; setTimeout(()=>{ a.currentTime=0; a.play().catch(()=>{}); }, 800); } else a._done=0; });
 }
 function fToggle(k){ const a=fulls[k]; if(a.paused) a.play().catch(()=>{}); else a.pause(); }
 function fStop(k){ const a=fulls[k]; a.pause(); a.currentTime=0; }
 function fSeek(k,s){ const a=fulls[k]; a.currentTime=Math.max(0,Math.min((a.duration||0)-0.1,a.currentTime+s)); }
 function fRestart(k){ const a=fulls[k]; a.currentTime=0; a.play().catch(()=>{}); }
-function fRate(k,r){ const a=fulls[k]; a.playbackRate=r; a.defaultPlaybackRate=r; document.querySelectorAll(`#f-${k} .frt`).forEach(b=>b.classList.toggle("on",Number(b.dataset.r)===r)); }
+function fRate(k,r){ const a=fulls[k]; a.playbackRate=r; a.defaultPlaybackRate=r; document.querySelectorAll(`#f-${k} .frt`).forEach(b=>b.classList.toggle("on",Number(b.dataset.r)===r)); const m=document.querySelector(`#f-${k} .mrate`); if(m) m.textContent=r.toFixed(1)+"x"; }
 
 /* ---------- highlight current sentence ---------- */
 let lastHi = "";
@@ -244,7 +321,7 @@ function highlight(){
   ["a1","a2"].forEach(aid=>{ const i=currentSentence(aid);
     document.querySelectorAll(`#lines-${aid} .sent`).forEach((el,j)=>el.classList.toggle("on", j===i));
     if(i>=0) hi=aid+"-"+i; });
-  if(hi && hi!==lastHi){ const el=document.getElementById("s-"+hi); if(el) el.scrollIntoView({behavior:"smooth",block:"nearest"}); }
+  if(hi && hi!==lastHi){ const el=document.getElementById("s-"+hi); if(el && el.offsetParent) el.scrollIntoView({behavior:"smooth",block:"nearest"}); }
   lastHi=hi;
 }
 
@@ -262,7 +339,7 @@ function linesHTML(A, mode){
   }).join("");
 }
 function tgl(k,aid){ reveal[k]=!reveal[k]; drawLines(aid); }
-function setMode(aid,m){ modes[aid]=m; document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
+function setMode(aid,m){ modes[aid]=m; if(TAB.art===aid){ TAB.tab = m==="jik"?"jik":"en"; saveTab(); drawTabs(); } document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
 function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2; document.getElementById("lines-"+aid).innerHTML=linesHTML(A,modes[aid]); highlight(); }
 
 const tries = {};
@@ -297,42 +374,81 @@ function star(A,type,en,ko,ex,pos,clipName){
 }
 function articleHTML(A){
   const id=A.id;
-  return `<section class="art" id="${id}">
+  return `<section class="art" id="${id}" data-pn="read">
   <div class="kicker">${esc(A.kicker)}</div><h2>${esc(A.headline)}</h2><div class="sub">${esc(A.koHeadline)}</div>
-  ${fullPlayer(id, FULL[id], "🎧 기사 전체 듣기 (Ava)")}
+  <div class="pn pn-read">
   <span class="seg" id="mode-${id}">${[["en","원문"],["jik","직해"],["ko","한국어"],["eo","영어만"]].map(([m,l])=>`<button data-m="${m}" class="${m==="jik"?"on":""}" onclick="setMode('${id}','${m}')">${l}</button>`).join("")}</span>
+  <div class="row" style="margin:0 0 6px"><button class="rep-${id}s" onclick="seqRep('${id}s')">🔂 문장 반복 끔</button><span class="note">켜고 문장의 🔊를 누르면 그 문장을 반복해요.</span></div>
   <div id="lines-${id}"></div>
   <h3>문장별 듣기</h3>
-  ${seqPlayer(id+"s","문장",{shadow:true})}
+  ${seqPlayer(id+"s","문장",{shadow:true,rep:true})}
+  <a class="card" href="${A.source.href}" target="_blank" rel="noopener"><b>원문: ${esc(A.source.title)}</b><small>${esc(A.source.site)} · ${esc(A.source.date||META.ym)}</small></a>
+  </div>
+  <div class="pn pn-voc">
   <h3>주요 어휘</h3>
   <div class="note">🔊 영어 → 뜻을 세 번 번갈아 읽어 줍니다.</div>
+  ${gapRow()}
   <div class="items"><div class="item ihdr"><div class="w">단어</div><div class="mean">뜻</div><div class="ex">기사 속 문장</div><div class="acts"></div></div>
   ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}v',${i},true)">🔊</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
-  ${seqPlayer(id+"v","어휘")}
+  ${seqPlayer(id+"v","어휘",{gap:true})}
+  </div>
+  <div class="pn pn-exp">
   <h3>중요 표현</h3>
+  ${gapRow()}
   <div class="items"><div class="item ihdr"><div class="w">표현</div><div class="mean">뜻</div><div class="ex">기사 속 쓰임</div><div class="acts"></div></div>
   ${A.exprs.map((x,i)=>`<div class="item" data-row="${id}x-${i}"><div class="w"><b>${esc(x.en)}</b></div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}x',${i},true)">🔊</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
-  ${seqPlayer(id+"x","표현")}
+  ${seqPlayer(id+"x","표현",{gap:true})}
   ${fullPlayer(id+"X", FULLX[id], "🎧 중요 표현 한 번에 듣기 (영어 → 뜻 → 영어)")}
-  <a class="card" href="${A.source.href}" target="_blank" rel="noopener"><b>원문: ${esc(A.source.title)}</b><small>${esc(A.source.site)} · ${esc(A.source.date||META.ym)}</small></a>
+  </div>
+  <div class="pn pn-quiz">
   <h3>퀴즈</h3><div id="quiz-${id}"></div>
+  </div>
 </section>`;
 }
 
 const clip = n => "clips/"+n+".mp3";
+const enko = n => { const e=clip(n+"-en"), k=clip(n+"-ko"); return [e,k,e,k,e,k]; };   // EN→KO ×3, gap set by the listener
 [D.A1,D.A2].forEach(A=>{
   seqs[A.id+"s"]={unit:"문장",idx:0,rate:1,shadow:false,list:A.pairs.map((p,i)=>({src:clip(`${A.id}-s${i+1}`),title:strip(p.en),detail:strip(p.ko)}))};
-  seqs[A.id+"v"]={unit:"어휘",idx:0,rate:1,list:A.vocab.map((x,i)=>({src:clip(`${A.id}-v${i+1}`),title:`${x.w} (${x.pos})`,detail:x.ko}))};
-  seqs[A.id+"x"]={unit:"표현",idx:0,rate:1,list:A.exprs.map((x,i)=>({src:clip(`${A.id}-x${i+1}`),title:x.en,detail:x.ko}))};
+  seqs[A.id+"v"]={unit:"어휘",idx:0,rate:1,list:A.vocab.map((x,i)=>({src:clip(`${A.id}-v${i+1}`),parts:enko(`${A.id}-v${i+1}`),title:`${x.w} (${x.pos})`,detail:x.ko}))};
+  seqs[A.id+"x"]={unit:"표현",idx:0,rate:1,list:A.exprs.map((x,i)=>({src:clip(`${A.id}-x${i+1}`),parts:enko(`${A.id}-x${i+1}`),title:x.en,detail:x.ko}))};
 });
-seqs.rq={unit:"표현",idx:0,rate:1,list:D.RQ.map((x,i)=>({src:clip(`rq${i+1}`),title:x.en,detail:""}))};
+seqs.rq={unit:"표현",idx:0,rate:1,list:D.RQ.map((x,i)=>({src:clip(`rq${i+1}`),parts:enko(`rq${i+1}`),title:x.en,detail:""}))};
 document.getElementById("arts").innerHTML = articleHTML(D.A1)+articleHTML(D.A2);
+document.getElementById("mini").innerHTML = [D.A1,D.A2].map((A,n)=>miniPlayer(A.id, FULL[A.id], `🎧 기사 ${n+1} 전체 듣기`)).join("");
 ["a1","a2"].forEach(id=>{ initFull(id, MARKS[id]); initFull(id+"X", null); drawLines(id); });
 Object.keys(seqs).forEach(k=>renderSeq(k));
 drawQuiz(); drawRQ();
+/* ---------- tabs: article switcher + 원문|직해|어휘|표현|퀴즈 (remembered per browser) ---------- */
+const TABS=[["en","원문","read"],["jik","직해","read"],["voc","어휘","voc"],["exp","표현","exp"],["quiz","퀴즈","quiz"]];
+const TAB_KEY="ea-tab-v1";
+const TAB=(()=>{ let t={}; try{ t=JSON.parse(localStorage.getItem(TAB_KEY)||"{}"); }catch(e){}
+  return {art:(location.hash==="#a2"?"a2":location.hash==="#a1"?"a1":(t.art==="a2"?"a2":"a1")), tab:TABS.some(x=>x[0]===t.tab)?t.tab:"jik"}; })();
+function saveTab(){ try{ localStorage.setItem(TAB_KEY, JSON.stringify(TAB)); }catch(e){} }
+function drawTabs(){
+  document.getElementById("artsw").innerHTML=["a1","a2"].map((a,n)=>`<button class="${TAB.art===a?"on":""}" onclick="selArt('${a}')"><b>기사 ${n+1}</b>${esc(META.short[n])}</button>`).join("");
+  document.getElementById("tabs").innerHTML=TABS.map(([t,l])=>`<button role="tab" aria-selected="${TAB.tab===t}" class="${TAB.tab===t?"on":""}" data-t="${t}" onclick="selTab('${t}')">${l}</button>`).join("");
+  ["a1","a2"].forEach(a=>{ const el=document.getElementById(a); el.classList.toggle("cur",TAB.art===a); el.dataset.pn=TABS.find(x=>x[0]===TAB.tab)[2];
+    document.getElementById("mp-"+a).classList.toggle("cur",TAB.art===a); });
+}
+function toStudyTop(){ const st=document.getElementById("study"); const y=st.getBoundingClientRect().top+scrollY; if(scrollY>y) window.scrollTo(0,y); }
+function selTab(t){ if(t===TAB.tab) return; TAB.tab=t; saveTab();
+  if(t==="en"||t==="jik"){ ["a1","a2"].forEach(a=>{ if(t==="jik"? modes[a]!=="jik" : modes[a]==="jik"){ modes[a]=t; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===t)); drawLines(a); } }); }
+  drawTabs(); toStudyTop(); }
+function selArt(a){ if(a===TAB.art) return; const old=fulls[TAB.art]; if(old && !old.paused) old.pause();
+  TAB.art=a; saveTab(); drawTabs(); toStudyTop(); }
+if(TAB.tab==="en"){ ["a1","a2"].forEach(a=>{ modes[a]="en"; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m==="en")); drawLines(a); }); }
+drawTabs();
+// swipe left/right on the article body to move between tabs
+(()=>{ let x0=null,y0=0,t0=0; const el=document.getElementById("arts");
+  el.addEventListener("touchstart",e=>{ if(e.touches.length!==1||e.target.closest("input,textarea,.bar")){x0=null;return;} x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now(); },{passive:true});
+  el.addEventListener("touchend",e=>{ if(x0===null) return; const dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0; x0=null;
+    if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.8||Date.now()-t0>800) return;
+    const i=TABS.findIndex(x=>x[0]===TAB.tab), j=i+(dx<0?1:-1); if(j>=0&&j<TABS.length) selTab(TABS[j][0]); },{passive:true});
+})();
 /* ---------- META-driven parts ---------- */
 document.getElementById("mdate").textContent = META.dateLine;
-document.getElementById("toc").innerHTML = [["past","지난 학습"],["a1","기사 1 · "+META.short[0]],["a2","기사 2 · "+META.short[1]]].concat(META.sunday?[["mywb","⭐ 내 단어장 복습"]]:[]).concat([["rq","🔁 복습 퀴즈"],["review","오늘의 복습 표현"]]).map(([h,l])=>`<a href="#${h}">${esc(l)}</a>`).join("") + `<a href="../wordbook.html">⭐ 단어장</a>`;
+document.getElementById("toc").innerHTML = [["past","지난 학습"],["a1","기사 1 · "+META.short[0]],["a2","기사 2 · "+META.short[1]]].concat(META.sunday?[["mywb","⭐ 내 단어장 복습"]]:[]).concat([["rq","🔁 복습 퀴즈"],["review","오늘의 복습 표현"]]).map(([h,l])=>(h==="a1"||h==="a2")?`<a href="#study" onclick="selArt('${h}')">${esc(l)}</a>`:`<a href="#${h}">${esc(l)}</a>`).join("") + `<a href="../wordbook.html">⭐ 단어장</a>`;
 document.getElementById("revnote").textContent = META.reviewNote;
 document.getElementById("revtbl").innerHTML = `<tr><th>표현</th><th>뜻</th></tr>` + META.todayReview.map(x=>`<tr><td>${esc(x.en)}</td><td>${esc(x.ko)}</td></tr>`).join("");
 function drawPast(days){
@@ -344,6 +460,7 @@ drawPast(null);
 fetch("../days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.days&&j.days.length) drawPast(j.days); }).catch(()=>{});
 if(HAS_WB){
   WB.onPlay = () => { stopSeq(); stopFulls(); };
+  window.addEventListener("storage", e => { if(e.key==="ea-gap-v1") Object.keys(seqs).forEach(renderSeq); });
   const cnt=()=>{ const n=WB.all().length; document.getElementById("wbcount").textContent = n? `저장 ${n}개` : "아직 비어 있어요"; };
   cnt(); WB.onChange(()=>{ cnt(); WB.refreshStars(); });
   if(META.sunday){ document.getElementById("mywb").hidden=false; WB.quiz(document.getElementById("mywbbox"),{limit:10}); }
