@@ -92,6 +92,8 @@ label.tg input{width:22px;height:22px}
 .tabs button+button{border-left:1px solid var(--line)}
 .tabs button.on{background:var(--accs);color:var(--acc);box-shadow:inset 0 -3px 0 var(--acc)}
 #study section.art{margin:12px 0}
+#pagev section.box{margin:12px 0}
+.artsw button.pv{flex:0 0 auto}
 #study section.art:not(.cur){display:none}
 .art .pn{display:none}
 .art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
@@ -109,6 +111,13 @@ label.tg input{width:22px;height:22px}
 #mini .fpp{min-width:46px}
 #mini .bar{margin:5px 0 1px;height:5px}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+#tabs[hidden],#pagev[hidden]{display:none}
+figure.hero{margin:6px 0 14px}
+figure.hero img{display:block;width:100%;height:auto;border-radius:10px;background:var(--line)}
+figure.hero figcaption{font-size:13px;color:var(--tx2);margin-top:6px;line-height:1.45;word-break:keep-all}
+figure.hero .credit{white-space:nowrap}
+figure.hero .credit a{color:var(--tx2)}
+@media (max-width:600px){figure.hero{margin-left:-16px;margin-right:-16px}figure.hero img{border-radius:0}figure.hero figcaption{padding:0 16px}}
 .toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .toplinks a{flex:1;min-width:140px;text-align:center}
 </style>
@@ -121,26 +130,21 @@ label.tg input{width:22px;height:22px}
   <p>기사를 읽고, 직해로 끊어 읽고, 자연스러운 AI 음성(Ava)으로 듣고, 퀴즈로 확인하세요. ☆를 누르면 나만의 단어장에 저장돼요.</p>
 </header>
 <nav class="toc" id="toc"></nav>
-<section class="box" id="past">
-  <h3 style="border:0;margin-top:0;padding-top:0">지난 학습</h3>
-  <div class="toplinks"><a class="card" href="../index.html"><b>📚 전체 학습 목록</b></a><a class="card" href="../wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount"></small></a></div>
-  <div id="pastlist"></div>
-</section>
 <div id="study">
   <div class="sbar" id="sbar">
     <div class="artsw" id="artsw"></div>
     <div class="tabs" id="tabs" role="tablist"></div>
   </div>
   <div id="arts"></div>
-</div>
+  <div id="pagev" hidden>
 <section class="box" id="mywb" hidden>
   <h3 style="border:0;margin-top:0;padding-top:0">⭐ 내 단어장 복습 (일요일)</h3>
-  <div class="note">이번 주까지 저장한 단어·표현에서 최대 10개를 무작위로 냅니다. 🔊는 영어→뜻을 세 번 읽어 줘요. 이 기기·브라우저에 저장된 단어장만 보여요.</div>
+  <div class="note">이번 주까지 저장한 단어·표현에서 최대 10개를 무작위로 냅니다. 🔊는 영어→뜻을 설정한 횟수(1~3회)만큼 읽어 줘요. 이 기기·브라우저에 저장된 단어장만 보여요.</div>
   <div id="mywbbox"></div>
 </section>
 <section class="box" id="rq">
   <h3 style="border:0;margin-top:0;padding-top:0">🔁 복습 퀴즈</h3>
-  <div class="note">복습 기록에 있는 표현의 뜻을 골라 보세요. 🔊로 영어→뜻을 세 번 들을 수 있어요.</div>
+  <div class="note">복습 기록에 있는 표현의 뜻을 골라 보세요. 🔊로 영어→뜻을 설정한 횟수(1~3회)만큼 들을 수 있어요.</div>
   <div id="rqbox"></div>
 </section>
 <section class="box" id="review">
@@ -148,13 +152,20 @@ label.tg input{width:22px;height:22px}
   <div class="note" id="revnote"></div>
   <table class="tbl" id="revtbl"></table>
 </section>
+<section class="box" id="past">
+  <h3 style="border:0;margin-top:0;padding-top:0">지난 학습</h3>
+  <div class="toplinks"><a class="card" href="../index.html"><b>📚 전체 학습 목록</b></a><a class="card" href="../wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount"></small></a></div>
+  <div id="pastlist"></div>
+</section>
+  </div>
+</div>
 <p class="note">음성: Microsoft Edge 신경망 음성(영어 Ava, 한국어 SunHi)으로 미리 만든 mp3입니다.</p>
 </div>
 <div id="mini"></div>
 <audio id="clip" preload="none" playsinline></audio>
 <script src="../wb.js"></script>
 <script>
-const D = {"A1": {"id": "a1", "kicker": "기사 1 · 핼러윈", "headline": "The World's Heaviest Jack-o'-Lantern", "koHeadline": "세계에서 가장 무거운 잭오랜턴", "pairs": [{"en": "Just in time for Halloween, / the heaviest pumpkin ever grown / has become / the heaviest jack-o'-lantern in the world.", "ko": "핼러윈에 딱 맞춰, / 지금까지 재배된 것 중 가장 무거운 호박이 / 되었다 / 세계에서 가장 무거운 잭오랜턴이."}, {"en": "The giant pumpkin, / which weighs three thousand one hundred fifty-six pounds, / or about one thousand four hundred thirty-one kilograms, / was grown by a famous gardener named Ron Wallace, / and it won a big pumpkin contest in New England / earlier this month.", "ko": "그 거대한 호박은, / 무게가 3,156파운드, / 즉 약 1,431킬로그램인데, / 론 월리스라는 유명한 재배자가 길렀고, / 뉴잉글랜드의 큰 호박 대회에서 우승했다 / 이달 초에."}, {"en": "After Todd Graves, / the founder of the restaurant chain Raising Cane's, / got the pumpkin, / he brought it to Salem, Massachusetts, / where the town is celebrating its four hundredth birthday.", "ko": "토드 그레이브스가, / 식당 체인 레이징 케인스의 창업자인데, / 그 호박을 손에 넣은 뒤, / 그는 그것을 매사추세츠주 세일럼으로 가져갔다, / 그곳은 도시 탄생 400주년을 기념하고 있다."}, {"en": "Three record-breaking carvers / flew in / and worked on it for thirty-two hours, / turning it into a spooky Halloween decoration.", "ko": "기록을 깬 적 있는 조각가 세 명이 / 비행기를 타고 와서 / 32시간 동안 작업했고, / 그것을 으스스한 핼러윈 장식으로 바꿔 놓았다."}, {"en": "When they finished, / a Guinness World Records judge / checked the weight again / and confirmed the new record, / since the pumpkin had kept its original weight.", "ko": "그들이 작업을 마치자, / 기네스 세계기록 심사관이 / 무게를 다시 쟀고 / 새 기록을 확인했다, / 호박이 원래 무게를 그대로 유지했기 때문이다."}, {"en": "It easily beat the old record from twenty twenty-three, / which was two thousand seven hundred forty-nine pounds, / so the new jack-o'-lantern / is now about as heavy as a small car.", "ko": "그것은 2023년의 옛 기록을 가볍게 깼다, / 그 기록은 2,749파운드였다, / 그래서 새 잭오랜턴은 / 이제 소형차와 거의 맞먹는 무게다."}], "natural": ["핼러윈을 앞두고, 역대 가장 무거운 호박이 세계에서 가장 무거운 잭오랜턴으로 다시 태어났다. 무게가 3,156파운드(약 1,431kg)인 이 거대한 호박은 유명 재배자 론 월리스가 길렀으며, 이달 초 뉴잉글랜드의 대형 호박 대회에서 우승했다.", "식당 체인 레이징 케인스의 창업자 토드 그레이브스는 이 호박을 손에 넣은 뒤, 올해 400주년을 맞은 매사추세츠주 세일럼으로 가져갔다. 기록 보유 조각가 세 명이 날아와 32시간 동안 작업해 으스스한 핼러윈 장식으로 완성했다.", "작업이 끝나자 기네스 세계기록 심사관이 무게를 다시 쟀고, 호박이 원래 무게를 그대로 유지했기에 새 기록을 공식 인정했다. 2023년의 종전 기록(2,749파운드)을 여유 있게 넘어선 이 잭오랜턴은 이제 소형차와 맞먹는 무게다."], "exprs": [{"en": "just in time for", "ko": "~에 딱 맞춰", "ex": "Just in time for Halloween, ..."}, {"en": "beat the record", "ko": "기록을 깨다", "ex": "It easily beat the old record from 2023."}, {"en": "record-breaking", "ko": "기록을 깨는, 기록적인", "ex": "Three record-breaking carvers flew in."}, {"en": "confirm the new record", "ko": "새 기록을 공식 확인하다", "ex": "a judge ... confirmed the new record"}, {"en": "about as heavy as", "ko": "~와 거의 같은 무게인", "ex": "about as heavy as a small car"}], "vocab": [{"w": "giant", "pos": "형용사", "ko": "거대한", "ex": "The giant pumpkin ..."}, {"w": "gardener", "pos": "명사", "ko": "정원사, 재배자", "ex": "a famous gardener named Ron Wallace"}, {"w": "founder", "pos": "명사", "ko": "창업자, 설립자", "ex": "the founder of the restaurant chain"}, {"w": "carver", "pos": "명사", "ko": "조각가", "ex": "Three record-breaking carvers"}, {"w": "spooky", "pos": "형용사", "ko": "으스스한, 무시무시한", "ex": "a spooky Halloween decoration"}, {"w": "decoration", "pos": "명사", "ko": "장식(품)", "ex": "a spooky Halloween decoration"}, {"w": "judge", "pos": "명사", "ko": "심사위원, 심판", "ex": "a Guinness World Records judge"}, {"w": "original", "pos": "형용사", "ko": "원래의, 처음의", "ex": "kept its original weight"}], "source": {"title": "Heaviest pumpkin dons carved costume in Salem to turn into heftiest jack o'lantern ever", "site": "Guinness World Records", "href": "https://www.guinnessworldrecords.com/news/commercial/2026/10/heaviest-pumpkin-dons-carved-costume-in-salem-to-turn-into-heftiest-jack-o-lantern-ever", "date": ""}}, "A2": {"id": "a2", "kicker": "기사 2 · 과학·AI", "headline": "AI Helps Scientists Count Rare Bats", "koHeadline": "AI, 희귀 박쥐 개체 조사를 돕다", "pairs": [{"en": "Scientists in Britain / have finished / the country's largest ever survey of woodland bats, / and they say / it would not have been possible / without artificial intelligence.", "ko": "영국의 과학자들이 / 마쳤다 / 영국 사상 최대 규모의 숲 박쥐 조사를, / 그리고 그들은 말한다 / 그것이 불가능했을 것이라고 / 인공지능이 없었다면."}, {"en": "Researchers placed recording devices / on poles among the trees / in three hundred ten woodlands across Britain, / and over three years / these devices recorded / ninety-eight million bat calls.", "ko": "연구자들은 녹음 장치를 설치했다 / 나무들 사이 기둥 위에 / 영국 전역 310곳의 숲에, / 그리고 3년에 걸쳐 / 이 장치들은 녹음했다 / 9,800만 건의 박쥐 울음소리를."}, {"en": "Analyzing so many sounds by hand / would have taken more than thirty years, / but AI tools were able to / identify millions of calls / and find patterns across the whole country.", "ko": "그렇게 많은 소리를 사람 손으로 분석하는 것은 / 30년 넘게 걸렸을 것이다, / 하지만 AI 도구들은 ~할 수 있었다 / 수백만 건의 울음소리를 식별하고 / 전국에 걸친 패턴을 찾아내는 것을."}, {"en": "Some of Britain's rarest bats / were found in the south-west of England, / including the Barbastelle, / which lives in ancient forests / and is very hard to track / because it is so shy.", "ko": "영국에서 가장 희귀한 박쥐 일부가 / 잉글랜드 남서부에서 발견되었다, / 바르바스텔박쥐를 포함해서, / 이 박쥐는 오래된 숲에 살고 / 추적하기가 매우 어렵다 / 워낙 겁이 많기 때문에."}, {"en": "Kate Jones from University College London / said that / AI has changed the scale / at which we can watch wildlife, / and she called the survey / a nice story of AI for good.", "ko": "유니버시티 칼리지 런던의 케이트 존스는 / 말했다 / AI가 규모를 바꿔 놓았다고 / 우리가 야생동물을 관찰할 수 있는, / 그리고 그녀는 이 조사를 불렀다 / 'AI가 좋은 일에 쓰인 멋진 이야기'라고."}], "natural": ["영국 과학자들이 사상 최대 규모의 숲 박쥐 조사를 마쳤다. 연구진은 인공지능이 없었다면 이 조사는 불가능했을 것이라고 말한다. 연구진은 영국 전역 310곳의 숲속 나무 사이 기둥에 녹음 장치를 달았고, 3년 동안 박쥐 울음소리 9,800만 건이 녹음됐다.", "이 많은 소리를 사람이 직접 분석했다면 30년 넘게 걸렸겠지만, AI 도구가 수백만 건의 울음소리를 식별하고 전국적인 패턴을 찾아냈다. 영국에서 가장 희귀한 박쥐 일부는 잉글랜드 남서부에서 발견됐는데, 그중에는 오래된 숲에 살며 워낙 겁이 많아 추적하기 매우 어려운 바르바스텔박쥐도 있었다.", "유니버시티 칼리지 런던의 케이트 존스는 AI가 야생동물을 관찰할 수 있는 규모 자체를 바꿔 놓았다며, 이번 조사를 'AI가 좋은 일에 쓰인 멋진 사례'라고 평가했다."], "exprs": [{"en": "would not have been possible without", "ko": "~없이는 불가능했을 것이다", "ex": "it would not have been possible without artificial intelligence"}, {"en": "the largest ever survey", "ko": "사상 최대 규모의 조사", "ex": "the country's largest ever survey of woodland bats"}, {"en": "by hand", "ko": "사람 손으로, 수작업으로", "ex": "Analyzing so many sounds by hand ..."}, {"en": "hard to track", "ko": "추적하기 어려운", "ex": "very hard to track because it is so shy"}, {"en": "the scale at which", "ko": "~하는 규모", "ex": "the scale at which we can watch wildlife"}], "vocab": [{"w": "survey", "pos": "명사", "ko": "(실태) 조사", "ex": "the country's largest ever survey"}, {"w": "woodland", "pos": "명사", "ko": "숲, 삼림 지대", "ex": "in three hundred ten woodlands"}, {"w": "device", "pos": "명사", "ko": "장치, 기기", "ex": "placed recording devices"}, {"w": "analyze", "pos": "동사", "ko": "분석하다", "ex": "Analyzing so many sounds by hand"}, {"w": "identify", "pos": "동사", "ko": "식별하다, 알아보다", "ex": "identify millions of calls"}, {"w": "pattern", "pos": "명사", "ko": "패턴, 규칙성", "ex": "find patterns across the whole country"}, {"w": "ancient", "pos": "형용사", "ko": "아주 오래된", "ex": "lives in ancient forests"}, {"w": "shy", "pos": "형용사", "ko": "수줍음을 타는, 겁이 많은", "ex": "because it is so shy"}], "source": {"title": "AI helps scientists complete largest survey of Britain's woodland bats", "site": "BBC News", "href": "https://www.bbc.co.uk/news/articles/cqm24kgr1jz4o", "date": ""}}, "QUIZ": [{"q": "Q1. (기사 1) 심사관이 새 기록을 확인할 수 있었던 이유는?", "opts": ["A. 조각가들이 장식을 더 붙여서 무게가 늘었기 때문에", "B. 조각한 뒤에도 호박이 원래 무게를 유지했기 때문에", "C. 2023년 기록이 취소되었기 때문에"], "ans": "B", "why": "조각을 끝낸 뒤 다시 무게를 쟀더니 원래 무게 그대로였기 때문에 기록이 인정되었습니다.", "quote": "since the pumpkin had kept its original weight"}, {"q": "Q2. (기사 1) 토드 그레이브스는 호박을 어디로 가져갔나요?", "opts": ["A. 400주년을 맞은 매사추세츠주 세일럼", "B. 호박 대회가 열린 뉴잉글랜드의 농장", "C. 레이징 케인스 본사"], "ans": "A", "why": "그는 400번째 생일을 기념 중인 세일럼으로 호박을 가져갔습니다.", "quote": "he brought it to Salem, Massachusetts, where the town is celebrating its four hundredth birthday"}, {"q": "Q3. (기사 2) 녹음된 소리를 사람이 직접 분석했다면 얼마나 걸렸을까요?", "opts": ["A. 약 3년", "B. 30년 이상", "C. 98년"], "ans": "B", "why": "사람 손으로 분석하면 30년 넘게 걸렸을 것이라고 합니다. 3년은 녹음 기간입니다.", "quote": "Analyzing so many sounds by hand would have taken more than thirty years"}, {"q": "Q4. (기사 2) 바르바스텔박쥐를 추적하기 어려운 이유는?", "opts": ["A. 도시에만 살기 때문에", "B. 겁이 아주 많기 때문에", "C. 겨울에만 날아다니기 때문에"], "ans": "B", "why": "오래된 숲에 살고 겁이 많아서 추적하기 매우 어렵다고 나옵니다.", "quote": "is very hard to track because it is so shy"}], "HINTS": ["힌트: 기사 1의 다섯 번째 문장에서 since 뒤를 다시 읽어 보세요.", "힌트: 기사 1의 세 번째 문장에서 he brought it to 다음을 보세요.", "힌트: 기사 2의 세 번째 문장에서 by hand가 나오는 부분을 보세요. 녹음 기간과 헷갈리지 마세요.", "힌트: 기사 2의 네 번째 문장 끝, because 뒤를 보세요."], "RQ": [{"day": "10/30", "en": "at a yearly pace of", "opts": ["A. 연간 ~의 속도로", "B. 1년 만에 처음으로", "C. 해마다 줄어드는"], "ans": "A", "hint": "힌트: yearly는 '1년 단위', pace는 '속도'예요."}, {"day": "10/30", "en": "a rate hike", "opts": ["A. 세율 인하", "B. 금리 인상", "C. 물가 하락"], "ans": "B", "hint": "힌트: rate는 금리, hike는 '크게 올림'이에요."}, {"day": "10/30", "en": "pay off", "opts": ["A. 돈을 빌리다", "B. 포기하다", "C. 성과를 내다, 결실을 맺다"], "ans": "C", "hint": "힌트: 노력이 '보상받는' 장면을 떠올려 보세요."}, {"day": "10/31", "en": "just in time for", "opts": ["A. ~에 딱 맞춰", "B. ~보다 늦게", "C. ~ 대신에"], "ans": "A", "hint": "힌트: 기사 1 첫 문장 'Just in time for Halloween'을 떠올려 보세요."}, {"day": "10/31", "en": "beat the record", "opts": ["A. 기록을 세우지 못하다", "B. 기록을 깨다", "C. 기록을 확인하다"], "ans": "B", "hint": "힌트: beat는 '이기다'라는 뜻이에요."}, {"day": "10/31", "en": "would not have been possible without", "opts": ["A. ~가 있어도 어려웠을 것이다", "B. ~ 덕분에 쉬웠다", "C. ~없이는 불가능했을 것이다"], "ans": "C", "hint": "힌트: not possible + without, 두 부정을 함께 읽어 보세요."}]};
+const D = {"A1": {"id": "a1", "kicker": "기사 1 · 핼러윈", "headline": "The World's Heaviest Jack-o'-Lantern", "koHeadline": "세계에서 가장 무거운 잭오랜턴", "pairs": [{"en": "Just in time for Halloween, / the heaviest pumpkin ever grown / has become / the heaviest jack-o'-lantern in the world.", "ko": "핼러윈에 딱 맞춰, / 지금까지 재배된 것 중 가장 무거운 호박이 / 되었다 / 세계에서 가장 무거운 잭오랜턴이."}, {"en": "The giant pumpkin, / which weighs three thousand one hundred fifty-six pounds, / or about one thousand four hundred thirty-one kilograms, / was grown by a famous gardener named Ron Wallace, / and it won a big pumpkin contest in New England / earlier this month.", "ko": "그 거대한 호박은, / 무게가 3,156파운드, / 즉 약 1,431킬로그램인데, / 론 월리스라는 유명한 재배자가 길렀고, / 뉴잉글랜드의 큰 호박 대회에서 우승했다 / 이달 초에."}, {"en": "After Todd Graves, / the founder of the restaurant chain Raising Cane's, / got the pumpkin, / he brought it to Salem, Massachusetts, / where the town is celebrating its four hundredth birthday.", "ko": "토드 그레이브스가, / 식당 체인 레이징 케인스의 창업자인데, / 그 호박을 손에 넣은 뒤, / 그는 그것을 매사추세츠주 세일럼으로 가져갔다, / 그곳은 도시 탄생 400주년을 기념하고 있다."}, {"en": "Three record-breaking carvers / flew in / and worked on it for thirty-two hours, / turning it into a spooky Halloween decoration.", "ko": "기록을 깬 적 있는 조각가 세 명이 / 비행기를 타고 와서 / 32시간 동안 작업했고, / 그것을 으스스한 핼러윈 장식으로 바꿔 놓았다."}, {"en": "When they finished, / a Guinness World Records judge / checked the weight again / and confirmed the new record, / since the pumpkin had kept its original weight.", "ko": "그들이 작업을 마치자, / 기네스 세계기록 심사관이 / 무게를 다시 쟀고 / 새 기록을 확인했다, / 호박이 원래 무게를 그대로 유지했기 때문이다."}, {"en": "It easily beat the old record from twenty twenty-three, / which was two thousand seven hundred forty-nine pounds, / so the new jack-o'-lantern / is now about as heavy as a small car.", "ko": "그것은 2023년의 옛 기록을 가볍게 깼다, / 그 기록은 2,749파운드였다, / 그래서 새 잭오랜턴은 / 이제 소형차와 거의 맞먹는 무게다."}], "natural": ["핼러윈을 앞두고, 역대 가장 무거운 호박이 세계에서 가장 무거운 잭오랜턴으로 다시 태어났다. 무게가 3,156파운드(약 1,431kg)인 이 거대한 호박은 유명 재배자 론 월리스가 길렀으며, 이달 초 뉴잉글랜드의 대형 호박 대회에서 우승했다.", "식당 체인 레이징 케인스의 창업자 토드 그레이브스는 이 호박을 손에 넣은 뒤, 올해 400주년을 맞은 매사추세츠주 세일럼으로 가져갔다. 기록 보유 조각가 세 명이 날아와 32시간 동안 작업해 으스스한 핼러윈 장식으로 완성했다.", "작업이 끝나자 기네스 세계기록 심사관이 무게를 다시 쟀고, 호박이 원래 무게를 그대로 유지했기에 새 기록을 공식 인정했다. 2023년의 종전 기록(2,749파운드)을 여유 있게 넘어선 이 잭오랜턴은 이제 소형차와 맞먹는 무게다."], "exprs": [{"en": "just in time for", "ko": "~에 딱 맞춰", "ex": "Just in time for Halloween, ..."}, {"en": "beat the record", "ko": "기록을 깨다", "ex": "It easily beat the old record from 2023."}, {"en": "record-breaking", "ko": "기록을 깨는, 기록적인", "ex": "Three record-breaking carvers flew in."}, {"en": "confirm the new record", "ko": "새 기록을 공식 확인하다", "ex": "a judge ... confirmed the new record"}, {"en": "about as heavy as", "ko": "~와 거의 같은 무게인", "ex": "about as heavy as a small car"}], "vocab": [{"w": "giant", "pos": "형용사", "ko": "거대한", "ex": "The giant pumpkin ..."}, {"w": "gardener", "pos": "명사", "ko": "정원사, 재배자", "ex": "a famous gardener named Ron Wallace"}, {"w": "founder", "pos": "명사", "ko": "창업자, 설립자", "ex": "the founder of the restaurant chain"}, {"w": "carver", "pos": "명사", "ko": "조각가", "ex": "Three record-breaking carvers"}, {"w": "spooky", "pos": "형용사", "ko": "으스스한, 무시무시한", "ex": "a spooky Halloween decoration"}, {"w": "decoration", "pos": "명사", "ko": "장식(품)", "ex": "a spooky Halloween decoration"}, {"w": "judge", "pos": "명사", "ko": "심사위원, 심판", "ex": "a Guinness World Records judge"}, {"w": "original", "pos": "형용사", "ko": "원래의, 처음의", "ex": "kept its original weight"}], "source": {"title": "Heaviest pumpkin dons carved costume in Salem to turn into heftiest jack o'lantern ever", "site": "Guinness World Records", "href": "https://www.guinnessworldrecords.com/news/commercial/2026/10/heaviest-pumpkin-dons-carved-costume-in-salem-to-turn-into-heftiest-jack-o-lantern-ever", "date": ""}, "image": {"src": "img/pumpkin.jpg", "w": 1065, "h": 600, "alt": "A giant pumpkin carved into a glowing jack-o'-lantern with a witch and Halloween figures", "caption": "세계에서 가장 무거운 잭오랜턴으로 조각된 호박", "credit": "Guinness World Records", "creditUrl": "https://www.guinnessworldrecords.com/news/commercial/2026/10/heaviest-pumpkin-dons-carved-costume-in-salem-to-turn-into-heftiest-jack-o-lantern-ever"}}, "A2": {"id": "a2", "kicker": "기사 2 · 과학·AI", "headline": "AI Helps Scientists Count Rare Bats", "koHeadline": "AI, 희귀 박쥐 개체 조사를 돕다", "pairs": [{"en": "Scientists in Britain / have finished / the country's largest ever survey of woodland bats, / and they say / it would not have been possible / without artificial intelligence.", "ko": "영국의 과학자들이 / 마쳤다 / 영국 사상 최대 규모의 숲 박쥐 조사를, / 그리고 그들은 말한다 / 그것이 불가능했을 것이라고 / 인공지능이 없었다면."}, {"en": "Researchers placed recording devices / on poles among the trees / in three hundred ten woodlands across Britain, / and over three years / these devices recorded / ninety-eight million bat calls.", "ko": "연구자들은 녹음 장치를 설치했다 / 나무들 사이 기둥 위에 / 영국 전역 310곳의 숲에, / 그리고 3년에 걸쳐 / 이 장치들은 녹음했다 / 9,800만 건의 박쥐 울음소리를."}, {"en": "Analyzing so many sounds by hand / would have taken more than thirty years, / but AI tools were able to / identify millions of calls / and find patterns across the whole country.", "ko": "그렇게 많은 소리를 사람 손으로 분석하는 것은 / 30년 넘게 걸렸을 것이다, / 하지만 AI 도구들은 ~할 수 있었다 / 수백만 건의 울음소리를 식별하고 / 전국에 걸친 패턴을 찾아내는 것을."}, {"en": "Some of Britain's rarest bats / were found in the south-west of England, / including the Barbastelle, / which lives in ancient forests / and is very hard to track / because it is so shy.", "ko": "영국에서 가장 희귀한 박쥐 일부가 / 잉글랜드 남서부에서 발견되었다, / 바르바스텔박쥐를 포함해서, / 이 박쥐는 오래된 숲에 살고 / 추적하기가 매우 어렵다 / 워낙 겁이 많기 때문에."}, {"en": "Kate Jones from University College London / said that / AI has changed the scale / at which we can watch wildlife, / and she called the survey / a nice story of AI for good.", "ko": "유니버시티 칼리지 런던의 케이트 존스는 / 말했다 / AI가 규모를 바꿔 놓았다고 / 우리가 야생동물을 관찰할 수 있는, / 그리고 그녀는 이 조사를 불렀다 / 'AI가 좋은 일에 쓰인 멋진 이야기'라고."}], "natural": ["영국 과학자들이 사상 최대 규모의 숲 박쥐 조사를 마쳤다. 연구진은 인공지능이 없었다면 이 조사는 불가능했을 것이라고 말한다. 연구진은 영국 전역 310곳의 숲속 나무 사이 기둥에 녹음 장치를 달았고, 3년 동안 박쥐 울음소리 9,800만 건이 녹음됐다.", "이 많은 소리를 사람이 직접 분석했다면 30년 넘게 걸렸겠지만, AI 도구가 수백만 건의 울음소리를 식별하고 전국적인 패턴을 찾아냈다. 영국에서 가장 희귀한 박쥐 일부는 잉글랜드 남서부에서 발견됐는데, 그중에는 오래된 숲에 살며 워낙 겁이 많아 추적하기 매우 어려운 바르바스텔박쥐도 있었다.", "유니버시티 칼리지 런던의 케이트 존스는 AI가 야생동물을 관찰할 수 있는 규모 자체를 바꿔 놓았다며, 이번 조사를 'AI가 좋은 일에 쓰인 멋진 사례'라고 평가했다."], "exprs": [{"en": "would not have been possible without", "ko": "~없이는 불가능했을 것이다", "ex": "it would not have been possible without artificial intelligence"}, {"en": "the largest ever survey", "ko": "사상 최대 규모의 조사", "ex": "the country's largest ever survey of woodland bats"}, {"en": "by hand", "ko": "사람 손으로, 수작업으로", "ex": "Analyzing so many sounds by hand ..."}, {"en": "hard to track", "ko": "추적하기 어려운", "ex": "very hard to track because it is so shy"}, {"en": "the scale at which", "ko": "~하는 규모", "ex": "the scale at which we can watch wildlife"}], "vocab": [{"w": "survey", "pos": "명사", "ko": "(실태) 조사", "ex": "the country's largest ever survey"}, {"w": "woodland", "pos": "명사", "ko": "숲, 삼림 지대", "ex": "in three hundred ten woodlands"}, {"w": "device", "pos": "명사", "ko": "장치, 기기", "ex": "placed recording devices"}, {"w": "analyze", "pos": "동사", "ko": "분석하다", "ex": "Analyzing so many sounds by hand"}, {"w": "identify", "pos": "동사", "ko": "식별하다, 알아보다", "ex": "identify millions of calls"}, {"w": "pattern", "pos": "명사", "ko": "패턴, 규칙성", "ex": "find patterns across the whole country"}, {"w": "ancient", "pos": "형용사", "ko": "아주 오래된", "ex": "lives in ancient forests"}, {"w": "shy", "pos": "형용사", "ko": "수줍음을 타는, 겁이 많은", "ex": "because it is so shy"}], "source": {"title": "AI helps scientists complete largest survey of Britain's woodland bats", "site": "BBC News", "href": "https://www.bbc.co.uk/news/articles/cqm24kgr1jz4o", "date": ""}, "image": {"src": "img/bats.jpg", "w": 1200, "h": 676, "alt": "A bat flies at night with its wings stretched out on a completely black background.", "caption": "날개를 활짝 펴고 밤하늘을 나는 박쥐", "credit": "Daniel Hargreaves / BBC News", "creditUrl": "https://www.bbc.co.uk/news/articles/cqm24kgr1jz4o"}}, "QUIZ": [{"q": "Q1. (기사 1) 심사관이 새 기록을 확인할 수 있었던 이유는?", "opts": ["A. 조각가들이 장식을 더 붙여서 무게가 늘었기 때문에", "B. 조각한 뒤에도 호박이 원래 무게를 유지했기 때문에", "C. 2023년 기록이 취소되었기 때문에"], "ans": "B", "why": "조각을 끝낸 뒤 다시 무게를 쟀더니 원래 무게 그대로였기 때문에 기록이 인정되었습니다.", "quote": "since the pumpkin had kept its original weight"}, {"q": "Q2. (기사 1) 토드 그레이브스는 호박을 어디로 가져갔나요?", "opts": ["A. 400주년을 맞은 매사추세츠주 세일럼", "B. 호박 대회가 열린 뉴잉글랜드의 농장", "C. 레이징 케인스 본사"], "ans": "A", "why": "그는 400번째 생일을 기념 중인 세일럼으로 호박을 가져갔습니다.", "quote": "he brought it to Salem, Massachusetts, where the town is celebrating its four hundredth birthday"}, {"q": "Q3. (기사 2) 녹음된 소리를 사람이 직접 분석했다면 얼마나 걸렸을까요?", "opts": ["A. 약 3년", "B. 30년 이상", "C. 98년"], "ans": "B", "why": "사람 손으로 분석하면 30년 넘게 걸렸을 것이라고 합니다. 3년은 녹음 기간입니다.", "quote": "Analyzing so many sounds by hand would have taken more than thirty years"}, {"q": "Q4. (기사 2) 바르바스텔박쥐를 추적하기 어려운 이유는?", "opts": ["A. 도시에만 살기 때문에", "B. 겁이 아주 많기 때문에", "C. 겨울에만 날아다니기 때문에"], "ans": "B", "why": "오래된 숲에 살고 겁이 많아서 추적하기 매우 어렵다고 나옵니다.", "quote": "is very hard to track because it is so shy"}], "HINTS": ["힌트: 기사 1의 다섯 번째 문장에서 since 뒤를 다시 읽어 보세요.", "힌트: 기사 1의 세 번째 문장에서 he brought it to 다음을 보세요.", "힌트: 기사 2의 세 번째 문장에서 by hand가 나오는 부분을 보세요. 녹음 기간과 헷갈리지 마세요.", "힌트: 기사 2의 네 번째 문장 끝, because 뒤를 보세요."], "RQ": [{"day": "10/30", "en": "at a yearly pace of", "opts": ["A. 연간 ~의 속도로", "B. 1년 만에 처음으로", "C. 해마다 줄어드는"], "ans": "A", "hint": "힌트: yearly는 '1년 단위', pace는 '속도'예요."}, {"day": "10/30", "en": "a rate hike", "opts": ["A. 세율 인하", "B. 금리 인상", "C. 물가 하락"], "ans": "B", "hint": "힌트: rate는 금리, hike는 '크게 올림'이에요."}, {"day": "10/30", "en": "pay off", "opts": ["A. 돈을 빌리다", "B. 포기하다", "C. 성과를 내다, 결실을 맺다"], "ans": "C", "hint": "힌트: 노력이 '보상받는' 장면을 떠올려 보세요."}, {"day": "10/31", "en": "just in time for", "opts": ["A. ~에 딱 맞춰", "B. ~보다 늦게", "C. ~ 대신에"], "ans": "A", "hint": "힌트: 기사 1 첫 문장 'Just in time for Halloween'을 떠올려 보세요."}, {"day": "10/31", "en": "beat the record", "opts": ["A. 기록을 세우지 못하다", "B. 기록을 깨다", "C. 기록을 확인하다"], "ans": "B", "hint": "힌트: beat는 '이기다'라는 뜻이에요."}, {"day": "10/31", "en": "would not have been possible without", "opts": ["A. ~가 있어도 어려웠을 것이다", "B. ~ 덕분에 쉬웠다", "C. ~없이는 불가능했을 것이다"], "ans": "C", "hint": "힌트: not possible + without, 두 부정을 함께 읽어 보세요."}]};
 const META = {"date": "2026-10-31", "label": "10월 31일(토)", "ym": "2026-10", "sunday": false, "dateLine": "2026년 10월 31일 토요일 · 가벼운 뉴스 2편 · B1", "short": ["잭오랜턴 세계 기록", "AI 박쥐 조사"], "marks": {"a1": [2.62, 9.9, 26.93, 39.42, 47.31, 57.09], "a2": [3.02, 12.46, 23.75, 34.48, 45.71]}, "full": {"a1": "pumpkin.mp3", "a2": "bats.mp3"}, "fullx": {"a1": "pumpkin-expr.mp3", "a2": "bats-expr.mp3"}, "todayReview": [{"en": "just in time for", "ko": "~에 딱 맞춰"}, {"en": "beat the record", "ko": "기록을 깨다"}, {"en": "would not have been possible without", "ko": "~없이는 불가능했을 것이다"}], "reviewNote": "11월 3일과 11월 7일 복습 퀴즈에 다시 나옵니다."};
 const MARKS = META.marks, FULL = META.full, FULLX = META.fullx;
 const HAS_WB = typeof WB !== "undefined";
@@ -175,6 +186,9 @@ function hideCue(k){ const c=document.getElementById("cue-"+k); if(c) c.classLis
 
 /* ---------- clip sequence players (sentences / expressions / vocab / review) ---------- */
 const GAPS=[0,0.3,0.6,1,1.5];
+const NREPS=[1,2,3];
+function repsN(){ if(HAS_WB) return WB.reps(); try{ const v=parseInt(localStorage.getItem("ea-reps-v1"),10); return NREPS.includes(v)?v:3; }catch(e){ return 3; } }
+function setReps(n){ if(HAS_WB) WB.setReps(n); else { try{ localStorage.setItem("ea-reps-v1",String(n)); }catch(e){} } Object.keys(seqs).forEach(renderSeq); }
 function gapSec(){ if(HAS_WB) return WB.gap(); try{ const v=parseFloat(localStorage.getItem("ea-gap-v1")); return GAPS.includes(v)?v:0.3; }catch(e){ return 0.3; } }
 const REPS=[0,Infinity,3,5];     // tap cycle: off → ∞ (until turned off) → 3회 → 5회
 const repLabel = n => n===0 ? "끔" : (n===Infinity ? "∞" : n+"회");
@@ -217,7 +231,7 @@ function seqToggle(key){
   playSeq(key, S.idx, false);
 }
 function seqJump(key, d){ const S=seqs[key]; const n=Math.max(0,Math.min(S.list.length-1,S.idx+d)); if(seq&&seq.key===key) playSeq(key,n,false); else { S.idx=n; renderSeq(key); } }
-function gapRow(){ return `<span class="row" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg" style="margin:0">${GAPS.map(g=>`<button class="gp${g===gapSec()?" on":""}" data-g="${g}" onclick="setGap(${g})">${g}초</button>`).join("")}</span></span>`; }
+function gapRow(){ return `<span class="row" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg" style="margin:0">${GAPS.map(g=>`<button class="gp${g===gapSec()?" on":""}" data-g="${g}" onclick="setGap(${g})">${g}초</button>`).join("")}</span><span class="note">반복</span><span class="seg" style="margin:0">${NREPS.map(n=>`<button class="rp${n===repsN()?" on":""}" data-n="${n}" onclick="setReps(${n})">${n}회</button>`).join("")}</span></span>`; }
 function seqRep(key){ const S=seqs[key]; S.rep=REPS[(REPS.indexOf(S.rep||0)+1)%REPS.length]; if(seq&&seq.key===key) seq.done=0; renderSeq(key); }
 function setGap(g){ if(HAS_WB) WB.setGap(g); else { try{ localStorage.setItem("ea-gap-v1",String(g)); }catch(e){} } Object.keys(seqs).forEach(renderSeq); }
 function seqRate(key, r){ seqs[key].rate=r; if(seq&&seq.key===key) clipEl.playbackRate=r; renderSeq(key); }
@@ -230,6 +244,7 @@ function renderSeq(key){
   el.querySelector(".pp").textContent = playing ? "⏸ 일시정지" : (active ? "▶ 이어 듣기" : "▶ 재생");
   el.querySelectorAll(".rt").forEach(b => b.classList.toggle("on", Number(b.dataset.r)===S.rate));
   document.querySelectorAll(`.rep-${key}`).forEach(b => { b.textContent = "🔂 문장 반복 " + repLabel(S.rep||0); b.classList.toggle("pri", !!S.rep); });
+  document.querySelectorAll(".rp").forEach(b => b.classList.toggle("on", Number(b.dataset.n)===repsN()));
   document.querySelectorAll(".gp").forEach(b => b.classList.toggle("on", Number(b.dataset.g)===gapSec()));
   if(!active){ const b=document.getElementById("bar-"+key); if(b) b.style.width="0"; }
   // row highlight for tables
@@ -377,6 +392,7 @@ function articleHTML(A){
   return `<section class="art" id="${id}" data-pn="read">
   <div class="kicker">${esc(A.kicker)}</div><h2>${esc(A.headline)}</h2><div class="sub">${esc(A.koHeadline)}</div>
   <div class="pn pn-read">
+  ${A.image?`<figure class="hero"><img src="${esc(A.image.src)}" width="${A.image.w}" height="${A.image.h}" alt="${esc(A.image.alt||"")}" decoding="async"><figcaption>${esc(A.image.caption||"")}${A.image.credit?` <span class="credit">사진: <a href="${esc(A.image.creditUrl||A.source.href)}" target="_blank" rel="noopener">${esc(A.image.credit)}</a></span>`:""}</figcaption></figure>`:""}
   <span class="seg" id="mode-${id}">${[["en","원문"],["jik","직해"],["ko","한국어"],["eo","영어만"]].map(([m,l])=>`<button data-m="${m}" class="${m==="jik"?"on":""}" onclick="setMode('${id}','${m}')">${l}</button>`).join("")}</span>
   <div class="row" style="margin:0 0 6px"><button class="rep-${id}s" onclick="seqRep('${id}s')">🔂 문장 반복 끔</button><span class="note">켜고 문장의 🔊를 누르면 그 문장을 반복해요.</span></div>
   <div id="lines-${id}"></div>
@@ -386,7 +402,7 @@ function articleHTML(A){
   </div>
   <div class="pn pn-voc">
   <h3>주요 어휘</h3>
-  <div class="note">🔊 영어 → 뜻을 세 번 번갈아 읽어 줍니다.</div>
+  <div class="note">🔊 영어 → 뜻을 번갈아 읽어 줍니다 (반복 횟수·간격은 아래에서 설정).</div>
   ${gapRow()}
   <div class="items"><div class="item ihdr"><div class="w">단어</div><div class="mean">뜻</div><div class="ex">기사 속 문장</div><div class="acts"></div></div>
   ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}v',${i},true)">🔊</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
@@ -407,7 +423,7 @@ function articleHTML(A){
 }
 
 const clip = n => "clips/"+n+".mp3";
-const enko = n => { const e=clip(n+"-en"), k=clip(n+"-ko"); return [e,k,e,k,e,k]; };   // EN→KO ×3, gap set by the listener
+const enko = n => n;   // item.parts is computed on play: EN→KO × the listener's 1/2/3회, gap set by the listener
 [D.A1,D.A2].forEach(A=>{
   seqs[A.id+"s"]={unit:"문장",idx:0,rate:1,shadow:false,list:A.pairs.map((p,i)=>({src:clip(`${A.id}-s${i+1}`),title:strip(p.en),detail:strip(p.ko)}))};
   seqs[A.id+"v"]={unit:"어휘",idx:0,rate:1,list:A.vocab.map((x,i)=>({src:clip(`${A.id}-v${i+1}`),parts:enko(`${A.id}-v${i+1}`),title:`${x.w} (${x.pos})`,detail:x.ko}))};
@@ -416,27 +432,38 @@ const enko = n => { const e=clip(n+"-en"), k=clip(n+"-ko"); return [e,k,e,k,e,k]
 seqs.rq={unit:"표현",idx:0,rate:1,list:D.RQ.map((x,i)=>({src:clip(`rq${i+1}`),parts:enko(`rq${i+1}`),title:x.en,detail:""}))};
 document.getElementById("arts").innerHTML = articleHTML(D.A1)+articleHTML(D.A2);
 document.getElementById("mini").innerHTML = [D.A1,D.A2].map((A,n)=>miniPlayer(A.id, FULL[A.id], `🎧 기사 ${n+1} 전체 듣기`)).join("");
+Object.values(seqs).forEach(S=>S.list.forEach(it=>{ if(typeof it.parts!=="string") return; const n=it.parts; delete it.parts;
+  Object.defineProperty(it,"parts",{get(){ const e=clip(n+"-en"), k=clip(n+"-ko"); return Array.from({length:repsN()},()=>[e,k]).flat(); }}); }));
 ["a1","a2"].forEach(id=>{ initFull(id, MARKS[id]); initFull(id+"X", null); drawLines(id); });
 Object.keys(seqs).forEach(k=>renderSeq(k));
 drawQuiz(); drawRQ();
 /* ---------- tabs: article switcher + 원문|직해|어휘|표현|퀴즈 (remembered per browser) ---------- */
 const TABS=[["en","원문","read"],["jik","직해","read"],["voc","어휘","voc"],["exp","표현","exp"],["quiz","퀴즈","quiz"]];
-const TAB_KEY="ea-tab-v1";
+const TAB_KEY="ea-tab-v1:"+META.date;   // per day page: a new day always opens on 기사 1 → 원문
 const TAB=(()=>{ let t={}; try{ t=JSON.parse(localStorage.getItem(TAB_KEY)||"{}"); }catch(e){}
-  return {art:(location.hash==="#a2"?"a2":location.hash==="#a1"?"a1":(t.art==="a2"?"a2":"a1")), tab:TABS.some(x=>x[0]===t.tab)?t.tab:"jik"}; })();
+  const h=location.hash.slice(1), PV=["rv","past","mywb","rq","review"];
+  const art=(h==="a1"||h==="a2")?h:PV.includes(h)?"rv":(["a1","a2","rv"].includes(t.art)?t.art:"a1");
+  return {art, last:(t.last==="a2"?"a2":"a1"), tab:TABS.some(x=>x[0]===t.tab)?t.tab:"en"}; })();
+if(TAB.art!=="rv") TAB.last=TAB.art;
 function saveTab(){ try{ localStorage.setItem(TAB_KEY, JSON.stringify(TAB)); }catch(e){} }
 function drawTabs(){
-  document.getElementById("artsw").innerHTML=["a1","a2"].map((a,n)=>`<button class="${TAB.art===a?"on":""}" onclick="selArt('${a}')"><b>기사 ${n+1}</b>${esc(META.short[n])}</button>`).join("");
+  document.getElementById("artsw").innerHTML=["a1","a2"].map((a,n)=>`<button class="${TAB.art===a?"on":""}" onclick="selArt('${a}')"><b>기사 ${n+1}</b>${esc(META.short[n])}</button>`).join("")
+    + `<button class="pv${TAB.art==="rv"?" on":""}" onclick="selArt('rv')"><b>🔁 복습</b></button>`;
+  // page-level sections (복습 퀴즈, 오늘의 복습 표현, 일요일 단어장 복습, 지난 학습) live in their own view, never under an article tab
+  const rv=TAB.art==="rv"; document.getElementById("tabs").hidden=rv; document.getElementById("pagev").hidden=!rv;
   document.getElementById("tabs").innerHTML=TABS.map(([t,l])=>`<button role="tab" aria-selected="${TAB.tab===t}" class="${TAB.tab===t?"on":""}" data-t="${t}" onclick="selTab('${t}')">${l}</button>`).join("");
   ["a1","a2"].forEach(a=>{ const el=document.getElementById(a); el.classList.toggle("cur",TAB.art===a); el.dataset.pn=TABS.find(x=>x[0]===TAB.tab)[2];
-    document.getElementById("mp-"+a).classList.toggle("cur",TAB.art===a); });
+    document.getElementById("mp-"+a).classList.toggle("cur",(rv?TAB.last:TAB.art)===a); });
 }
 function toStudyTop(){ const st=document.getElementById("study"); const y=st.getBoundingClientRect().top+scrollY; if(scrollY>y) window.scrollTo(0,y); }
 function selTab(t){ if(t===TAB.tab) return; TAB.tab=t; saveTab();
   if(t==="en"||t==="jik"){ ["a1","a2"].forEach(a=>{ if(t==="jik"? modes[a]!=="jik" : modes[a]==="jik"){ modes[a]=t; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===t)); drawLines(a); } }); }
   drawTabs(); toStudyTop(); }
-function selArt(a){ if(a===TAB.art) return; const old=fulls[TAB.art]; if(old && !old.paused) old.pause();
-  TAB.art=a; saveTab(); drawTabs(); toStudyTop(); }
+function selArt(a, target){ if(a!==TAB.art){ if(a!=="rv"){ const old=fulls[TAB.last]; if(a!==TAB.last && old && !old.paused) old.pause(); TAB.last=a; }
+    TAB.art=a; saveTab(); drawTabs(); }
+  const el=target&&document.getElementById(target); if(el){ const bar=document.getElementById("sbar").offsetHeight; window.scrollTo(0, el.getBoundingClientRect().top+scrollY-bar-8); } else toStudyTop(); }
+addEventListener("hashchange",()=>{ const h=location.hash.slice(1);
+  if(h==="a1"||h==="a2") selArt(h); else if(["rv","past","mywb","rq","review"].includes(h)) selArt("rv", h==="rv"?null:h); });
 if(TAB.tab==="en"){ ["a1","a2"].forEach(a=>{ modes[a]="en"; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m==="en")); drawLines(a); }); }
 drawTabs();
 // swipe left/right on the article body to move between tabs
@@ -448,7 +475,7 @@ drawTabs();
 })();
 /* ---------- META-driven parts ---------- */
 document.getElementById("mdate").textContent = META.dateLine;
-document.getElementById("toc").innerHTML = [["past","지난 학습"],["a1","기사 1 · "+META.short[0]],["a2","기사 2 · "+META.short[1]]].concat(META.sunday?[["mywb","⭐ 내 단어장 복습"]]:[]).concat([["rq","🔁 복습 퀴즈"],["review","오늘의 복습 표현"]]).map(([h,l])=>(h==="a1"||h==="a2")?`<a href="#study" onclick="selArt('${h}')">${esc(l)}</a>`:`<a href="#${h}">${esc(l)}</a>`).join("") + `<a href="../wordbook.html">⭐ 단어장</a>`;
+document.getElementById("toc").innerHTML = [["past","지난 학습"],["a1","기사 1 · "+META.short[0]],["a2","기사 2 · "+META.short[1]]].concat(META.sunday?[["mywb","⭐ 내 단어장 복습"]]:[]).concat([["rq","🔁 복습 퀴즈"],["review","오늘의 복습 표현"]]).map(([h,l])=>(h==="a1"||h==="a2")?`<a href="#study" onclick="event.preventDefault();selArt('${h}')">${esc(l)}</a>`:`<a href="#${h}" onclick="event.preventDefault();selArt('rv','${h}')">${esc(l)}</a>`).join("") + `<a href="../wordbook.html">⭐ 단어장</a>`;
 document.getElementById("revnote").textContent = META.reviewNote;
 document.getElementById("revtbl").innerHTML = `<tr><th>표현</th><th>뜻</th></tr>` + META.todayReview.map(x=>`<tr><td>${esc(x.en)}</td><td>${esc(x.ko)}</td></tr>`).join("");
 function drawPast(days){
@@ -460,7 +487,7 @@ drawPast(null);
 fetch("../days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.days&&j.days.length) drawPast(j.days); }).catch(()=>{});
 if(HAS_WB){
   WB.onPlay = () => { stopSeq(); stopFulls(); };
-  window.addEventListener("storage", e => { if(e.key==="ea-gap-v1") Object.keys(seqs).forEach(renderSeq); });
+  window.addEventListener("storage", e => { if(e.key==="ea-gap-v1"||e.key==="ea-reps-v1") Object.keys(seqs).forEach(renderSeq); });
   const cnt=()=>{ const n=WB.all().length; document.getElementById("wbcount").textContent = n? `저장 ${n}개` : "아직 비어 있어요"; };
   cnt(); WB.onChange(()=>{ cnt(); WB.refreshStars(); });
   if(META.sunday){ document.getElementById("mywb").hidden=false; WB.quiz(document.getElementById("mywbbox"),{limit:10}); }
