@@ -79,6 +79,36 @@ label.tg input{width:22px;height:22px}
 .note{font-size:14px;color:var(--tx2)}
 .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--tx2)}
 .wbstar{font-size:18px}
+/* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
+#study{margin:18px 0}
+.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0 -4px;padding-left:4px;padding-right:4px;border-bottom:1px solid var(--line)}
+.artsw{display:flex;gap:6px;margin-bottom:6px}
+.artsw button{flex:1;min-width:0;text-align:left;font-size:14px;line-height:1.3;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artsw button b{margin-right:4px}
+.artsw button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+@media (prefers-color-scheme:dark){.artsw button.on{color:#111}}
+.tabs{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.tabs button{flex:1;border:0;border-radius:0;background:transparent;min-height:42px;padding:6px 2px;font-weight:600;color:var(--tx2)}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button.on{background:var(--accs);color:var(--acc);box-shadow:inset 0 -3px 0 var(--acc)}
+#study section.art{margin:12px 0}
+#study section.art:not(.cur){display:none}
+.art .pn{display:none}
+.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
+.pn>h3:first-child{margin-top:4px;padding-top:0;border-top:0}
+.sent{scroll-margin-top:130px;scroll-margin-bottom:110px}
+/* compact sticky mini-player for the full article */
+#mini{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(0,0,0,.08);padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
+#mini .mp{max-width:720px;margin:0 auto}
+#mini .mp:not(.cur){display:none}
+#mini .player{border:0;margin:0;padding:0}
+#mini .mrow{display:flex;align-items:center;gap:6px}
+#mini .mrow .lbl{flex:1;min-width:0;font-size:13px;color:var(--tx2);line-height:1.3;overflow:hidden}
+#mini .mrow .lbl b{display:block;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mini button{min-height:38px;padding:6px 9px;font-size:14px}
+#mini .fpp{min-width:46px}
+#mini .bar{margin:5px 0 1px;height:5px}
+.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 .toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .toplinks a{flex:1;min-width:140px;text-align:center}
 </style>

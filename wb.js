@@ -11,9 +11,22 @@ function changed(){ listeners.forEach(f=>{ try{ f(); }catch(e){} }); }
 window.addEventListener("storage", e => { if(e.key===KEY) changed(); });
 
 const audio = new Audio(); audio.preload="none"; audio.setAttribute("playsinline","");
+/* EN/KO gap between the separate English and Korean clips (seconds), shared with every day page */
+const GAP_KEY = "ea-gap-v1", GAPS = [0, 0.3, 0.6, 1, 1.5];
+function getGap(){ try{ const v=parseFloat(localStorage.getItem(GAP_KEY)); return GAPS.includes(v)?v:0.3; }catch(e){ return 0.3; } }
+/* a combined day clip (…/clips/a1-v2.mp3, a1-x1.mp3, rq3.mp3) has separate -en / -ko files next to it: EN→KO ×3 */
+function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vx]\d+|rq\d+))\.mp3$/); if(!m) return [url]; const e=m[1]+"-en.mp3", k=m[1]+"-ko.mp3"; return [e,k,e,k,e,k]; }
+let cur = null;                      // {id, url, parts, i, timer}
 let playingId = null;
-audio.addEventListener("ended", () => { playingId=null; changed(); });
-audio.addEventListener("pause", () => { playingId=null; changed(); });
+function finish(){ if(cur && cur.timer) clearTimeout(cur.timer); cur=null; playingId=null; changed(); }
+function playPart(){ audio.src=cur.parts[cur.i]; audio.play().catch(()=>{}); }
+audio.addEventListener("ended", () => { if(!cur) return;
+  if(cur.i+1 < cur.parts.length){ cur.timer=setTimeout(()=>{ if(!cur) return; cur.timer=null; cur.i++; playPart(); }, getGap()*1000); }
+  else finish(); });
+let skipPause = false;
+audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && !audio.ended && !cur.timer) finish(); });
+audio.addEventListener("error", () => { if(cur && cur.parts.length>1){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
+window.addEventListener("storage", e => { if(e.key===GAP_KEY) WB.refreshGap(); });
 
 const WB = {
   KEY, esc,
@@ -27,10 +40,19 @@ const WB = {
   idOf, onChange: f => listeners.push(f),
   onPlay: null,                        // set by a host page to stop its own audio
   play(url, id){ if(!url) return; if(WB.onPlay) WB.onPlay();
-    if(playingId===id && !audio.paused){ audio.pause(); return; }
-    audio.src=url; playingId=id||url; audio.play().catch(()=>{}); changed(); },
-  stop(){ if(!audio.paused) audio.pause(); },
-  isPlaying: id => playingId===id && !audio.paused,
+    const pid=id||url;
+    if(cur && cur.id===pid){ WB.stop(); return; }
+    if(cur && cur.timer) clearTimeout(cur.timer);
+    if(!audio.paused) skipPause=true;
+    cur={id:pid, url, parts:partsFor(url), i:0, timer:null}; playingId=pid; playPart(); changed(); },
+  stop(){ if(!cur) return; finish(); audio.pause(); },
+  isPlaying: id => !!cur && cur.id===id,
+  partsFor,
+  GAPS, gap: getGap,
+  setGap(v){ try{ localStorage.setItem(GAP_KEY, String(v)); }catch(e){} WB.refreshGap(); if(WB.onGap) WB.onGap(v); },
+  onGap: null,
+  gapHTML: () => `<span class="row wbgaprow" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg wbgap" style="margin:0">${GAPS.map(g=>`<button data-gap="${g}" class="${g===getGap()?"on":""}" onclick="WB.setGap(${g})">${g}초</button>`).join("")}</span></span>`,
+  refreshGap(root=document){ const g=getGap(); root.querySelectorAll(".wbgap button").forEach(b=>b.classList.toggle("on", Number(b.dataset.gap)===g)); },
   exportText(){ return JSON.stringify({app:"english-audio-wordbook",v:1,items:load()}, null, 1); },
   importText(t){ let items; try{ const o=JSON.parse(t); items=Array.isArray(o)?o:o.items; }catch(e){ throw new Error("JSON 형식이 아니에요."); }
     if(!Array.isArray(items)) throw new Error("items 목록이 없어요.");
