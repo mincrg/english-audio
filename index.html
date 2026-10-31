@@ -192,11 +192,12 @@ body.sheet-open{overflow:hidden}
 <a class="card" href="./wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount">저장한 단어·표현 보기, 복습 퀴즈, 백업</small></a>
 <section class="box">
   <h3 style="border:0;margin-top:0;padding-top:0">📚 전체 학습 (최신순)</h3>
+  <a class="card" href="./2026-11-01/index.html"><b>11월 1일(일) · 새끼 니알라 두 마리 / 낯선 이 11명의 '비결혼식'</b><small>2026-11-01<span class="dprog" data-date="2026-11-01"></span></small></a>
   <a class="card" href="./2026-10-31/index.html"><b>10월 31일(토) · 잭오랜턴 세계 기록 / AI 박쥐 조사</b><small>2026-10-31<span class="dprog" data-date="2026-10-31"></span></small></a>
 </section>
 </div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="e27b2b9279") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="dc33aeb48f") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}
