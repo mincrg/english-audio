@@ -2,8 +2,8 @@
  "updated": "2026-11-01",
  "assets": {
   "wb": "ab1a2742e1",
-  "root": "dc33aeb48f",
-  "wordbook": "733c3727b8"
+  "root": "92ff3e3c8e",
+  "wordbook": "c1c0865a5e"
  },
  "days": [
   {
@@ -14,7 +14,7 @@
     "낯선 이 11명의 '비결혼식'"
    ],
    "url": "2026-11-01/index.html",
-   "build": "bdc1de5e50"
+   "build": "f119051e08"
   },
   {
    "date": "2026-10-31",
@@ -24,7 +24,7 @@
     "AI 박쥐 조사"
    ],
    "url": "2026-10-31/index.html",
-   "build": "09c0ce3ec3"
+   "build": "330d5686c3"
   }
  ]
 }
