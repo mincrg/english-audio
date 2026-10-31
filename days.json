@@ -2,8 +2,8 @@
  "updated": "2026-10-31",
  "assets": {
   "wb": "e4b9d9c2fe",
-  "root": "9b0cba55bf",
-  "wordbook": "84c8ced87c"
+  "root": "137fc38972",
+  "wordbook": "290b688989"
  },
  "days": [
   {
@@ -14,7 +14,7 @@
     "AI 박쥐 조사"
    ],
    "url": "2026-10-31/index.html",
-   "build": "87d108a153"
+   "build": "75b2361694"
   }
  ]
 }
