@@ -15,7 +15,11 @@ const audio = new Audio(); audio.preload="none"; audio.setAttribute("playsinline
 const GAP_KEY = "ea-gap-v1", GAPS = [0, 0.3, 0.6, 1, 1.5];
 function getGap(){ try{ const v=parseFloat(localStorage.getItem(GAP_KEY)); return GAPS.includes(v)?v:0.3; }catch(e){ return 0.3; } }
 /* a combined day clip (…/clips/a1-v2.mp3, a1-x1.mp3, rq3.mp3) has separate -en / -ko files next to it: EN→KO ×3 */
-function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vx]\d+|rq\d+))\.mp3$/); if(!m) return [url]; const e=m[1]+"-en.mp3", k=m[1]+"-ko.mp3"; return [e,k,e,k,e,k]; }
+/* how many EN→KO rounds per vocab / expression item (1–3), shared like the gap */
+const REPS_KEY = "ea-reps-v1", REPS = [1, 2, 3];
+function getReps(){ try{ const v=parseInt(localStorage.getItem(REPS_KEY),10); return REPS.includes(v)?v:3; }catch(e){ return 3; } }
+const enkoParts = (e, k) => Array.from({length:getReps()}, () => [e, k]).flat();
+function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vx]\d+|rq\d+))\.mp3$/); if(!m) return [url]; return enkoParts(m[1]+"-en.mp3", m[1]+"-ko.mp3"); }
 let cur = null;                      // {id, url, parts, i, timer}
 let playingId = null;
 function finish(){ if(cur && cur.timer) clearTimeout(cur.timer); cur=null; playingId=null; changed(); }
@@ -26,7 +30,7 @@ audio.addEventListener("ended", () => { if(!cur) return;
 let skipPause = false;
 audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && !audio.ended && !cur.timer) finish(); });
 audio.addEventListener("error", () => { if(cur && cur.parts.length>1){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
-window.addEventListener("storage", e => { if(e.key===GAP_KEY) WB.refreshGap(); });
+window.addEventListener("storage", e => { if(e.key===GAP_KEY||e.key===REPS_KEY) WB.refreshGap(); });
 
 const WB = {
   KEY, esc,
@@ -51,8 +55,11 @@ const WB = {
   GAPS, gap: getGap,
   setGap(v){ try{ localStorage.setItem(GAP_KEY, String(v)); }catch(e){} WB.refreshGap(); if(WB.onGap) WB.onGap(v); },
   onGap: null,
-  gapHTML: () => `<span class="row wbgaprow" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg wbgap" style="margin:0">${GAPS.map(g=>`<button data-gap="${g}" class="${g===getGap()?"on":""}" onclick="WB.setGap(${g})">${g}초</button>`).join("")}</span></span>`,
-  refreshGap(root=document){ const g=getGap(); root.querySelectorAll(".wbgap button").forEach(b=>b.classList.toggle("on", Number(b.dataset.gap)===g)); },
+  REPS, reps: getReps, enkoParts,
+  setReps(n){ try{ localStorage.setItem(REPS_KEY, String(n)); }catch(e){} WB.refreshGap(); if(WB.onGap) WB.onGap(); },
+  gapHTML: () => `<span class="row wbgaprow" style="margin:4px 0;gap:6px"><span class="note">영어↔뜻 간격</span><span class="seg wbgap" style="margin:0">${GAPS.map(g=>`<button data-gap="${g}" class="${g===getGap()?"on":""}" onclick="WB.setGap(${g})">${g}초</button>`).join("")}</span><span class="note">반복</span><span class="seg wbreps" style="margin:0">${REPS.map(n=>`<button data-reps="${n}" class="${n===getReps()?"on":""}" onclick="WB.setReps(${n})">${n}회</button>`).join("")}</span></span>`,
+  refreshGap(root=document){ const g=getGap(); root.querySelectorAll(".wbgap button").forEach(b=>b.classList.toggle("on", Number(b.dataset.gap)===g));
+    const n=getReps(); root.querySelectorAll(".wbreps button").forEach(b=>b.classList.toggle("on", Number(b.dataset.reps)===n)); },
   exportText(){ return JSON.stringify({app:"english-audio-wordbook",v:1,items:load()}, null, 1); },
   importText(t){ let items; try{ const o=JSON.parse(t); items=Array.isArray(o)?o:o.items; }catch(e){ throw new Error("JSON 형식이 아니에요."); }
     if(!Array.isArray(items)) throw new Error("items 목록이 없어요.");

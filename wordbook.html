@@ -92,6 +92,8 @@ label.tg input{width:22px;height:22px}
 .tabs button+button{border-left:1px solid var(--line)}
 .tabs button.on{background:var(--accs);color:var(--acc);box-shadow:inset 0 -3px 0 var(--acc)}
 #study section.art{margin:12px 0}
+#pagev section.box{margin:12px 0}
+.artsw button.pv{flex:0 0 auto}
 #study section.art:not(.cur){display:none}
 .art .pn{display:none}
 .art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
@@ -109,6 +111,13 @@ label.tg input{width:22px;height:22px}
 #mini .fpp{min-width:46px}
 #mini .bar{margin:5px 0 1px;height:5px}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+#tabs[hidden],#pagev[hidden]{display:none}
+figure.hero{margin:6px 0 14px}
+figure.hero img{display:block;width:100%;height:auto;border-radius:10px;background:var(--line)}
+figure.hero figcaption{font-size:13px;color:var(--tx2);margin-top:6px;line-height:1.45;word-break:keep-all}
+figure.hero .credit{white-space:nowrap}
+figure.hero .credit a{color:var(--tx2)}
+@media (max-width:600px){figure.hero{margin-left:-16px;margin-right:-16px}figure.hero img{border-radius:0}figure.hero figcaption{padding:0 16px}}
 .toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .toplinks a{flex:1;min-width:140px;text-align:center}
 </style>
@@ -118,7 +127,7 @@ label.tg input{width:22px;height:22px}
 <header class="mast">
   <div class="date"><a href="./index.html" style="color:inherit">← 전체 학습 목록</a></div>
   <h1>⭐ 나만의 단어장</h1>
-  <p>날짜별 페이지에서 ☆로 저장한 단어와 중요 표현이 모여요. 🔊는 영어 → 뜻을 세 번 번갈아 읽어 줍니다.</p>
+  <p>날짜별 페이지에서 ☆로 저장한 단어와 중요 표현이 모여요. 🔊는 영어 → 뜻을 번갈아 읽어 줍니다 (반복 1~3회·간격은 아래에서 설정).</p>
 </header>
 <section class="box">
   <span class="seg" id="filt"><button data-f="all" class="on">전체</button><button data-f="word">단어</button><button data-f="expr">표현</button></span>
