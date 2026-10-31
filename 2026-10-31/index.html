@@ -47,9 +47,28 @@ button.ico{padding:6px 9px;min-width:40px}
 label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px}
 label.tg input{width:22px;height:22px}
 .tbl{width:100%;border-collapse:collapse;font-size:15px}
-.tbl td,.tbl th{word-break:keep-all;overflow-wrap:anywhere;border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+.tbl td,.tbl th{word-break:keep-all;overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual;border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
 .tbl th{font-size:13px;color:var(--tx2);font-weight:600}
 .tbl tr.on td{background:var(--accs)}
+/* word / expression lists: grid rows on desktop, one card per item on phones; never split words */
+.items{margin:6px 0;font-size:15px}
+.items,.items *{word-break:keep-all;overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual}
+.item{display:grid;grid-template-columns:minmax(9em,1.2fr) minmax(7em,1fr) 2fr auto;grid-template-areas:"w mean ex acts";gap:2px 12px;align-items:start;padding:9px 8px;border-bottom:1px solid var(--line);border-radius:8px;transition:background .2s}
+.item.ihdr{font-size:13px;color:var(--tx2);font-weight:600;padding-top:4px;padding-bottom:4px}
+.item.on{background:var(--accs)}
+.item .w{grid-area:w;min-width:0}.item .w b{font-size:16px}
+.item .pos{color:var(--tx2);font-size:13px;margin-left:6px;white-space:nowrap}
+.item .mean{grid-area:mean;min-width:0}
+.item .ex{grid-area:ex;min-width:0}
+.item .acts{grid-area:acts;display:flex;gap:6px;justify-content:flex-end;white-space:nowrap}
+.item .acts button{min-width:40px}
+@media (max-width:600px){
+  .item{grid-template-columns:1fr auto;grid-template-areas:"w acts" "mean mean" "ex ex";border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;gap:4px 8px}
+  .item.ihdr{display:none}
+  .item .w{align-self:center}
+  .item .mean{font-size:16px}
+  .item .ex{font-size:13.5px}
+}
 .ex{color:var(--tx2);font-size:14px}
 .card{display:block;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--tx);margin:8px 0}
 .card small{color:var(--tx2);display:block}
@@ -60,7 +79,6 @@ label.tg input{width:22px;height:22px}
 .note{font-size:14px;color:var(--tx2)}
 .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--tx2)}
 .wbstar{font-size:18px}
-.cell2{display:flex;gap:4px;flex-wrap:wrap}
 .toplinks{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .toplinks a{flex:1;min-width:140px;text-align:center}
 </style>
@@ -288,12 +306,12 @@ function articleHTML(A){
   ${seqPlayer(id+"s","문장",{shadow:true})}
   <h3>주요 어휘</h3>
   <div class="note">🔊 영어 → 뜻을 세 번 번갈아 읽어 줍니다.</div>
-  <table class="tbl"><tr><th></th><th>단어</th><th>뜻</th><th>기사 속 문장</th></tr>
-  ${A.vocab.map((x,i)=>`<tr data-row="${id}v-${i}"><td><div class="cell2"><button class="ico" onclick="playSeq('${id}v',${i},true)">🔊</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div></td><td><b>${esc(x.w)}</b><br><span class="ex">${esc(x.pos)}</span></td><td>${esc(x.ko)}</td><td class="ex">${esc(x.ex)}</td></tr>`).join("")}</table>
+  <div class="items"><div class="item ihdr"><div class="w">단어</div><div class="mean">뜻</div><div class="ex">기사 속 문장</div><div class="acts"></div></div>
+  ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}v',${i},true)">🔊</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
   ${seqPlayer(id+"v","어휘")}
   <h3>중요 표현</h3>
-  <table class="tbl"><tr><th></th><th>표현</th><th>뜻</th><th>기사 속 쓰임</th></tr>
-  ${A.exprs.map((x,i)=>`<tr data-row="${id}x-${i}"><td><div class="cell2"><button class="ico" onclick="playSeq('${id}x',${i},true)">🔊</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div></td><td><b>${esc(x.en)}</b></td><td>${esc(x.ko)}</td><td class="ex">${esc(x.ex)}</td></tr>`).join("")}</table>
+  <div class="items"><div class="item ihdr"><div class="w">표현</div><div class="mean">뜻</div><div class="ex">기사 속 쓰임</div><div class="acts"></div></div>
+  ${A.exprs.map((x,i)=>`<div class="item" data-row="${id}x-${i}"><div class="w"><b>${esc(x.en)}</b></div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}x',${i},true)">🔊</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
   ${seqPlayer(id+"x","표현")}
   ${fullPlayer(id+"X", FULLX[id], "🎧 중요 표현 한 번에 듣기 (영어 → 뜻 → 영어)")}
   <a class="card" href="${A.source.href}" target="_blank" rel="noopener"><b>원문: ${esc(A.source.title)}</b><small>${esc(A.source.site)} · ${esc(A.source.date||META.ym)}</small></a>
