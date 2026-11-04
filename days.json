@@ -2,8 +2,8 @@
  "updated": "2026-11-04",
  "assets": {
   "wb": "ab1a2742e1",
-  "root": "0e74689492",
-  "wordbook": "f82c2c4c08"
+  "root": "9b5e63b9e6",
+  "wordbook": "99a18a8b5d"
  },
  "days": [
   {
@@ -14,7 +14,7 @@
     "중간선거 날 미국 증시 혼조"
    ],
    "url": "2026-11-04/index.html",
-   "build": "f638679f5a"
+   "build": "fc17152cf1"
   },
   {
    "date": "2026-11-03",
