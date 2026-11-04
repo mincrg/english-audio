@@ -1,9 +1,9 @@
-/* 직독직해 service worker — version f341c77173
+/* 직독직해 service worker — version ba0dc9bf01
    HTML / JSON / JS / manifest : network-first, cache fallback (fresh lessons online, last copy offline)
    images / icons               : cache-first after first sight
    mp3                          : never precached; cached in full the first time it is played (or via
                                   "오프라인용 받기"), Range requests are answered as 206 slices of the cached file */
-const V = "f341c77173";
+const V = "ba0dc9bf01";
 const PAGES = "ea-pages-" + V, IMGS = "ea-img-v1", AUDIO = "ea-audio-v1";
 const KEEP = [PAGES, IMGS, AUDIO];
 

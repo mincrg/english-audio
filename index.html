@@ -14,7 +14,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=f341c77173" defer></script>
+<script src="./pwa.js?v=ba0dc9bf01" defer></script>
+<style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}.stk{top:env(safe-area-inset-top,0px)!important}</style>
 <title>영어 직독직해 · 전체 학습</title>
 <style>
 :root{--bg:#fafaf8;--card:#fff;--tx:#1b1b1b;--tx2:#5f6368;--line:#e4e4e0;--acc:#1a5fd6;--accs:#e8f0fe;--ok:#1e8e3e;--bad:#d93025;--btn:#f1f3f4}
@@ -127,7 +128,7 @@ label.tg input{width:22px;height:22px}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
 /* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
-.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.ctl{position:sticky;top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px));z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
 .srep{align-items:center;gap:6px;margin:8px 0 2px}
 .srep .seg{margin:0}.srep .seg button{min-height:34px;padding:4px 10px;font-size:14px}
 .srep .lab{font-size:13px;color:var(--tx2)}
@@ -193,7 +194,7 @@ body.sheet-open{overflow:hidden}
 /* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
 html{background:var(--bg)}
 .wrap{overflow-x:clip}
-.stk{top:0!important}
+.stk{top:env(safe-area-inset-top,0px)!important}
 .stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
 .sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
 #wbctl{--bleed:17px}
@@ -260,7 +261,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 </section>
 </div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="8c16b92ab6") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="7915a65a28") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}

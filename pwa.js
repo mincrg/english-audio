@@ -27,11 +27,21 @@
       });
       if (document.readyState === "complete") send(); else addEventListener("load", send);
       let reloading = false;
+      // New version took over: reload once so the fix shows right away. Guarded against loops
+      // (once per 60s per tab) and never while audio plays or a text box is focused; else a toast.
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (!hadController || reloading) return;          // first install: nothing to refresh
+        const last = +(sessionStorage.getItem("pwa-reloaded") || 0);
+        const busy = [...document.querySelectorAll("audio")].some(a => !a.paused) || (window.speechSynthesis && speechSynthesis.speaking)
+          || /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");
+        if (!busy && Date.now() - last > 60000) { reloading = true; sessionStorage.setItem("pwa-reloaded", Date.now()); location.reload(); return; }
         const t = toast('새 버전이 나왔어요. <button id="pwa-reload" style="margin-left:8px;font:inherit;padding:6px 12px;border-radius:8px;border:0;background:#8ab4f8;color:#111">새로고침</button>');
         t.querySelector("#pwa-reload").onclick = () => { reloading = true; location.reload(); };
       });
+      // home-screen apps resume without navigating: check for a new sw.js when shown again
+      document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible")
+        navigator.serviceWorker.getRegistration(base).then(r => r && r.update()).catch(() => {}); });
+
     }
   }
 
