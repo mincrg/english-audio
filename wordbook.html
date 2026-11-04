@@ -205,6 +205,11 @@ html{background:var(--bg)}
 .wm textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}
 .wm details{margin:6px 0}.wm summary{cursor:pointer;color:var(--acc);font-size:14px}
 .wm .wmex{font-style:italic;color:var(--tx2)}
+.gw{cursor:pointer;text-decoration:underline dotted rgba(128,128,128,.55);text-decoration-thickness:1px;text-underline-offset:3px}
+.gw.gon{background:var(--accs);border-radius:3px;text-decoration-color:var(--acc)}
+#gpop{position:fixed;z-index:30;box-sizing:border-box;padding:10px 12px;background:var(--card);color:var(--tx);border:1px solid var(--acc);border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,.18)}
+#gpop .gph{display:flex;align-items:flex-start;gap:8px}#gpop .gpw{flex:1;font-size:18px}#gpop .glem{font-weight:400;color:var(--tx2);font-size:15px}
+#gpop .gpk{margin-top:4px;font-size:17px;line-height:1.45}#gpop .gx{flex:none}
 .wm .gres{margin:8px 0;font-size:calc(15px*var(--fs,1))}
 .wm .gtxt{padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);line-height:1.7;white-space:pre-wrap;word-break:break-word}
 .wm mark.gerr{background:rgba(230,80,60,.18);color:inherit;border-bottom:2px solid #e5533d;border-radius:3px;padding:0 1px}
@@ -250,7 +255,7 @@ html{background:var(--bg)}
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="fefd0d4959") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="f82c2c4c08") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 let filt="all", mode="list", qz=null;
@@ -288,6 +293,8 @@ function drawCtl(){ const st=WB.listState(), items=WB.all().filter(x=>filt==="al
   const it = st.active ? items.find(x=>x.id===st.id) : null;
   document.getElementById("wbnow").innerHTML = it ? `<b>${st.li+1}/${st.n}</b> ${esc(it.en)}` : `<b>전체 ${n}개</b> 듣기`;
   document.querySelectorAll("#list .item[data-id]").forEach(r=>r.classList.toggle("on", WB.isPlaying(r.dataset.id))); }
+function ttsSay(t){ try{ const ss=speechSynthesis; ss.cancel(); WB.stop(); const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=0.9; const vs=ss.getVoices();
+  const v=vs.find(v=>/\bAva\b/.test(v.name)&&/^en[-_]US/i.test(v.lang))||vs.find(v=>/^en[-_]US/i.test(v.lang)); if(v) u.voice=v; ss.speak(u); }catch(e){} }
 const typeName = t => t==="expr"?"표현":"단어";
 function drawList(){
   const all=WB.all(), items=all.filter(x=>filt==="all"||x.type===filt);
@@ -302,7 +309,7 @@ function drawList(){
 }
 document.getElementById("list").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return;
   const all=WB.all();
-  if(b.dataset.play){ const x=all.find(i=>i.id===b.dataset.play); if(x) WB.play(x.clip, x.id); }
+  if(b.dataset.play){ const x=all.find(i=>i.id===b.dataset.play); if(x){ if(x.clip) WB.play(x.clip, x.id); else ttsSay(x.en); } }
   if(b.dataset.del){ const x=all.find(i=>i.id===b.dataset.del); if(x && confirm(`'${x.en}'을(를) 단어장에서 뺄까요?`)) WB.remove(x.id); } });
 document.getElementById("filt").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; filt=b.dataset.f;
   document.querySelectorAll("#filt button").forEach(x=>x.classList.toggle("on",x===b)); if(qz) qz.setType(filt); drawList(); drawCtl(); });
