@@ -193,6 +193,18 @@ html{background:var(--bg)}
 .dprog,.wprog{font-weight:600;color:var(--ok)}
 .wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
+/* recall quiz, writing mission, review tags (since 2026-11-05) */
+.rcin input{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:10px 12px;font-size:max(16px,calc(17px*var(--fs,1)));border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--tx)}
+.rcin input:focus{outline:2px solid var(--acc);outline-offset:1px}
+.rcin input:disabled{opacity:.75}
+.tagc{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.6;background:var(--accs);color:var(--acc);white-space:nowrap;vertical-align:middle}
+.tagc.big{font-size:calc(14px*var(--fs,1));margin:0 6px 6px 0;padding:2px 10px}
+.wm{margin:18px 0 6px;padding:12px 14px;border:1px dashed var(--acc);border-radius:12px;background:var(--card)}
+.wm h4{margin:0 0 8px;font-size:calc(17px*var(--fs,1))}
+.wm p{margin:6px 0;font-size:calc(16px*var(--fs,1))}
+.wm textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}
+.wm details{margin:6px 0}.wm summary{cursor:pointer;color:var(--acc);font-size:14px}
+.wm .wmex{font-style:italic;color:var(--tx2)}
 </style>
 </head>
 <body>
@@ -231,7 +243,7 @@ html{background:var(--bg)}
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="514a383aef") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="dc1fc96beb") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 let filt="all", mode="list", qz=null;
