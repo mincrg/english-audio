@@ -205,6 +205,16 @@ html{background:var(--bg)}
 .wm textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}
 .wm details{margin:6px 0}.wm summary{cursor:pointer;color:var(--acc);font-size:14px}
 .wm .wmex{font-style:italic;color:var(--tx2)}
+.dict{margin:18px 0 6px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.dict h4{margin:0 0 6px;font-size:calc(17px*var(--fs,1))}
+.dcard{margin:12px 0 0;padding:10px 0 0;border-top:1px dashed var(--line)}
+.dcard .dhd{display:flex;align-items:center;gap:8px}
+.dsen{margin:6px 0;font-size:calc(17px*var(--fs,1));line-height:1.55}.dsen.dhid{color:var(--tx2);font-size:15px}
+.dcin{width:100%;box-sizing:border-box;padding:12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx)}
+.dict .row button{min-height:44px}
+.dres{margin:8px 0;font-size:calc(16px*var(--fs,1));line-height:1.7}.dline{margin:4px 0}.dl{display:inline-block;font-size:12px;font-weight:700;color:var(--tx2);margin-right:4px}
+.dwr{color:#d33;text-decoration:line-through;text-decoration-thickness:2px}
+.dms{background:rgba(255,200,0,.45);color:inherit;border-radius:3px;padding:0 2px;font-weight:700}
 .gw{cursor:pointer;text-decoration:underline dotted rgba(128,128,128,.55);text-decoration-thickness:1px;text-underline-offset:3px}
 .gw.gon{background:var(--accs);border-radius:3px;text-decoration-color:var(--acc)}
 #gpop{position:fixed;z-index:30;box-sizing:border-box;padding:10px 12px;background:var(--card);color:var(--tx);border:1px solid var(--acc);border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,.18)}
@@ -255,7 +265,7 @@ html{background:var(--bg)}
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="f82c2c4c08") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="99a18a8b5d") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 let filt="all", mode="list", qz=null;
