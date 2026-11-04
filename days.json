@@ -2,9 +2,9 @@
  "updated": "2026-11-05",
  "assets": {
   "wb": "ab1a2742e1",
-  "root": "8c16b92ab6",
-  "wordbook": "a62d4012ac",
-  "pwa": "f341c77173"
+  "root": "7915a65a28",
+  "wordbook": "d6791c6c61",
+  "pwa": "ba0dc9bf01"
  },
  "days": [
   {
@@ -15,7 +15,7 @@
     "맥도날드, 미국 매출 소폭 감소"
    ],
    "url": "2026-11-05/index.html",
-   "build": "74f04898f5"
+   "build": "83f3205c9a"
   },
   {
    "date": "2026-11-04",
@@ -25,7 +25,7 @@
     "중간선거 날 미국 증시 혼조"
    ],
    "url": "2026-11-04/index.html",
-   "build": "7c743576ef"
+   "build": "d5908926c8"
   },
   {
    "date": "2026-11-03",
@@ -76,7 +76,7 @@
    "label": "주말 복습 (10/26~10/31)",
    "count": 10,
    "url": "weekly/2026-11-01.html",
-   "build": "6686c6f896"
+   "build": "9a39ac4b4b"
   }
  ]
 }
