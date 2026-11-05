@@ -13,8 +13,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="../pwa.js?v=ba0dc9bf01" defer></script>
-<style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}.stk{top:env(safe-area-inset-top,0px)!important}</style>
+<script src="../pwa.js?v=3bbeca3976" defer></script>
+<style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}@media (display-mode:standalone),(display-mode:fullscreen){.stk{top:env(safe-area-inset-top,0px)!important}.ctl{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))!important}}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <title>주말 복습 (10/26~10/31) · 영어 직독직해</title>
@@ -97,7 +97,7 @@ label.tg input{width:22px;height:22px}
 .wbstar{font-size:18px}
 /* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
 #study{margin:18px 0}
-.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0 -4px;padding-left:4px;padding-right:4px;border-bottom:1px solid var(--line)}
+.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0;border-bottom:1px solid var(--line)}
 .artsw{display:flex;gap:6px;margin-bottom:6px}
 .artsw button{flex:1;min-width:0;text-align:left;font-size:14px;line-height:1.3;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .artsw button b{margin-right:4px}
@@ -112,7 +112,7 @@ label.tg input{width:22px;height:22px}
 .artsw button.pv{flex:0 0 auto}
 #study section.art:not(.cur){display:none}
 .art .pn{display:none}
-.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
+.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz,.art[data-pn="gram"] .pn-gram{display:block}
 .pn>h3:first-child{margin-top:4px;padding-top:0;border-top:0}
 .sent{scroll-margin-top:130px;scroll-margin-bottom:110px}
 /* compact sticky mini-player for the full article */
@@ -129,7 +129,7 @@ label.tg input{width:22px;height:22px}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
 /* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
-.ctl{position:sticky;top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px));z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px 0 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
 .srep{align-items:center;gap:6px;margin:8px 0 2px}
 .srep .seg{margin:0}.srep .seg button{min-height:34px;padding:4px 10px;font-size:14px}
 .srep .lab{font-size:13px;color:var(--tx2)}
@@ -192,16 +192,25 @@ body.sheet-open{overflow:hidden}
 .tabs button .ck{color:var(--ok);font-size:12px;margin-left:2px;font-weight:700}
 .ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .srep{margin:6px 0 2px}
-/* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
+.exk{margin-top:3px;font-size:.92em;color:var(--tx2);opacity:.9}.exk b{color:var(--tx);font-weight:700}
+/* ---------- sticky bars: tab-mode top:0 + stuck-layer cover (iOS Safari paints content into the URL/status strip) ---------- */
 html{background:var(--bg)}
-.wrap{overflow-x:clip}
-.stk{top:env(safe-area-inset-top,0px)!important}
-.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
+/* Do NOT put overflow-x:clip on .wrap — it becomes a containing block and clips .stk.stuck::before upward covers. */
+.stk{top:0!important;overflow:visible}
+.stk.stuck{box-shadow:0 1px 0 var(--line),0 -70vh 0 70vh var(--bg)}
+.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh);background:var(--bg)!important;pointer-events:none}
 .sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
 #wbctl{--bleed:17px}
+@media (display-mode:standalone),(display-mode:fullscreen){
+  .stk{top:env(safe-area-inset-top,0px)!important}
+  .ctl{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))}
+}
 .dprog,.wprog{font-weight:600;color:var(--ok)}
 .wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
+.tc{margin-top:18px}.tcen{line-height:1.55;margin-bottom:8px}.tc textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}.tcres{margin-top:8px}.tcl{margin:5px 0;line-height:1.5}.tcl.ok b{color:#2e9d5b}.tcl.no b{color:#c77700}.tcm{margin-top:8px;padding:8px 10px;border-left:3px solid var(--line);line-height:1.55}
+.gp{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.gp h3{margin:0 0 8px;padding-top:0;border-top:0}.gpl{margin:6px 0;line-height:1.55}.gpr{font-weight:700}.gpt{display:inline-block;font-size:.8em;padding:1px 6px;border-radius:6px;background:var(--accs);color:var(--acc);margin-right:4px}.gpk{display:block;color:var(--tx2);font-size:.92em}.pn-gram .gq{margin-top:14px}
+.gq{margin-top:18px}.gqq{margin:6px 0;line-height:1.6}.gqb{font-weight:700;color:var(--tx)}.gqo{min-height:44px}.gqs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;line-height:1.3}.gqt{min-height:40px;min-width:40px;padding:6px 9px;font-size:1em;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}.gqt.gqw,.gqo.gqw{text-decoration:line-through;opacity:.55}.gqt.gqok{outline:2px solid #2e9d5b;text-decoration:line-through;text-decoration-color:#d33}.gqt:disabled{cursor:default}.gqx{font-weight:600}
 /* recall quiz, writing mission, review tags (since 2026-11-05) */
 .rcin input{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:10px 12px;font-size:max(16px,calc(17px*var(--fs,1)));border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--tx)}
 .rcin input:focus{outline:2px solid var(--acc);outline-offset:1px}
@@ -305,7 +314,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 <script src="../wb.js?v=ab1a2742e1"></script>
 <script>
 const W = {"date": "2026-11-01", "from": "2026-10-26", "to": "2026-10-31", "label": "주말 복습 (10/26~10/31)", "range": "10/26~10/31", "dateLine": "2026년 11월 1일 일요일 · 10/26~10/31 핵심 표현 10개", "items": [{"en": "better-than-expected", "ko": "예상보다 좋은", "date": "2026-10-26", "dlabel": "10/26(월)", "art": 1, "title": "Tesla Beats Expectations, but Car Sales Slow Down", "sentence": "Tesla reported better-than-expected results for the third quarter on Wednesday, even though money from selling cars fell by 3% compared with a year earlier.", "hl": "", "url": ""}, {"en": "the largest deal of its kind", "ko": "(같은 종류 중) 가장 큰 거래", "date": "2026-10-27", "dlabel": "10/27(화)", "art": 1, "title": "SpaceX Gets 40 Billion Dollars for AI Chips", "sentence": "SpaceX said on Monday that it had agreed to a deal worth about 40 billion dollars to get new computer chips for artificial intelligence, and the company called it the largest deal of its kind ever.", "hl": "", "url": ""}, {"en": "room to grow", "ko": "성장할 여지", "date": "2026-10-28", "dlabel": "10/28(수)", "art": 1, "title": "Palantir Gets a Higher Price Target Before Its Earnings", "sentence": "That new target is about 31 percent above Monday's closing price, so the firm believes the shares still have room to grow.", "hl": "", "url": ""}, {"en": "come in below expectations", "ko": "예상에 못 미치다", "date": "2026-10-29", "dlabel": "10/29(목)", "art": 2, "title": "Google's Parent Company Grows Fast but Spends Heavily on AI", "sentence": "Search revenue also came in below expectations, so Alphabet's shares fell more than seven percent after the report.", "hl": "came in below expectations", "url": ""}, {"en": "at a yearly pace of", "ko": "연간 ~의 속도로", "date": "2026-10-30", "dlabel": "10/30(금)", "art": 1, "title": "The US Economy Grows Faster Than Expected", "sentence": "The American economy grew at a yearly pace of three point four percent from July to September, which was faster than the three point two percent that economists had expected and much faster than the two point two percent in the spring.", "hl": "", "url": ""}, {"en": "a rate hike", "ko": "금리 인상", "date": "2026-10-30", "dlabel": "10/30(금)", "art": 1, "title": "The US Economy Grows Faster Than Expected", "sentence": "The Federal Reserve kept interest rates between three point seven five and four percent on Wednesday, but two officials wanted to raise them, so many traders now expect a rate hike in December.", "hl": "", "url": ""}, {"en": "pay off", "ko": "성과를 내다, 결실을 맺다", "date": "2026-10-30", "dlabel": "10/30(금)", "art": 2, "title": "Amazon's Cloud Grows Fast, but Its Shares Fall", "sentence": "Since Google's parent company had disappointed investors just one day earlier, many people are now asking whether the giant AI spending by big tech companies will really pay off.", "hl": "", "url": ""}, {"en": "just in time for", "ko": "~에 딱 맞춰", "date": "2026-10-31", "dlabel": "10/31(토)", "art": 1, "title": "The World's Heaviest Jack-o'-Lantern", "sentence": "Just in time for Halloween, the heaviest pumpkin ever grown has become the heaviest jack-o'-lantern in the world.", "hl": "", "url": "../2026-10-31/index.html"}, {"en": "beat the record", "ko": "기록을 깨다", "date": "2026-10-31", "dlabel": "10/31(토)", "art": 1, "title": "The World's Heaviest Jack-o'-Lantern", "sentence": "It easily beat the old record from twenty twenty-three, which was two thousand seven hundred forty-nine pounds, so the new jack-o'-lantern is now about as heavy as a small car.", "hl": "beat the old record", "url": "../2026-10-31/index.html"}, {"en": "would not have been possible without", "ko": "~없이는 불가능했을 것이다", "date": "2026-10-31", "dlabel": "10/31(토)", "art": 2, "title": "AI Helps Scientists Count Rare Bats", "sentence": "Scientists in Britain have finished the country's largest ever survey of woodland bats, and they say it would not have been possible without artificial intelligence.", "hl": "", "url": "../2026-10-31/index.html"}]};
-fetch("../days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const me=j&&(j.weeklies||[]).find(x=>x.date===W.date); if(me&&me.build&&me.build!=="9a39ac4b4b") freshen(me.build); }).catch(()=>{});
+fetch("../days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const me=j&&(j.weeklies||[]).find(x=>x.date===W.date); if(me&&me.build&&me.build!=="c6391f57d7") freshen(me.build); }).catch(()=>{});
 const esc = WB.esc, $ = id => document.getElementById(id);
 const clipUrl = i => new URL(`${W.date}/clips/rq${i+1}.mp3`, location.href).href;   // WB plays rqN-en.mp3 then rqN-ko.mp3
 const idOf = i => "wk"+W.date+"-"+(i+1);
