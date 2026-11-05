@@ -13,8 +13,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=ff0a18efe1" defer></script>
-<style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}.stk{top:env(safe-area-inset-top,0px)!important}</style>
+<script src="./pwa.js?v=3bbeca3976" defer></script>
+<style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}@media (display-mode:standalone),(display-mode:fullscreen){.stk{top:env(safe-area-inset-top,0px)!important}.ctl{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))!important}}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <title>나만의 단어장 · 영어 직독직해</title>
@@ -97,7 +97,7 @@ label.tg input{width:22px;height:22px}
 .wbstar{font-size:18px}
 /* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
 #study{margin:18px 0}
-.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0 -4px;padding-left:4px;padding-right:4px;border-bottom:1px solid var(--line)}
+.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0;border-bottom:1px solid var(--line)}
 .artsw{display:flex;gap:6px;margin-bottom:6px}
 .artsw button{flex:1;min-width:0;text-align:left;font-size:14px;line-height:1.3;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .artsw button b{margin-right:4px}
@@ -129,7 +129,7 @@ label.tg input{width:22px;height:22px}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
 /* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
-.ctl{position:sticky;top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px));z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px 0 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
 .srep{align-items:center;gap:6px;margin:8px 0 2px}
 .srep .seg{margin:0}.srep .seg button{min-height:34px;padding:4px 10px;font-size:14px}
 .srep .lab{font-size:13px;color:var(--tx2)}
@@ -193,13 +193,18 @@ body.sheet-open{overflow:hidden}
 .ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .srep{margin:6px 0 2px}
 .exk{margin-top:3px;font-size:.92em;color:var(--tx2);opacity:.9}.exk b{color:var(--tx);font-weight:700}
-/* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
+/* ---------- sticky bars: tab-mode top:0 + stuck-layer cover (iOS Safari paints content into the URL/status strip) ---------- */
 html{background:var(--bg)}
-.wrap{overflow-x:clip}
-.stk{top:env(safe-area-inset-top,0px)!important}
-.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
+/* Do NOT put overflow-x:clip on .wrap — it becomes a containing block and clips .stk.stuck::before upward covers. */
+.stk{top:0!important;overflow:visible}
+.stk.stuck{box-shadow:0 1px 0 var(--line),0 -70vh 0 70vh var(--bg)}
+.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh);background:var(--bg)!important;pointer-events:none}
 .sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
 #wbctl{--bleed:17px}
+@media (display-mode:standalone),(display-mode:fullscreen){
+  .stk{top:env(safe-area-inset-top,0px)!important}
+  .ctl{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))}
+}
 .dprog,.wprog{font-weight:600;color:var(--ok)}
 .wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
@@ -279,7 +284,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="2527c1b1bd") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="e4e2801968") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 let filt="all", mode="list", qz=null;
