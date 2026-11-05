@@ -2,9 +2,9 @@
  "updated": "2026-11-05",
  "assets": {
   "wb": "ab1a2742e1",
-  "root": "72fb76ae09",
-  "wordbook": "143baeda19",
-  "pwa": "d93bd83a25"
+  "root": "ce674c3ff1",
+  "wordbook": "7bc6db3813",
+  "pwa": "be38f475a3"
  },
  "days": [
   {
@@ -15,7 +15,7 @@
     "맥도날드, 미국 매출 소폭 감소"
    ],
    "url": "2026-11-05/index.html",
-   "build": "87c9e3b060"
+   "build": "a013b80a55"
   },
   {
    "date": "2026-11-04",
