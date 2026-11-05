@@ -41,6 +41,72 @@ audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; 
 audio.addEventListener("error", () => { if(cur && cur.parts.length>1){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
 window.addEventListener("storage", e => { if(e.key===GAP_KEY||e.key===REPS_KEY||e.key===RATE_KEY){ if(e.key===RATE_KEY) audio.playbackRate=getRate(); WB.refreshGap(); if(WB.onGap) WB.onGap(); } });
 
+
+/* speechSynthesis EN→KO for wordbook rows saved without mp3 clips (glossary ☆). Ava/SunHi are Edge neural
+   names for the day mp3s — iPhone Safari usually has other en-US / ko-KR system voices; we pick the best available. */
+let ttsId = null, ttsTimer = null;
+function ttsClearTimer(){ if(ttsTimer){ clearTimeout(ttsTimer); ttsTimer=null; } }
+function ttsStop(){ ttsClearTimer(); try{ speechSynthesis.cancel(); }catch(e){} const was=ttsId; ttsId=null; if(was!==null) changed(); }
+function pickVoices(vs){
+  vs = vs || [];
+  const en = vs.find(v=>/\bAva\b/.test(v.name)&&/^en[-_]US/i.test(v.lang))
+    || vs.find(v=>/^en[-_]US/i.test(v.lang))
+    || vs.find(v=>/^en/i.test(v.lang));
+  const ko = vs.find(v=>/(SunHi|Google\s*한국어|\bYuna\b)/i.test(v.name)&&/^ko/i.test(v.lang))
+    || vs.find(v=>/^ko[-_]?KR/i.test(v.lang))
+    || vs.find(v=>/^ko/i.test(v.lang));
+  return {en, ko};
+}
+function ttsSay(en, ko, id){
+  try{
+    const ss = window.speechSynthesis; if(!ss) return;
+    if(id!=null && ttsId===id){ ttsStop(); return; }
+    ttsStop();
+    if(cur) WB.stop();
+    en = String(en||"").trim(); ko = String(ko||"").trim();
+    if(!en) return;
+    const reps = getReps(), gapMs = Math.max(0, getGap())*1000, rate = getRate();
+    ttsId = id; changed();
+    let rep = 0;
+    const voices = () => pickVoices(ss.getVoices());
+    function utter(text, lang, voice, next){
+      if(ttsId!==id) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = lang; u.rate = rate;
+      if(voice) u.voice = voice;
+      const go = () => { if(ttsId===id) next(); };
+      u.onend = go; u.onerror = go;
+      ss.speak(u);
+    }
+    function afterGap(fn){
+      if(ttsId!==id) return;
+      if(!gapMs) fn();
+      else { ttsClearTimer(); ttsTimer=setTimeout(()=>{ ttsTimer=null; if(ttsId===id) fn(); }, gapMs); }
+    }
+    function round(){
+      if(ttsId!==id) return;
+      if(rep>=reps){ ttsId=null; changed(); return; }
+      const v = voices();
+      utter(en, "en-US", v.en, ()=>{
+        afterGap(()=>{
+          if(!ko){ rep++; afterGap(round); return; }
+          utter(ko, "ko-KR", v.ko, ()=>{
+            rep++;
+            if(rep>=reps){ ttsId=null; changed(); return; }
+            afterGap(round);
+          });
+        });
+      });
+    }
+    // voices may load async on Safari — kick a refresh then start
+    if(!ss.getVoices().length){
+      const kick = ()=>{ if(ttsId===id) round(); };
+      ss.addEventListener("voiceschanged", kick, {once:true});
+      setTimeout(kick, 250);
+    } else round();
+  }catch(e){ ttsId=null; }
+}
+
 const WB = {
   KEY, esc,
   all: load,
@@ -52,7 +118,8 @@ const WB = {
   toggle(it){ if(WB.has(it)) WB.remove(idOf(it)); else WB.add(it); return WB.has(it); },
   idOf, onChange: f => listeners.push(f),
   onPlay: null,                        // set by a host page to stop its own audio
-  play(url, id){ if(!url) return; if(WB.onPlay) WB.onPlay();
+  ttsSay, ttsStop, isTts: id => ttsId===id,
+  play(url, id){ if(!url) return; ttsStop(); if(WB.onPlay) WB.onPlay();
     const pid=id||url;
     if(cur && cur.id===pid){ WB.stop(); return; }
     if(cur && cur.timer) clearTimeout(cur.timer);
@@ -117,7 +184,8 @@ const WB = {
       if(!st.items.length){ el.innerHTML=`<div class="note">${load().length? "이 종류로 저장한 항목이 없어요." : "아직 저장한 단어·표현이 없어요. 각 날짜 페이지의 ☆ 버튼을 눌러 저장해 보세요."}</div>`; return; }
       const L="ABC";
       el.innerHTML = st.items.map((q,i)=>{ const t=st.tries[i]||[], solved=t.includes(q.ans), wrong=!solved&&t.length>0;
-        return `<div class="q"><div class="row" style="margin:0">${q.x.clip?`<button class="ico" onclick="WB.play('${esc(q.x.clip)}','q${i}')">🔊</button>`:""}<b>W${i+1}. '${esc(q.x.en)}'의 뜻은?</b> <span class="note">${q.x.type==="expr"?"표현":"단어"}</span></div>
+        const sid="q"+i, speaking=WB.isPlaying(sid)||WB.isTts(sid);
+        return `<div class="q"><div class="row" style="margin:0"><button class="ico" data-speak="${i}" aria-label="듣기">${speaking?"⏹ 정지":"🔊"}</button><b>W${i+1}. '${esc(q.x.en)}'의 뜻은?</b> <span class="note">${q.x.type==="expr"?"표현":"단어"}</span></div>
         ${q.choices.map((c,j)=>`<div class="opt">${L[j]}. ${esc(c)}</div>`).join("")}
         <div class="row">${q.choices.map((c,j)=>`<button class="${solved&&j===q.ans?"pri":""}" ${solved||t.includes(j)?"disabled":""} data-i="${i}" data-j="${j}">${L[j]}</button>`).join("")}</div>
         ${solved?`<div class="fb"><span class="okc">✅ 정답! (${L[q.ans]})</span> ${esc(q.x.en)} = ${esc(q.x.ko)}</div>`:""}
@@ -127,7 +195,10 @@ const WB = {
     el.addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b||!el.contains(b)) return;
       if(b.dataset.act==="again"){ st.tries={}; draw(); return; }
       if(b.dataset.act==="new"){ build(); return; }
+      if(b.dataset.speak!==undefined){ const i=+b.dataset.speak, q=st.items[i], sid="q"+i; if(!q) return;
+        if(q.x.clip) WB.play(q.x.clip, sid); else WB.ttsSay(q.x.en, q.x.ko, sid); draw(); return; }
       if(b.dataset.j!==undefined){ const i=+b.dataset.i, j=+b.dataset.j, t=st.tries[i]||[]; if(t.includes(st.items[i].ans)||t.includes(j)) return; st.tries[i]=[...t,j]; draw(); } });
+    WB.onChange(()=>{ if(el.isConnected) draw(); });
     build();
     return { rebuild:build, setType(t){ st.type=t; build(); } };
   }
