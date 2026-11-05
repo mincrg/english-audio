@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=ba0dc9bf01" defer></script>
+<script src="./pwa.js?v=1e83bf15ad" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}.stk{top:env(safe-area-inset-top,0px)!important}</style>
 <title>영어 직독직해 · 전체 학습</title>
 <style>
@@ -191,6 +191,7 @@ body.sheet-open{overflow:hidden}
 .tabs button .ck{color:var(--ok);font-size:12px;margin-left:2px;font-weight:700}
 .ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .srep{margin:6px 0 2px}
+.exk{margin-top:3px;font-size:.92em;color:var(--tx2);opacity:.9}.exk b{color:var(--tx);font-weight:700}
 /* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
 html{background:var(--bg)}
 .wrap{overflow-x:clip}
@@ -261,7 +262,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 </section>
 </div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="7915a65a28") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="1b64244dec") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}
