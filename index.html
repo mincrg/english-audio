@@ -14,15 +14,16 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=3bbeca3976" defer></script>
-<style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}@media (display-mode:standalone),(display-mode:fullscreen){.stk{top:env(safe-area-inset-top,0px)!important}.ctl{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))!important}}</style>
+<script src="./pwa.js?v=be8830781f" defer></script>
+<style>html{background-color:var(--bg,#fafaf8)}</style>
 <title>영어 직독직해 · 전체 학습</title>
 <style>
 :root{--bg:#fafaf8;--card:#fff;--tx:#1b1b1b;--tx2:#5f6368;--line:#e4e4e0;--acc:#1a5fd6;--accs:#e8f0fe;--ok:#1e8e3e;--bad:#d93025;--btn:#f1f3f4}
 @media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1c1c1e;--tx:#ececec;--tx2:#a0a4a8;--line:#2e2e30;--acc:#8ab4f8;--accs:#1f2a3d;--ok:#81c995;--bad:#f28b82;--btn:#2a2a2d}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
-.wrap{max-width:720px;margin:0 auto;padding:16px 16px calc(80px + env(safe-area-inset-bottom))}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);overscroll-behavior:none}
+body{color:var(--tx);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px calc(110px + env(safe-area-inset-bottom));height:100%;height:100svh;height:100dvh;max-height:100dvh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;background:var(--bg)}
 header.mast{border-bottom:3px double var(--tx);padding:6px 0 10px;margin-bottom:14px}
 .mast .date{font-size:13px;color:var(--tx2);letter-spacing:.04em}
 .mast h1{font:700 28px/1.2 Georgia,"Times New Roman",serif;margin:4px 0}
@@ -125,7 +126,6 @@ label.tg input{width:22px;height:22px}
 #mini button{min-height:38px;padding:6px 9px;font-size:14px}
 #mini .fpp{min-width:46px}
 #mini .bar{margin:5px 0 1px;height:5px}
-.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
 /* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
 .ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px 0 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
@@ -192,14 +192,9 @@ body.sheet-open{overflow:hidden}
 .ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .srep{margin:6px 0 2px}
 .exk{margin-top:3px;font-size:.92em;color:var(--tx2);opacity:.9}.exk b{color:var(--tx);font-weight:700}
-/* ---------- sticky bars: tab-mode top:0 + stuck-layer cover (iOS Safari paints content into the URL/status strip) ---------- */
-html{background:var(--bg)}
-/* Do NOT put overflow-x:clip on .wrap — it becomes a containing block and clips .stk.stuck::before upward covers. */
-.stk{top:0!important;overflow:visible}
-.stk.stuck{box-shadow:0 1px 0 var(--line),0 -70vh 0 70vh var(--bg)}
-.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh);background:var(--bg)!important;pointer-events:none}
-.sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
-#wbctl{--bleed:17px}
+/* ---------- contained scroll: document does not scroll; .wrap is the only scroller (iOS Safari tab chrome) ---------- */
+.stk{top:0!important}
+.sbar{box-shadow:0 1px 0 var(--line)}
 @media (display-mode:standalone),(display-mode:fullscreen){
   .stk{top:env(safe-area-inset-top,0px)!important}
   .ctl{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))}
@@ -270,7 +265,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 </section>
 </div>
 <script src="./wb.js?v=ab1a2742e1"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="ffdf28aba9") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="738dd1b640") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}
