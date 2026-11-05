@@ -2,9 +2,9 @@
  "updated": "2026-11-01",
  "assets": {
   "wb": "ab1a2742e1",
-  "root": "738dd1b640",
-  "wordbook": "50f741efc8",
-  "pwa": "be8830781f"
+  "root": "8e2a53fe81",
+  "wordbook": "81c184ebd9",
+  "pwa": "0b448c8585"
  },
  "days": [
   {
@@ -15,7 +15,7 @@
     "맥도날드, 미국 매출 소폭 감소"
    ],
    "url": "2026-11-05/index.html",
-   "build": "1bc3466fda"
+   "build": "068768d2b8"
   },
   {
    "date": "2026-11-04",
@@ -76,7 +76,7 @@
    "label": "주말 복습 (10/26~10/31)",
    "count": 10,
    "url": "weekly/2026-11-01.html",
-   "build": "c30787950d"
+   "build": "4fabf6c2ab"
   }
  ]
 }
