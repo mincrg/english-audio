@@ -1,10 +1,10 @@
 {
  "updated": "2026-11-10",
  "assets": {
-  "wb": "821d326ffe",
-  "root": "25c0e837f7",
-  "wordbook": "9f2f0d412b",
-  "pwa": "f8b4aac419"
+  "wb": "f18a0eee64",
+  "root": "71f699b49b",
+  "wordbook": "2f2a673565",
+  "pwa": "615155845a"
  },
  "days": [
   {
@@ -15,7 +15,7 @@
     "앤트로픽 34억 달러 발전기 확보"
    ],
    "url": "2026-11-10/index.html",
-   "build": "2917e28e52"
+   "build": "e702fd7d2d"
   },
   {
    "date": "2026-11-07",
