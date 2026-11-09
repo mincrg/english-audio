@@ -22,7 +22,7 @@ function getReps(){ try{ const v=parseInt(localStorage.getItem(REPS_KEY),10); re
 const RATE_KEY = "ea-rate-v1", RATES = [0.8, 0.9, 1, 1.2];
 function getRate(){ try{ const v=parseFloat(localStorage.getItem(RATE_KEY)); return RATES.includes(v)?v:1; }catch(e){ return 1; } }
 const enkoParts = (e, k) => Array.from({length:getReps()}, () => [e, k]).flat();
-function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vx]\d+|rq\d+))\.mp3$/); if(!m) return [url]; return enkoParts(m[1]+"-en.mp3", m[1]+"-ko.mp3"); }
+function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vxc]\d+|rq\d+))\.mp3$/); if(!m) return [url]; return enkoParts(m[1]+"-en.mp3", m[1]+"-ko.mp3"); }
 let cur = null;                      // {id, url, parts, i, timer, list?, li?, paused?, held?}  list = play-all queue [{id,url}]
 let playingId = null;
 const ITEM_GAP = 0.9;                // pause between items when playing the whole list
