@@ -1,11 +1,12 @@
-/* 직독직해 service worker — version d9dd96e771
+/* 직독직해 service worker — version 365baa4c68
    HTML / JSON / JS / manifest : network-first, cache fallback (fresh lessons online, last copy offline)
    images / icons               : cache-first after first sight
+   dict/en-ko.json (?v=hash)    : cache-first in its own cache, only the current version kept (사전 뜻 works offline after the first tap)
    mp3                          : never precached; cached in full the first time it is played (or via
                                   "오프라인용 받기"), Range requests are answered as 206 slices of the cached file */
-const V = "d9dd96e771";
-const PAGES = "ea-pages-" + V, IMGS = "ea-img-v1", AUDIO = "ea-audio-v1";
-const KEEP = [PAGES, IMGS, AUDIO];
+const V = "365baa4c68";
+const PAGES = "ea-pages-" + V, IMGS = "ea-img-v1", AUDIO = "ea-audio-v1", DICT = "ea-dict-v1";
+const KEEP = [PAGES, IMGS, AUDIO, DICT];
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil((async () => {
@@ -39,6 +40,7 @@ self.addEventListener("fetch", e => {
   const req = e.request; if (req.method !== "GET") return;
   const url = new URL(req.url); if (url.origin !== location.origin) return;   // LanguageTool, news links … go straight to the network
   if (isMp3(url)) return e.respondWith(audio(e, url));
+  if (/\/dict\/[^/]+\.json$/.test(url.pathname)) return e.respondWith(dictFirst(req));
   if (isImg(url)) return e.respondWith(cacheFirst(req, IMGS));
   e.respondWith(networkFirst(req));
 });
@@ -56,6 +58,13 @@ async function networkFirst(req) {
     if (req.mode === "navigate") return new Response(OFFLINE_HTML, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } });
     throw err;
   }
+}
+async function dictFirst(req) {          // versioned URL: a hit is always current; a new version replaces the old one
+  const c = await caches.open(DICT), hit = await c.match(req);
+  if (hit) return hit;
+  const r = await fetch(req);
+  if (r.ok) { const copy = r.clone(); for (const k of await c.keys()) await c.delete(k); await c.put(req, copy); }
+  return r;
 }
 async function cacheFirst(req, name) {
   const c = await caches.open(name), hit = await c.match(req, { ignoreSearch: true });
