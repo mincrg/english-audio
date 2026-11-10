@@ -14,7 +14,7 @@ function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get(
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="../pwa.js?v=82ce3884d8" defer></script>
+<script src="../pwa.js?v=d9dd96e771" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -256,6 +256,14 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .cvx .cvm{margin:4px 0;font-size:calc(15.5px*var(--fs,1))}.cvx .cvu{font-size:calc(14px*var(--fs,1));color:var(--tx2);margin:2px 0}.cvx .cve{margin-top:6px;font-size:calc(15px*var(--fs,1));line-height:1.5}.cvx .cve .gpk{font-size:.92em}
 .cvp{margin:18px 0 6px;padding:12px 14px;border:1px dashed var(--acc);border-radius:12px;background:var(--card)}.cvp h4{margin:0 0 6px;font-size:calc(17px*var(--fs,1))}.cvq{display:flex;gap:8px;align-items:flex-start;margin:6px 0}.cvq>div{flex:1;line-height:1.5;font-size:calc(16px*var(--fs,1))}
 .cvp textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}
+/* 🔎 문장 분석 (article.analysis; 직해 view) */
+.ap{--c:#7f8c8d}.ap-S{--c:#1a5fd6}.ap-V{--c:#d93025}.ap-O{--c:#1e8e3e}.ap-C{--c:#8e44ad}.ap-M{--c:#7f8c8d}.ap-REL{--c:#00897b}.ap-PART{--c:#e67e22}.ap-CONJ{--c:#b8860b}
+@media (prefers-color-scheme:dark){.ap-S{--c:#8ab4f8}.ap-V{--c:#f28b82}.ap-O{--c:#81c995}.ap-C{--c:#c58af9}.ap-REL{--c:#4dd0c4}.ap-PART{--c:#fcad70}.ap-CONJ{--c:#e6c35c}}
+.apx{border-bottom:2.5px solid var(--c);padding-bottom:1px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
+.sent.anl .t>div:first-child{line-height:2.4;position:relative}
+.anote{margin:6px 0 2px;padding:6px 10px;border-left:3px solid var(--acc);background:var(--accs);border-radius:0 8px 8px 0;font-size:calc(14px*var(--fs,1));line-height:1.5;color:var(--tx)}.anote div+div{margin-top:3px}
+.anleg{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0 8px;font-size:12px;color:var(--tx2)}.anleg span{display:inline-flex;align-items:center;gap:4px}.anleg i{display:inline-block;width:14px;height:3px;background:var(--c);border-radius:2px}
 </style>
 </head>
 <body>
@@ -317,7 +325,7 @@ const $wrap = () => document.querySelector(".wrap");
 const wrapY = () => { const w=$wrap(); return w ? w.scrollTop : (window.scrollY||0); };
 const wrapScrollTo = (top, opt) => { const w=$wrap(); const o=typeof top==="object"?top:{top, ...(opt||{})}; if(w) w.scrollTo(o); else window.scrollTo(o); };
 const wrapScrollBy = (o) => { const w=$wrap(); if(w) w.scrollBy(o); else window.scrollBy(o); };
-const META = {"date": "2026-11-04", "build": "fe29b2e1a5", "label": "11월 4일(수)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 4일 수요일 · 가벼운 뉴스 2편 · B1", "short": ["팔란티어, 3분기 실적 예상 상회", "중간선거 날 미국 증시 혼조"], "marks": {"a1": [5.12, 15.14, 25.39, 35.46, 43.22], "a2": [3.8, 12.17, 24.16, 35.96, 47.84]}, "dur": {"a1": 54.98, "a2": 56.04}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "clips/rq4-en.mp3", "clips/rq4-ko.mp3", "clips/rq4.mp3", "clips/rq5-en.mp3", "clips/rq5-ko.mp3", "clips/rq5.mp3", "clips/rq6-en.mp3", "clips/rq6-ko.mp3", "clips/rq6.mp3", "palantir-q3-expr.mp3", "palantir-q3.mp3", "wall-street-midterms-expr.mp3", "wall-street-midterms.mp3"], "audioBytes": 5529288, "full": {"a1": "palantir-q3.mp3", "a2": "wall-street-midterms.mp3"}, "dialog": {}, "fullx": {"a1": "palantir-q3-expr.mp3", "a2": "wall-street-midterms-expr.mp3"}, "quizLang": "en", "todayReview": [{"en": "for the first time ever", "ko": "사상 처음으로"}, {"en": "raise its forecast", "ko": "전망치를 올리다"}, {"en": "on the other hand", "ko": "반면에"}], "reviewNote": "1·3·7·14·30일 뒤(11/5, 11/7, 11/11, 11/18, 12/4) 복습 퀴즈에 다시 나와요."};
+const META = {"date": "2026-11-04", "build": "5410d1b101", "label": "11월 4일(수)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 4일 수요일 · 가벼운 뉴스 2편 · B1", "short": ["팔란티어, 3분기 실적 예상 상회", "중간선거 날 미국 증시 혼조"], "marks": {"a1": [5.12, 15.14, 25.39, 35.46, 43.22], "a2": [3.8, 12.17, 24.16, 35.96, 47.84]}, "dur": {"a1": 54.98, "a2": 56.04}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "clips/rq4-en.mp3", "clips/rq4-ko.mp3", "clips/rq4.mp3", "clips/rq5-en.mp3", "clips/rq5-ko.mp3", "clips/rq5.mp3", "clips/rq6-en.mp3", "clips/rq6-ko.mp3", "clips/rq6.mp3", "palantir-q3-expr.mp3", "palantir-q3.mp3", "wall-street-midterms-expr.mp3", "wall-street-midterms.mp3"], "audioBytes": 5529288, "full": {"a1": "palantir-q3.mp3", "a2": "wall-street-midterms.mp3"}, "dialog": {}, "fullx": {"a1": "palantir-q3-expr.mp3", "a2": "wall-street-midterms-expr.mp3"}, "quizLang": "en", "todayReview": [{"en": "for the first time ever", "ko": "사상 처음으로"}, {"en": "raise its forecast", "ko": "전망치를 올리다"}, {"en": "on the other hand", "ko": "반면에"}], "reviewNote": "1·3·7·14·30일 뒤(11/5, 11/7, 11/11, 11/18, 12/4) 복습 퀴즈에 다시 나와요."};
 const DUR = META.dur||{};   // full-article seconds from the build (audio is not preloaded)
 const MARKS = META.marks, FULL = META.full, FULLX = META.fullx;
 const HAS_WB = typeof WB !== "undefined";
@@ -351,7 +359,7 @@ function applyRate(r){ Object.values(seqs).forEach(S=>S.rate=r); if(seq){ clipEl
   Object.values(fulls).forEach(a=>{ a.playbackRate=r; a.defaultPlaybackRate=r; }); document.querySelectorAll(".mrate").forEach(m=>m.textContent=r.toFixed(1)+"x"); }
 function setRate(r){ lsSet(RATE_KEY,String(r)); applyRate(r); settingsChanged(); }
 function setShadow(b){ lsSet(SH_KEY,b?"1":"0"); Object.keys(seqs).filter(k=>/s$/.test(k)).forEach(k=>seqs[k].shadow=b); settingsChanged(); }
-function applyFs(v){ document.documentElement.style.setProperty("--fs",v); }
+function applyFs(v){ document.documentElement.style.setProperty("--fs",v); if(typeof anFixAll==="function") requestAnimationFrame(anFixAll); }
 function stepFs(d){ const i=Math.max(0,Math.min(FSS.length-1,FSS.indexOf(fsG())+d)); lsSet(FS_KEY,String(FSS[i])); applyFs(FSS[i]); settingsChanged(); }
 function settingsChanged(){ Object.keys(seqs).forEach(renderSeq); if(sheetOpen()) drawSheet(); }
 addEventListener("storage", e=>{
@@ -401,7 +409,7 @@ function drawSheet(){
   <div class="sg" id="sg-gen"><div class="sl">공통</div>
     <div class="sr"><span class="lab">재생 속도</span>${seg("srt",RATES,r,v=>v.toFixed(1)+"x","setRate")}</div>
     <div class="sr"><span class="lab">글자 크기</span><button class="fsm" aria-label="글자 작게" onclick="stepFs(-1)" ${fi<=0?"disabled":""}>가-</button><span class="fsz">${FSL[fi]}</span><button class="fsp" aria-label="글자 크게" onclick="stepFs(1)" ${fi>=FSS.length-1?"disabled":""}>가+</button></div></div>
-  <div class="sg" id="sg-gl"><div class="sl">원문</div><div class="sr"><label class="tg"><input type="checkbox" id="glck" ${glossOn()?"checked":""} onchange="setGloss(this.checked)"> 단어 뜻 보기 (탭)</label></div></div>
+  <div class="sg" id="sg-gl"><div class="sl">원문</div><div class="sr"><label class="tg"><input type="checkbox" id="glck" ${glossOn()?"checked":""} onchange="setGloss(this.checked)"> 단어 뜻 보기 (탭)</label></div><div class="sr"><label class="tg"><input type="checkbox" id="anck" ${anOn()?"checked":""} onchange="setAn(this.checked)"> 문장 분석 보기 (직해)</label></div></div>
   <div class="sg" id="sg-sen"><div class="sl">문장별 듣기</div>
     <div class="sr"><span class="lab">문장 반복</span>${seg("srp",SREPS,srepN(),repLbl,"setSRep")}</div>
     <div class="sr"><label class="tg"><input type="checkbox" id="shck" ${shadowG()?"checked":""} onchange="setShadow(this.checked)"> 따라 말하기 (문장마다 잠시 멈춤)</label></div></div>
@@ -636,14 +644,38 @@ function highlight(){
 /* Korean of the article example under the English (example_ko; **target** → bold) */
 function exKo(x){ return x.exk?`<div class="exk">${esc(x.exk).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")}</div>`:""; }
 /* ---------- article rendering ---------- */
+const AN_KEY="ea-an-v1", AN_ROLES={S:"주어",V:"동사",O:"목적어",C:"보어",M:"수식어",REL:"관계절",PART:"분사(구)",CONJ:"접속·대조"};
+function anOn(){ return lsGet(AN_KEY)!=="0"; }
+function setAn(b){ lsSet(AN_KEY,b?"1":"0"); ["a1","a2"].forEach(a=>{ if(D[a.toUpperCase()]) drawLines(a); }); settingsChanged(); }
+function anLegend(A){ const used=new Set(); Object.values(A.an||{}).forEach(x=>x.p.forEach(q=>used.add(q[2])));
+  return `<div class="anleg">🔎 문장 분석: ${Object.keys(AN_ROLES).filter(r=>used.has(r)).map(r=>`<span class="ap ap-${r}"><i></i>${AN_ROLES[r]}</span>`).join("")}</div>`; }
+/* 직해 sentence with role underlines + tags; glossary words stay tappable inside the parts */
+function anText(A,i){ const raw=A.pairs[i].en, an=A.an[i]; let h="", p=0;
+  an.p.forEach(([a,b,r,l])=>{ h+=glossRange(A,i,p,a)+`<span class="ap ap-${r}"><span class="apt" aria-hidden="true">${esc(l)}</span><span class="apx">${glossRange(A,i,a,b)}</span></span>`; p=b; });
+  return h+glossRange(A,i,p,raw.length); }
+/* tags hang under the start of their part (out of flow → no gaps); nudge ones that collide on the same row or run past the right edge */
+function anFix(aid){ const box=document.getElementById("lines-"+aid); if(!box||box.offsetParent===null) return;
+  box.querySelectorAll(".sent.anl").forEach(se=>{ const t=se.querySelector(".t"), R=t.getBoundingClientRect().right; let prev=null;
+    se.querySelectorAll(".apt").forEach(g=>{ g.style.transform=""; const r=g.getBoundingClientRect(); let dx=0;
+      if(prev && Math.abs(r.top-prev.top)<4 && r.left<prev.right+6) dx=prev.right+6-r.left;
+      if(r.right+dx>R) dx=R-r.right;
+      if(dx) g.style.transform=`translateX(${Math.round(dx)}px)`;
+      prev={top:r.top,right:r.right+dx}; }); }); }
+function anFixAll(){ ["a1","a2"].forEach(anFix); }
+addEventListener("resize",()=>requestAnimationFrame(anFixAll)); addEventListener("load",()=>requestAnimationFrame(anFixAll)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>requestAnimationFrame(anFixAll));
 function linesHTML(A, mode){
+  if(mode==="jik" && anOn() && A.an && Object.keys(A.an).length) return anLegend(A)+linesHTML0(A,mode);
+  return linesHTML0(A,mode); }
+function linesHTML0(A, mode){
   if(mode==="ko") return A.natural.map(t=>`<p>${esc(t)}</p>`).join("");
   return A.pairs.map((p,i)=>{
     const k=A.id+"-"+i; let inner;
     if(mode==="eo"){ inner=`<div class="eo-t" onclick="tgl('${k}','${A.id}')">${esc(strip(p.en))}</div>
       <div class="row" style="margin:4px 0 0"><button onclick="tgl('${k}','${A.id}')">${reveal[k]?"뜻 숨기기":"뜻 보기"}</button></div>
       ${reveal[k]?`<div style="margin-top:4px">${esc(p.en)}</div><div class="ko">${esc(p.ko)}</div>`:""}`; }
-    else if(mode==="jik"){ inner=`<div>${i+1}. ${glossText(A,i,true)}</div><div class="ko">${esc(p.ko)}</div>`; }
+    else if(mode==="jik"){ const an=anOn()&&A.an&&A.an[i];
+      inner=`<div>${i+1}. ${an?anText(A,i):glossText(A,i,true)}</div><div class="ko">${esc(p.ko)}</div>${an&&an.n.length?`<div class="anote">${an.n.map(t=>`<div>💡 ${esc(t)}</div>`).join("")}</div>`:""}`;
+      return `<div class="sent${an?" anl":""}" id="s-${k}"><button class="ico sp" data-sp="${A.id}s:${i}" aria-label="문장 듣기" onclick="spTap('${A.id}s',${i})">${spLbl(A.id+'s',i)}</button><div class="t">${inner}</div></div>`; }
     else inner=`<div>${glossText(A,i)}</div>`;
     return `<div class="sent" id="s-${k}"><button class="ico sp" data-sp="${A.id}s:${i}" aria-label="문장 듣기" onclick="spTap('${A.id}s',${i})">${spLbl(A.id+'s',i)}</button><div class="t">${inner}</div></div>`;
   }).join("");
@@ -663,6 +695,12 @@ function glossText(A,i,chunked){ const raw=A.pairs[i].en, G=A.gloss&&A.gloss[i];
   const span=(txt,k)=>{ const sp=txt.includes(" / "); return txt.split(/( \/ )/).map(x=>x===" / "||!x.trim()?esc(x):`<span class="gw" data-a="${A.id}" data-i="${i}" data-k="${k}"${sp?' data-part="1"':""}>${esc(x)}</span>`).join(""); };
   let h="", p=0; G.t.forEach(([a,b,k])=>{ const ra=map[a], rb=map[b]; if(ra==null||rb==null||ra<p) return; h+=esc(raw.slice(p,ra))+span(raw.slice(ra,rb),k); p=rb; });
   return h+esc(raw.slice(p)); }
+function glossRange(A,i,from,to){ const raw=A.pairs[i].en, G=A.gloss&&A.gloss[i]; if(!G||!glossOn()) return esc(raw.slice(from,to));
+  const map=[]; for(let j=0;j<raw.length;){ map.push(j); j+= raw.startsWith(" / ",j) ? 3 : 1; } map.push(raw.length);
+  let h="", p=from; G.t.forEach(([a,b,k])=>{ let ra=map[a], rb=map[b]; if(ra==null||rb==null) return; ra=Math.max(ra,from); rb=Math.min(rb,to); if(rb<=ra||ra<p) return;
+    const part=(ra>map[a]||rb<map[b]||raw.slice(ra,rb).includes(" / "));
+    h+=esc(raw.slice(p,ra))+raw.slice(ra,rb).split(/( \/ )/).map(x=>x===" / "||!x.trim()?esc(x):`<span class="gw" data-a="${A.id}" data-i="${i}" data-k="${k}"${part?' data-part="1"':""}>${esc(x)}</span>`).join(""); p=rb; });
+  return h+esc(raw.slice(p,to)); }
 let gEl=null, gY=0;
 function closeGloss(){ const p=document.getElementById("gpop"); if(p){ if(ttsBtn&&p.contains(ttsBtn)) ttsStop(); p.remove(); } if(gEl) gEl.classList.remove("gon"); gEl=null; }
 function gSpeak(t, btn){ try{ const ss=window.speechSynthesis; if(!ss) return;
@@ -703,7 +741,7 @@ function keepPlace(aid, fn){ const box=document.getElementById("lines-"+aid); if
   wrapScrollBy({top:nk[j].getBoundingClientRect().top-stickyBottom()-off}); }
 function setMode(aid,m){ if(modes[aid]!==m && TAB.art===aid){ keepPlace(aid,()=>setMode0(aid,m)); return; } setMode0(aid,m); }
 function setMode0(aid,m){ modes[aid]=m; if(TAB.art===aid){ TAB.tab = m==="jik"?"jik":"en"; saveTab(); drawTabs(); } document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
-function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2; document.getElementById("lines-"+aid).innerHTML=linesHTML(A,modes[aid]); highlight();  const tc=document.getElementById("tc-"+aid); if(tc) tc.hidden = modes[aid]==="jik"||modes[aid]==="ko"; }
+function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2; document.getElementById("lines-"+aid).innerHTML=linesHTML(A,modes[aid]); highlight();  const tc=document.getElementById("tc-"+aid); if(tc) tc.hidden = modes[aid]==="jik"||modes[aid]==="ko"; if(modes[aid]==="jik") requestAnimationFrame(()=>anFix(aid)); }
 
 /* quiz/review UI language: English for lessons from 2026-11-05 (META.quizLang), Korean before */
 const QEN = META.quizLang==="en";
@@ -1022,10 +1060,10 @@ function selTab(t){ if(t===TAB.tab) return; spStop();
   selTab0(t,false); }
 function selTab0(t,keep){ TAB.tab=t; saveTab();
   if(t==="en"||t==="jik"){ ["a1","a2"].forEach(a=>{ if(t==="jik"? modes[a]!=="jik" : modes[a]==="jik"){ modes[a]=t; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===t)); drawLines(a); } }); }
-  drawTabs(); if(!keep) toStudyTop(); }
+  drawTabs(); if(!keep) toStudyTop(); requestAnimationFrame(anFixAll); }
 function selArt(a, target){ if(a!==TAB.art){ spStop(); if(a!=="rv"){ const old=fulls[TAB.last]; if(a!==TAB.last && old && !old.paused) old.pause(); TAB.last=a; }
     if(a!=="rv"){ closeGloss(); TAB.tab="en"; ["a1","a2"].forEach(x=>{ if(modes[x]==="jik"){ modes[x]="en"; document.querySelectorAll(`#mode-${x} button`).forEach(b=>b.classList.toggle("on",b.dataset.m==="en")); drawLines(x); } }); }   // a different article always opens on 원문, at its top
-    TAB.art=a; saveTab(); drawTabs(); }
+    TAB.art=a; saveTab(); drawTabs(); requestAnimationFrame(anFixAll); }
   const el=target&&document.getElementById(target); if(el){ const bar=document.getElementById("sbar").offsetHeight; wrapScrollTo(el.getBoundingClientRect().top+wrapY()-bar-8); } else toStudyTop(); }
 addEventListener("hashchange",()=>{ const h=location.hash.slice(1);
   if(h==="a1"||h==="a2") selArt(h); else if(["rv","past","mywb","rq","review"].includes(h)) selArt("rv", h==="rv"?null:h); });
