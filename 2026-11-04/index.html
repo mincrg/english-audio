@@ -14,8 +14,8 @@ function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get(
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="../pwa.js?v=ba0dc9bf01" defer></script>
-<style>html{background-color:var(--bg,#fafaf8)}html::before{content:"";position:fixed;left:0;right:0;bottom:100%;height:100vh;background:var(--bg,#fafaf8);z-index:30;pointer-events:none}html::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg,#fafaf8);z-index:30;pointer-events:none}.stk{top:env(safe-area-inset-top,0px)!important}</style>
+<script src="../pwa.js?v=177b989e2b" defer></script>
+<style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <title>11월 4일 직독직해 뉴스</title>
@@ -23,9 +23,10 @@ function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get(
 :root{--bg:#fafaf8;--card:#fff;--tx:#1b1b1b;--tx2:#5f6368;--line:#e4e4e0;--acc:#1a5fd6;--accs:#e8f0fe;--ok:#1e8e3e;--bad:#d93025;--btn:#f1f3f4}
 @media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1c1c1e;--tx:#ececec;--tx2:#a0a4a8;--line:#2e2e30;--acc:#8ab4f8;--accs:#1f2a3d;--ok:#81c995;--bad:#f28b82;--btn:#2a2a2d}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
-.wrap{max-width:720px;margin:0 auto;padding:16px 16px calc(80px + env(safe-area-inset-bottom))}
-header.mast{border-bottom:3px double var(--tx);padding:6px 0 10px;margin-bottom:14px}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);overscroll-behavior:none}
+body{color:var(--tx);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px calc(110px + env(safe-area-inset-bottom));height:100%;height:100svh;height:100dvh;max-height:100dvh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;background:var(--bg)}
+header.mast{border-bottom:3px double var(--tx);padding:16px 0 10px;margin-bottom:14px}
 .mast .date{font-size:13px;color:var(--tx2);letter-spacing:.04em}
 .mast h1{font:700 28px/1.2 Georgia,"Times New Roman",serif;margin:4px 0}
 .mast p{margin:4px 0 0;color:var(--tx2);font-size:15px}
@@ -98,7 +99,7 @@ label.tg input{width:22px;height:22px}
 .wbstar{font-size:18px}
 /* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
 #study{margin:18px 0}
-.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0 -4px;padding-left:4px;padding-right:4px;border-bottom:1px solid var(--line)}
+.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0;border-bottom:1px solid var(--line)}
 .artsw{display:flex;gap:6px;margin-bottom:6px}
 .artsw button{flex:1;min-width:0;text-align:left;font-size:14px;line-height:1.3;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .artsw button b{margin-right:4px}
@@ -113,9 +114,12 @@ label.tg input{width:22px;height:22px}
 .artsw button.pv{flex:0 0 auto}
 #study section.art:not(.cur){display:none}
 .art .pn{display:none}
-.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
+.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz,.art[data-pn="gram"] .pn-gram,.art[data-pn="conv"] .pn-conv{display:block}
 .pn>h3:first-child{margin-top:4px;padding-top:0;border-top:0}
-.sent{scroll-margin-top:130px;scroll-margin-bottom:110px}
+.sent{scroll-margin-top:calc(var(--sbh,104px) + 64px);scroll-margin-bottom:110px}
+/* 원문/직해 view-mode row (원문·직해·한국어·영어만): pinned right under the sticky header while reading; opaque, full card width */
+.modebar{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:0 -16px 6px;padding:6px 16px 6px;border-bottom:1px solid var(--line);box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.modebar .seg{margin:0;background:var(--card)}
 /* compact sticky mini-player for the full article */
 #mini{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(0,0,0,.08);padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
 #mini .mp{max-width:720px;margin:0 auto}
@@ -127,10 +131,9 @@ label.tg input{width:22px;height:22px}
 #mini button{min-height:38px;padding:6px 9px;font-size:14px}
 #mini .fpp{min-width:46px}
 #mini .bar{margin:5px 0 1px;height:5px}
-.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
 /* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
-.ctl{position:sticky;top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px));z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px 0 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
 .srep{align-items:center;gap:6px;margin:8px 0 2px}
 .srep .seg{margin:0}.srep .seg button{min-height:34px;padding:4px 10px;font-size:14px}
 .srep .lab{font-size:13px;color:var(--tx2)}
@@ -193,16 +196,21 @@ body.sheet-open{overflow:hidden}
 .tabs button .ck{color:var(--ok);font-size:12px;margin-left:2px;font-weight:700}
 .ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .srep{margin:6px 0 2px}
-/* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
-html{background:var(--bg)}
-.wrap{overflow-x:clip}
-.stk{top:env(safe-area-inset-top,0px)!important}
-.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
-.sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
-#wbctl{--bleed:17px}
+.exk{margin-top:3px;font-size:.92em;color:var(--tx2);opacity:.9}.exk b{color:var(--tx);font-weight:700}
+/* ---------- contained scroll: document does not scroll; .wrap is the only scroller (iOS Safari tab chrome) ---------- */
+.stk{top:0!important}
+.sbar{box-shadow:0 1px 0 var(--line)}
+@media (display-mode:standalone),(display-mode:fullscreen){
+  .wrap{padding-top:env(safe-area-inset-top,0px)}
+  .stk{top:env(safe-area-inset-top,0px)!important}
+  .ctl,.modebar{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))}
+}
 .dprog,.wprog{font-weight:600;color:var(--ok)}
 .wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
+.tc{margin-top:18px}.tcen{line-height:1.55;margin-bottom:8px}.tc textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}.tcres{margin-top:8px}.tcl{margin:5px 0;line-height:1.5}.tcl.ok b{color:#2e9d5b}.tcl.no b{color:#c77700}.tcm{margin-top:8px;padding:8px 10px;border-left:3px solid var(--line);line-height:1.55}
+.gp{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.gp h3{margin:0 0 8px;padding-top:0;border-top:0}.gpl{margin:6px 0;line-height:1.55}.gpr{font-weight:700}.gpt{display:inline-block;font-size:.8em;padding:1px 6px;border-radius:6px;background:var(--accs);color:var(--acc);margin-right:4px}.gpk{display:block;color:var(--tx2);font-size:.92em}.pn-gram .gq{margin-top:14px}
+.gq{margin-top:18px}.gqq{margin:6px 0;line-height:1.6}.gqb{font-weight:700;color:var(--tx)}.gqo{min-height:44px}.gqs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;line-height:1.3}.gqt{min-height:40px;min-width:40px;padding:6px 9px;font-size:1em;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}.gqt.gqw,.gqo.gqw{text-decoration:line-through;opacity:.55}.gqt.gqok{outline:2px solid #2e9d5b;text-decoration:line-through;text-decoration-color:#d33}.gqt:disabled{cursor:default}.gqx{font-weight:600}
 /* recall quiz, writing mission, review tags (since 2026-11-05) */
 .rcin input{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:10px 12px;font-size:max(16px,calc(17px*var(--fs,1)));border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--tx)}
 .rcin input:focus{outline:2px solid var(--acc);outline-offset:1px}
@@ -238,6 +246,16 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .wm .gbad{text-decoration:line-through;color:#d33}.wm .gsug{font-weight:700;color:var(--acc)}
 .wm .glist button{padding:2px 8px;font-size:13px;margin-left:4px}
 .wm .gmsg{display:block;color:var(--tx2);font-size:13px}
+/* 💬 회화 tab (article.conversation) */
+.cvd{margin:8px 0 4px}.cvl{display:flex;gap:8px;align-items:flex-start;margin:10px 0}.cvl.B{flex-direction:row-reverse}
+.cvav{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:var(--accs);color:var(--acc)}.cvl.B .cvav{background:rgba(46,157,91,.16);color:#2e9d5b}
+.cvb{flex:0 1 auto;max-width:82%;padding:8px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);line-height:1.5;font-size:calc(16.5px*var(--fs,1));transition:background .2s}.cvl.A .cvb{border-top-left-radius:4px}.cvl.B .cvb{border-top-right-radius:4px;background:var(--bg)}
+.cvl.on .cvb{background:var(--accs);border-color:var(--acc)}.cvb b{color:var(--acc)}.cvk{color:var(--tx2);font-size:.9em;margin-top:4px}
+.cvbt{display:flex;flex-direction:column;gap:4px;flex:none}.cvbt button{min-height:36px;padding:4px 8px;font-size:13px}
+.cvx{margin:10px 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.cvx .dhd{display:flex;align-items:center;gap:6px}.cvx .dhd b{flex:1;font-size:calc(16px*var(--fs,1))}
+.cvx .cvm{margin:4px 0;font-size:calc(15.5px*var(--fs,1))}.cvx .cvu{font-size:calc(14px*var(--fs,1));color:var(--tx2);margin:2px 0}.cvx .cve{margin-top:6px;font-size:calc(15px*var(--fs,1));line-height:1.5}.cvx .cve .gpk{font-size:.92em}
+.cvp{margin:18px 0 6px;padding:12px 14px;border:1px dashed var(--acc);border-radius:12px;background:var(--card)}.cvp h4{margin:0 0 6px;font-size:calc(17px*var(--fs,1))}.cvq{display:flex;gap:8px;align-items:flex-start;margin:6px 0}.cvq>div{flex:1;line-height:1.5;font-size:calc(16px*var(--fs,1))}
+.cvp textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}
 </style>
 </head>
 <body>
@@ -291,10 +309,15 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 <div id="sheetbg" onclick="closeSheet()"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <audio id="clip" preload="none" playsinline></audio>
-<script src="../wb.js?v=ab1a2742e1"></script>
+<script src="../wb.js?v=f18a0eee64"></script>
 <script>
 const D = {"A1": {"id": "a1", "kicker": "기사 1 · Palantir", "headline": "Palantir Beats Expectations as Business Sales Pass Government Sales", "koHeadline": "팔란티어, 기업 매출이 정부 매출을 넘어서며 예상을 뛰어넘다", "pairs": [{"en": "Palantir, / the data and AI software company, / reported its results / for the third quarter on Monday, / and it did better / than Wall Street had expected.", "ko": "팔란티어는, / 데이터·AI 소프트웨어 회사인, / 실적을 발표했다 / 월요일에 3분기의, / 그리고 더 잘했다 / 월가가 예상했던 것보다."}, {"en": "Its revenue nearly doubled / from a year ago / to about two point three billion dollars, / and this was the first time / the company made more than two billion dollars / in a single quarter.", "ko": "그 회사의 매출은 거의 두 배가 되었다 / 1년 전보다 / 약 23억 달러로, / 그리고 이것은 처음이었다 / 그 회사가 20억 달러 넘게 번 것은 / 단 한 분기에."}, {"en": "For the first time ever, / Palantir earned more money / from American businesses / than from the U.S. government, / because more and more companies / are using its AI tools.", "ko": "사상 처음으로, / 팔란티어는 더 많은 돈을 벌었다 / 미국 기업들로부터 / 미국 정부로부터보다, / 왜냐하면 점점 더 많은 회사들이 / 그 회사의 AI 도구를 쓰고 있기 때문이다."}, {"en": "The company also raised its forecast / for the full year, / and it now expects / about eight and a half billion dollars / in revenue.", "ko": "그 회사는 또한 전망치를 올렸다 / 한 해 전체에 대한, / 그리고 이제 예상한다 / 약 85억 달러를 / 매출로."}, {"en": "However, its shares fell on Tuesday, / because some investors were worried / that the value of new deals / with American businesses / grew by only eleven percent, / which was much slower than before.", "ko": "하지만 그 회사의 주가는 화요일에 떨어졌다, / 왜냐하면 일부 투자자들이 걱정했기 때문이다 / 새 계약의 가치가 / 미국 기업들과의 / 11%밖에 늘지 않았다는 것을, / 그것은 예전보다 훨씬 느린 것이었다."}], "natural": ["데이터·AI 소프트웨어 회사 팔란티어가 월요일 3분기 실적을 발표했는데, 월가의 예상보다 좋았다. 매출은 1년 전보다 거의 두 배로 늘어 약 23억 달러를 기록했고, 한 분기 매출이 20억 달러를 넘은 것은 처음이다.", "사상 처음으로 미국 기업에서 번 돈이 미국 정부에서 번 돈보다 많았다. 팔란티어의 AI 도구를 쓰는 회사가 점점 늘고 있기 때문이다. 회사는 올해 전체 전망치도 올려, 이제 매출 약 85억 달러를 예상한다.", "하지만 화요일 주가는 떨어졌다. 미국 기업들과 맺은 새 계약의 가치가 11% 늘어나는 데 그쳐 예전보다 훨씬 느려졌다는 점을 일부 투자자들이 걱정했기 때문이다."], "exprs": [{"en": "do better than expected", "ko": "예상보다 잘하다", "ex": "it did better than Wall Street had expected"}, {"en": "nearly double", "ko": "거의 두 배가 되다", "ex": "Its revenue nearly doubled from a year ago"}, {"en": "for the first time ever", "ko": "사상 처음으로", "ex": "For the first time ever, Palantir earned more money"}, {"en": "more and more", "ko": "점점 더 많은", "ex": "more and more companies are using its AI tools"}, {"en": "raise its forecast", "ko": "전망치를 올리다", "ex": "The company also raised its forecast for the full year"}, {"en": "be worried that", "ko": "~할까 봐 걱정하다", "ex": "some investors were worried that the value of new deals grew by only eleven percent"}], "vocab": [{"w": "revenue", "pos": "명사", "ko": "매출, 수익", "ex": "Its revenue nearly doubled"}, {"w": "quarter", "pos": "명사", "ko": "분기", "ex": "for the third quarter"}, {"w": "single", "pos": "형용사", "ko": "단 하나의", "ex": "in a single quarter"}, {"w": "government", "pos": "명사", "ko": "정부", "ex": "than from the U.S. government"}, {"w": "forecast", "pos": "명사", "ko": "전망, 예측", "ex": "raised its forecast"}, {"w": "share", "pos": "명사", "ko": "주식", "ex": "its shares fell on Tuesday"}, {"w": "investor", "pos": "명사", "ko": "투자자", "ex": "some investors were worried"}, {"w": "deal", "pos": "명사", "ko": "거래, 계약", "ex": "the value of new deals"}], "source": {"title": "Palantir reports booming U.S. commercial revenue growth, topping government for first time", "site": "CNBC", "href": "https://www.cnbc.com/2026/11/02/palantir-pltr-earnings-q3-2026.html", "date": "2026-11-02"}, "gloss": [{"t": [[0, 8, 0], [14, 18, 1], [23, 25, 2], [26, 34, 3], [35, 42, 4], [44, 52, 5], [57, 64, 6], [73, 78, 7], [79, 86, 8], [90, 96, 9], [105, 115, 10], [121, 132, 11], [137, 145, 12]], "g": [{"w": "Palantir", "ko": "팔란티어 (미국 데이터·AI 소프트웨어 회사)"}, {"w": "data", "ko": "데이터"}, {"w": "AI", "ko": "인공지능"}, {"w": "software", "ko": "소프트웨어"}, {"w": "company", "ko": "회사"}, {"w": "reported", "ko": "발표했다", "lemma": "report"}, {"w": "results", "ko": "실적", "lemma": "result"}, {"w": "third", "ko": "세 번째의"}, {"w": "quarter", "ko": "분기 (1년의 4분의 1)"}, {"w": "Monday", "ko": "월요일"}, {"w": "did better", "ko": "더 잘했다", "lemma": "do better"}, {"w": "Wall Street", "ko": "월가 (미국 금융시장·투자자들)"}, {"w": "expected", "ko": "예상했다", "lemma": "expect"}]}, {"t": [[4, 11, 0], [12, 18, 1], [19, 26, 2], [32, 42, 3], [46, 51, 4], [56, 61, 5], [68, 75, 6], [76, 83, 7], [102, 112, 8], [117, 124, 9], [125, 129, 10], [130, 139, 11], [144, 151, 6], [152, 159, 7], [165, 171, 12], [172, 179, 13]], "g": [{"w": "revenue", "ko": "매출"}, {"w": "nearly", "ko": "거의"}, {"w": "doubled", "ko": "두 배가 되었다", "lemma": "double"}, {"w": "a year ago", "ko": "1년 전"}, {"w": "about", "ko": "약, 대략"}, {"w": "point", "ko": "소수점 (two point three = 2.3)"}, {"w": "billion", "ko": "10억"}, {"w": "dollars", "ko": "달러", "lemma": "dollar"}, {"w": "first time", "ko": "처음"}, {"w": "company", "ko": "회사"}, {"w": "made", "ko": "벌었다", "lemma": "make"}, {"w": "more than", "ko": "~보다 많이"}, {"w": "single", "ko": "단 하나의"}, {"w": "quarter", "ko": "분기"}]}, {"t": [[0, 23, 0], [25, 33, 1], [34, 40, 2], [41, 45, 3], [46, 51, 4], [57, 65, 5], [66, 76, 6], [91, 95, 7], [96, 106, 8], [116, 129, 9], [130, 139, 10], [144, 149, 11], [154, 156, 12], [157, 162, 13]], "g": [{"w": "For the first time ever", "ko": "사상 처음으로"}, {"w": "Palantir", "ko": "팔란티어"}, {"w": "earned", "ko": "벌었다", "lemma": "earn"}, {"w": "more", "ko": "더 많은"}, {"w": "money", "ko": "돈"}, {"w": "American", "ko": "미국의"}, {"w": "businesses", "ko": "기업들", "lemma": "business"}, {"w": "U.S.", "ko": "미국"}, {"w": "government", "ko": "정부"}, {"w": "more and more", "ko": "점점 더 많은"}, {"w": "companies", "ko": "회사들", "lemma": "company"}, {"w": "using", "ko": "사용하고 있는", "lemma": "use"}, {"w": "AI", "ko": "인공지능"}, {"w": "tools", "ko": "도구", "lemma": "tool"}]}, {"t": [[4, 11, 0], [12, 16, 1], [17, 23, 2], [28, 36, 3], [45, 54, 4], [63, 66, 5], [67, 74, 6], [75, 80, 7], [81, 97, 8], [98, 105, 9], [106, 113, 10], [117, 124, 11]], "g": [{"w": "company", "ko": "회사"}, {"w": "also", "ko": "또한"}, {"w": "raised", "ko": "올렸다", "lemma": "raise"}, {"w": "forecast", "ko": "전망(치), 예측"}, {"w": "full year", "ko": "한 해 전체, 연간"}, {"w": "now", "ko": "이제"}, {"w": "expects", "ko": "예상한다", "lemma": "expect"}, {"w": "about", "ko": "약, 대략"}, {"w": "eight and a half", "ko": "8.5 (여덟 개 반)"}, {"w": "billion", "ko": "10억"}, {"w": "dollars", "ko": "달러", "lemma": "dollar"}, {"w": "revenue", "ko": "매출"}]}, {"t": [[0, 7, 0], [13, 19, 1], [20, 24, 2], [28, 35, 3], [45, 49, 4], [50, 59, 5], [60, 72, 6], [82, 87, 7], [91, 94, 8], [95, 100, 9], [106, 114, 10], [115, 125, 11], [126, 130, 12], [134, 138, 13], [139, 145, 14], [146, 153, 15], [165, 169, 16], [170, 176, 17], [182, 188, 18]], "g": [{"w": "However", "ko": "하지만"}, {"w": "shares", "ko": "주가, 주식", "lemma": "share"}, {"w": "fell", "ko": "떨어졌다", "lemma": "fall"}, {"w": "Tuesday", "ko": "화요일"}, {"w": "some", "ko": "일부"}, {"w": "investors", "ko": "투자자들", "lemma": "investor"}, {"w": "were worried", "ko": "걱정했다", "lemma": "be worried"}, {"w": "value", "ko": "가치, 금액"}, {"w": "new", "ko": "새로운"}, {"w": "deals", "ko": "계약, 거래", "lemma": "deal"}, {"w": "American", "ko": "미국의"}, {"w": "businesses", "ko": "기업들", "lemma": "business"}, {"w": "grew", "ko": "늘었다, 성장했다", "lemma": "grow"}, {"w": "only", "ko": "겨우, 단지"}, {"w": "eleven", "ko": "11"}, {"w": "percent", "ko": "퍼센트"}, {"w": "much", "ko": "훨씬"}, {"w": "slower", "ko": "더 느린", "lemma": "slow"}, {"w": "before", "ko": "이전"}]}], "keys": [2, 3, 4], "image": {"src": "img/palantir-q3.jpg", "w": 1200, "h": 676, "alt": "CNBC article photo", "caption": "팔란티어 실적 기사 대표 사진", "credit": "Getty Images / CNBC", "creditUrl": "https://www.cnbc.com/2026/11/02/palantir-pltr-earnings-q3-2026.html"}}, "A2": {"id": "a2", "kicker": "기사 2 · 경제·시장", "headline": "U.S. Stocks Are Mixed as Americans Vote in the Midterms", "koHeadline": "미국인들이 중간선거 투표에 나선 날, 미국 증시는 혼조", "pairs": [{"en": "U.S. stocks were mixed on Tuesday / as Americans went to vote / in the midterm elections, / and many investors waited nervously / for the results.", "ko": "미국 주식은 화요일에 혼조를 보였다 / 미국인들이 투표하러 가면서 / 중간선거에서, / 그리고 많은 투자자들은 초조하게 기다렸다 / 결과를."}, {"en": "The S&P 500 rose / about half a percent, / and the tech-heavy Nasdaq gained / almost one percent, / because chip makers like Nvidia and AMD climbed / after several days of losses.", "ko": "S&P 500은 올랐다 / 약 0.5%, / 그리고 기술주 중심의 나스닥은 올랐다 / 거의 1%, / 왜냐하면 엔비디아와 AMD 같은 반도체 회사들이 올랐기 때문이다 / 며칠간의 하락 뒤에."}, {"en": "On the other hand, / the Dow Jones Industrial Average slipped a little, / and Apple's stock also fell / after the company warned / that the rising cost of memory chips / could hurt its profits.", "ko": "반면에, / 다우존스 산업평균지수는 조금 하락했다, / 그리고 애플 주가도 떨어졌다 / 그 회사가 경고한 뒤에 / 메모리 칩의 오르는 가격이 / 이익에 타격을 줄 수 있다고."}, {"en": "Meanwhile, oil prices kept falling, / with Brent crude dropping / to around one hundred three dollars a barrel, / as traders hoped for an end / to the standoff between the U.S. and Iran.", "ko": "한편, 유가는 계속 떨어졌다, / 브렌트유가 떨어지면서 / 배럴당 약 103달러로, / 트레이더들이 끝나기를 바라면서 / 미국과 이란 사이의 대치가."}, {"en": "The elections are important / for the markets, / because the results could change a lot / for President Donald Trump / in his final two years in office.", "ko": "그 선거는 중요하다 / 시장에, / 왜냐하면 결과가 많은 것을 바꿀 수 있기 때문이다 / 도널드 트럼프 대통령에게 / 그의 마지막 2년 임기 동안."}], "natural": ["미국인들이 중간선거 투표에 나선 화요일, 미국 증시는 혼조세를 보였고 많은 투자자들은 초조하게 결과를 기다렸다.", "S&P 500은 약 0.5% 올랐고, 기술주 중심의 나스닥은 거의 1% 상승했다. 며칠간 떨어졌던 엔비디아와 AMD 같은 반도체 회사 주가가 올랐기 때문이다. 반면 다우존스 산업평균지수는 소폭 하락했고, 메모리 칩 가격 상승이 이익을 깎아 먹을 수 있다고 경고한 애플의 주가도 떨어졌다.", "한편 유가는 계속 떨어져 브렌트유가 배럴당 약 103달러까지 내려갔다. 트레이더들이 미국과 이란의 대치가 끝나기를 기대했기 때문이다. 이번 선거 결과는 도널드 트럼프 대통령의 남은 2년 임기를 크게 바꿀 수 있어 시장에도 중요하다."], "exprs": [{"en": "be mixed", "ko": "(증시가) 혼조를 보이다", "ex": "U.S. stocks were mixed on Tuesday"}, {"en": "wait nervously for", "ko": "~를 초조하게 기다리다", "ex": "many investors waited nervously for the results"}, {"en": "after several days of losses", "ko": "며칠간의 하락 뒤에", "ex": "chip makers like Nvidia and AMD climbed after several days of losses"}, {"en": "on the other hand", "ko": "반면에", "ex": "On the other hand, the Dow Jones Industrial Average slipped a little"}, {"en": "keep falling", "ko": "계속 떨어지다", "ex": "oil prices kept falling"}, {"en": "hope for an end to", "ko": "~가 끝나기를 바라다", "ex": "traders hoped for an end to the standoff"}], "vocab": [{"w": "stock", "pos": "명사", "ko": "주식", "ex": "U.S. stocks were mixed"}, {"w": "midterm election", "pos": "명사", "ko": "중간선거", "ex": "in the midterm elections"}, {"w": "chip maker", "pos": "명사", "ko": "반도체 회사", "ex": "chip makers like Nvidia and AMD"}, {"w": "slip", "pos": "동사", "ko": "조금 떨어지다", "ex": "the Dow slipped a little"}, {"w": "profit", "pos": "명사", "ko": "이익", "ex": "could hurt its profits"}, {"w": "barrel", "pos": "명사", "ko": "배럴(원유 단위)", "ex": "one hundred three dollars a barrel"}, {"w": "trader", "pos": "명사", "ko": "트레이더, 거래인", "ex": "as traders hoped"}, {"w": "standoff", "pos": "명사", "ko": "대치 상태", "ex": "the standoff between the U.S. and Iran"}], "source": {"title": "Stocks wobble on concerns over AI and US midterms", "site": "AFP", "href": "https://www.afp.com/en/stocks-wobble-concerns-over-ai-and-us-midterms", "date": "2026-11-03"}, "gloss": [{"t": [[0, 4, 0], [5, 11, 1], [12, 22, 2], [26, 33, 3], [34, 36, 4], [37, 46, 5], [47, 51, 6], [55, 59, 7], [67, 84, 8], [90, 94, 9], [95, 104, 10], [105, 111, 11], [112, 121, 12], [130, 137, 13]], "g": [{"w": "U.S.", "ko": "미국"}, {"w": "stocks", "ko": "주식, 주가", "lemma": "stock"}, {"w": "were mixed", "ko": "혼조를 보였다 (오른 것도 내린 것도 있었다)", "lemma": "be mixed"}, {"w": "Tuesday", "ko": "화요일"}, {"w": "as", "ko": "~하는 가운데, ~할 때"}, {"w": "Americans", "ko": "미국인들", "lemma": "American"}, {"w": "went", "ko": "갔다", "lemma": "go"}, {"w": "vote", "ko": "투표하다"}, {"w": "midterm elections", "ko": "중간선거", "lemma": "midterm election"}, {"w": "many", "ko": "많은"}, {"w": "investors", "ko": "투자자들", "lemma": "investor"}, {"w": "waited", "ko": "기다렸다", "lemma": "wait"}, {"w": "nervously", "ko": "초조하게"}, {"w": "results", "ko": "결과", "lemma": "result"}]}, {"t": [[4, 11, 0], [12, 16, 1], [17, 22, 2], [23, 37, 3], [47, 57, 4], [58, 64, 5], [65, 71, 6], [72, 78, 7], [79, 90, 8], [100, 111, 9], [112, 116, 10], [117, 123, 11], [128, 131, 12], [132, 139, 13], [140, 145, 14], [146, 153, 15], [154, 158, 16], [162, 168, 17]], "g": [{"w": "S&P 500", "ko": "S&P 500 지수 (미국 대표 주가지수)"}, {"w": "rose", "ko": "올랐다", "lemma": "rise"}, {"w": "about", "ko": "약, 대략"}, {"w": "half a percent", "ko": "0.5퍼센트"}, {"w": "tech-heavy", "ko": "기술주 비중이 큰"}, {"w": "Nasdaq", "ko": "나스닥 지수"}, {"w": "gained", "ko": "올랐다, 상승했다", "lemma": "gain"}, {"w": "almost", "ko": "거의"}, {"w": "one percent", "ko": "1퍼센트"}, {"w": "chip makers", "ko": "반도체 회사들", "lemma": "chip maker"}, {"w": "like", "ko": "~ 같은"}, {"w": "Nvidia", "ko": "엔비디아 (반도체 회사)"}, {"w": "AMD", "ko": "AMD (반도체 회사)"}, {"w": "climbed", "ko": "올랐다", "lemma": "climb"}, {"w": "after", "ko": "~ 뒤에"}, {"w": "several", "ko": "몇몇의, 여러"}, {"w": "days", "ko": "날, 일", "lemma": "day"}, {"w": "losses", "ko": "하락, 손실", "lemma": "loss"}]}, {"t": [[0, 17, 0], [23, 51, 1], [52, 59, 2], [60, 68, 3], [74, 81, 4], [82, 87, 5], [88, 92, 6], [93, 97, 7], [108, 115, 8], [116, 122, 9], [132, 138, 10], [139, 143, 11], [147, 159, 12], [160, 165, 13], [166, 170, 14], [175, 182, 15]], "g": [{"w": "On the other hand", "ko": "반면에"}, {"w": "Dow Jones Industrial Average", "ko": "다우존스 산업평균지수"}, {"w": "slipped", "ko": "조금 내렸다", "lemma": "slip"}, {"w": "a little", "ko": "조금"}, {"w": "Apple's", "ko": "애플의"}, {"w": "stock", "ko": "주가, 주식"}, {"w": "also", "ko": "또한"}, {"w": "fell", "ko": "떨어졌다", "lemma": "fall"}, {"w": "company", "ko": "회사"}, {"w": "warned", "ko": "경고했다", "lemma": "warn"}, {"w": "rising", "ko": "오르는", "lemma": "rise"}, {"w": "cost", "ko": "비용"}, {"w": "memory chips", "ko": "메모리 반도체", "lemma": "memory chip"}, {"w": "could", "ko": "~할 수도 있다", "lemma": "can"}, {"w": "hurt", "ko": "해치다, 줄이다"}, {"w": "profits", "ko": "이익, 수익", "lemma": "profit"}]}, {"t": [[0, 9, 0], [11, 14, 1], [15, 21, 2], [22, 34, 3], [41, 52, 4], [53, 61, 5], [65, 71, 6], [72, 89, 7], [90, 97, 8], [100, 106, 9], [108, 110, 10], [111, 118, 11], [119, 128, 12], [132, 135, 13], [143, 151, 14], [152, 159, 15], [164, 168, 16], [173, 177, 17]], "g": [{"w": "Meanwhile", "ko": "한편"}, {"w": "oil", "ko": "석유"}, {"w": "prices", "ko": "가격", "lemma": "price"}, {"w": "kept falling", "ko": "계속 떨어졌다", "lemma": "keep falling"}, {"w": "Brent crude", "ko": "브렌트유 (국제 유가의 기준)"}, {"w": "dropping", "ko": "떨어지며", "lemma": "drop"}, {"w": "around", "ko": "~쯤, 약"}, {"w": "one hundred three", "ko": "103"}, {"w": "dollars", "ko": "달러", "lemma": "dollar"}, {"w": "barrel", "ko": "배럴 (석유 단위, 약 159리터)"}, {"w": "as", "ko": "~하면서, ~하는 가운데"}, {"w": "traders", "ko": "트레이더들, 거래자들", "lemma": "trader"}, {"w": "hoped for", "ko": "~를 바랐다", "lemma": "hope for"}, {"w": "end", "ko": "끝"}, {"w": "standoff", "ko": "대치 (서로 버티는 상황)"}, {"w": "between", "ko": "~ 사이의"}, {"w": "U.S.", "ko": "미국"}, {"w": "Iran", "ko": "이란"}]}, {"t": [[4, 13, 0], [18, 27, 1], [36, 43, 2], [57, 64, 3], [65, 70, 4], [71, 77, 5], [78, 83, 6], [88, 97, 7], [98, 110, 8], [118, 123, 9], [124, 133, 10], [134, 143, 11]], "g": [{"w": "elections", "ko": "선거", "lemma": "election"}, {"w": "important", "ko": "중요한"}, {"w": "markets", "ko": "시장", "lemma": "market"}, {"w": "results", "ko": "결과", "lemma": "result"}, {"w": "could", "ko": "~할 수도 있다", "lemma": "can"}, {"w": "change", "ko": "바꾸다"}, {"w": "a lot", "ko": "많이"}, {"w": "President", "ko": "대통령"}, {"w": "Donald Trump", "ko": "도널드 트럼프 (미국 대통령)"}, {"w": "final", "ko": "마지막의"}, {"w": "two years", "ko": "2년", "lemma": "year"}, {"w": "in office", "ko": "재임 중(의)"}]}], "keys": [1, 2, 3], "image": {"src": "img/wall-street-midterms.jpg", "w": 1200, "h": 800, "alt": "Stock market photo", "caption": "미국 증시 관련 사진", "credit": "Yahoo Finance", "creditUrl": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-november-3-dow-sp-500-nasdaq-midterms-amd-earnings-141143244.html"}}, "QUIZ": [{"art": "a1", "q": "Q1. (기사 1) Why did Palantir's shares fall on Tuesday?", "opts": ["A. Its revenue went down a lot", "B. Some investors were worried that new business deals grew slowly", "C. The U.S. government stopped working with it"], "ans": "B", "why": "실적은 좋았지만, 미국 기업과의 새 계약 가치가 11%밖에 늘지 않아 투자자들이 걱정했습니다.", "quote": "some investors were worried that the value of new deals with American businesses grew by only eleven percent"}, {"type": "recall", "art": "a1", "q": "Q2. (기사 1) ✏️ Fill in the blank with the English expression for '사상 처음으로'. — ___, Palantir earned more money from American businesses than from the U.S. government.", "ans": "for the first time ever", "accept": [], "why": "'for the first time ever' = 사상 처음으로. 원문: \"For the first time ever, Palantir earned more money from American businesses than from the U.S. government.\"", "quote": ""}, {"art": "a2", "q": "Q3. (기사 2) What happened to the S&P 500 and the Nasdaq on Tuesday?", "opts": ["A. Both went down", "B. Both went up", "C. The market was closed"], "ans": "B", "why": "S&P 500은 약 0.5%, 나스닥은 거의 1% 올랐습니다.", "quote": "The S&P 500 rose about half a percent, and the tech-heavy Nasdaq gained almost one percent"}, {"type": "recall", "art": "a2", "q": "Q4. (기사 2) ✏️ Fill in the blank with the English expression for '반면에'. — ___, the Dow Jones Industrial Average slipped a little.", "ans": "on the other hand", "accept": [], "why": "'on the other hand' = 반면에. 원문: \"On the other hand, the Dow Jones Industrial Average slipped a little\"", "quote": ""}], "HINTS": ["Hint: look at the last sentence, after 'were worried that'.", "Starts with 'f', 5 words.", "Hint: look at the second sentence, at 'rose' and 'gained'.", "Starts with 'o', 4 words."], "WRITE": {"expressions": ["for the first time ever", "on the other hand"], "prompt": "두 표현을 모두 써서 오늘 기사에 대한 내 생각을 영어 2문장으로 써 보세요.", "example": "For the first time ever, Palantir made more money from companies than from the government. On the other hand, its shares fell because some investors were worried."}, "RQ": [{"day": "11/03", "en": "run into trouble", "opts": ["A. have problems or difficulties", "B. run very fast", "C. help someone in trouble"], "ans": "A", "hint": "Hint: 'run into' = meet something by accident.", "tag": "1일 전"}, {"day": "11/03", "en": "without permission", "opts": ["A. with a lot of money", "B. without being allowed", "C. without any problems"], "ans": "B", "hint": "Hint: permission = saying 'yes, you can'.", "tag": "1일 전"}, {"day": "11/03", "en": "on top of that", "opts": ["A. at the highest place", "B. in addition, also", "C. after that"], "ans": "B", "hint": "Hint: one more thing is added on top.", "tag": "1일 전"}, {"day": "11/01", "en": "what makes it even sweeter is that", "opts": ["A. the sad part is that", "B. the even nicer part is that", "C. the sweetest food is"], "ans": "B", "hint": "Hint: 'sweeter' here means 'more pleasant'.", "tag": "3일 전"}, {"day": "11/01", "en": "fall apart", "opts": ["A. fall down and get hurt", "B. collapse, fail completely", "C. live in different places"], "ans": "B", "hint": "Hint: 'apart' = into pieces.", "tag": "3일 전"}, {"day": "11/01", "en": "answer the call", "opts": ["A. hang up the phone", "B. respond to a request for help", "C. make a phone call"], "ans": "B", "hint": "Hint: someone calls for help, and you answer.", "tag": "3일 전"}]};
-const META = {"date": "2026-11-04", "build": "d5908926c8", "label": "11월 4일(수)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 4일 수요일 · 가벼운 뉴스 2편 · B1", "short": ["팔란티어, 3분기 실적 예상 상회", "중간선거 날 미국 증시 혼조"], "marks": {"a1": [5.12, 15.14, 25.39, 35.46, 43.22], "a2": [3.8, 12.17, 24.16, 35.96, 47.84]}, "dur": {"a1": 54.98, "a2": 56.04}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "clips/rq4-en.mp3", "clips/rq4-ko.mp3", "clips/rq4.mp3", "clips/rq5-en.mp3", "clips/rq5-ko.mp3", "clips/rq5.mp3", "clips/rq6-en.mp3", "clips/rq6-ko.mp3", "clips/rq6.mp3", "palantir-q3-expr.mp3", "palantir-q3.mp3", "wall-street-midterms-expr.mp3", "wall-street-midterms.mp3"], "audioBytes": 5529288, "full": {"a1": "palantir-q3.mp3", "a2": "wall-street-midterms.mp3"}, "fullx": {"a1": "palantir-q3-expr.mp3", "a2": "wall-street-midterms-expr.mp3"}, "quizLang": "en", "todayReview": [{"en": "for the first time ever", "ko": "사상 처음으로"}, {"en": "raise its forecast", "ko": "전망치를 올리다"}, {"en": "on the other hand", "ko": "반면에"}], "reviewNote": "1·3·7·14·30일 뒤(11/5, 11/7, 11/11, 11/18, 12/4) 복습 퀴즈에 다시 나와요."};
+/* .wrap is the page scroller (body/html overflow:hidden); window.scrollY stays 0 */
+const $wrap = () => document.querySelector(".wrap");
+const wrapY = () => { const w=$wrap(); return w ? w.scrollTop : (window.scrollY||0); };
+const wrapScrollTo = (top, opt) => { const w=$wrap(); const o=typeof top==="object"?top:{top, ...(opt||{})}; if(w) w.scrollTo(o); else window.scrollTo(o); };
+const wrapScrollBy = (o) => { const w=$wrap(); if(w) w.scrollBy(o); else window.scrollBy(o); };
+const META = {"date": "2026-11-04", "build": "f531faa347", "label": "11월 4일(수)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 4일 수요일 · 가벼운 뉴스 2편 · B1", "short": ["팔란티어, 3분기 실적 예상 상회", "중간선거 날 미국 증시 혼조"], "marks": {"a1": [5.12, 15.14, 25.39, 35.46, 43.22], "a2": [3.8, 12.17, 24.16, 35.96, 47.84]}, "dur": {"a1": 54.98, "a2": 56.04}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "clips/rq4-en.mp3", "clips/rq4-ko.mp3", "clips/rq4.mp3", "clips/rq5-en.mp3", "clips/rq5-ko.mp3", "clips/rq5.mp3", "clips/rq6-en.mp3", "clips/rq6-ko.mp3", "clips/rq6.mp3", "palantir-q3-expr.mp3", "palantir-q3.mp3", "wall-street-midterms-expr.mp3", "wall-street-midterms.mp3"], "audioBytes": 5529288, "full": {"a1": "palantir-q3.mp3", "a2": "wall-street-midterms.mp3"}, "dialog": {}, "fullx": {"a1": "palantir-q3-expr.mp3", "a2": "wall-street-midterms-expr.mp3"}, "quizLang": "en", "todayReview": [{"en": "for the first time ever", "ko": "사상 처음으로"}, {"en": "raise its forecast", "ko": "전망치를 올리다"}, {"en": "on the other hand", "ko": "반면에"}], "reviewNote": "1·3·7·14·30일 뒤(11/5, 11/7, 11/11, 11/18, 12/4) 복습 퀴즈에 다시 나와요."};
 const DUR = META.dur||{};   // full-article seconds from the build (audio is not preloaded)
 const MARKS = META.marks, FULL = META.full, FULLX = META.fullx;
 const HAS_WB = typeof WB !== "undefined";
@@ -432,8 +455,9 @@ async function offDel(){ await PWA.removeAudio(OFF_URLS); offDraw(); }
 const SP_ON="⏹ 정지";
 function spActive(key,i){ return !!(seq && seq.single && seq.key===key && seqs[key] && seqs[key].idx===i); }
 function spLbl(key,i){ return spActive(key,i)?SP_ON:"🔊"; }
-function spSync(){ document.querySelectorAll("button.sp").forEach(b=>{ const [k,i]=b.dataset.sp.split(":"), on=spActive(k,+i);
-  if(b.classList.contains("on")!==on || b.textContent!==(on?SP_ON:"🔊")){ b.textContent=on?SP_ON:"🔊"; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on); } }); }
+function spSync(){ document.querySelectorAll("button.sp").forEach(b=>{ const [k,i]=b.dataset.sp.split(":"), on=spActive(k,+i), off=b.dataset.spl||"🔊";
+  if(b.classList.contains("on")!==on || b.textContent!==(on?SP_ON:off)){ b.textContent=on?SP_ON:off; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on); } });
+  document.querySelectorAll(".cvl").forEach(r=>{ const [k,i]=r.dataset.row.split("-"); r.classList.toggle("on",spActive(k,+i)); }); }
 function spTap(key,i){ if(spActive(key,i)){ stopSeq(); spSync(); return; } ttsStop(); playSeq(key,i,true); spSync(); }
 function spStop(){ if(seq && seq.single) stopSeq(); ttsStop(); spSync(); }
 ["play","pause","ended","emptied"].forEach(ev=>clipEl.addEventListener(ev,()=>setTimeout(spSync,0)));
@@ -609,6 +633,8 @@ function highlight(){
   lastHi=hi;
 }
 
+/* Korean of the article example under the English (example_ko; **target** → bold) */
+function exKo(x){ return x.exk?`<div class="exk">${esc(x.exk).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")}</div>`:""; }
 /* ---------- article rendering ---------- */
 function linesHTML(A, mode){
   if(mode==="ko") return A.natural.map(t=>`<p>${esc(t)}</p>`).join("");
@@ -639,7 +665,7 @@ function gSpeak(t, btn){ try{ const ss=window.speechSynthesis; if(!ss) return;
   if(btn){ ttsBtn=btn; btn.textContent=SP_ON; btn.classList.add("on"); btn.setAttribute("aria-pressed","true"); }
   const done=()=>{ if(ttsBtn===btn) ttsReset(); }; u.onend=done; u.onerror=done; ss.speak(u); }catch(e){} }
 function openGloss(el){ closeGloss(); const A=D[el.dataset.a.toUpperCase()], i=+el.dataset.i, g=A.gloss[i].g[+el.dataset.k]; if(!g) return;
-  gEl=el; el.classList.add("gon"); gY=scrollY;
+  gEl=el; el.classList.add("gon"); gY=wrapY();
   const surf=el.textContent, head=g.lemma&&g.lemma.toLowerCase()!==surf.toLowerCase() ? `${esc(surf)} <span class="glem">← ${esc(g.lemma)}</span>` : esc(surf);
   const st=HAS_WB ? WB.starHTML({type:"word",en:g.lemma||g.w,ko:g.ko,ex:strip(A.pairs[i].en),pos:"",date:META.date,article:A.headline,clip:"",page:location.href.split("#")[0]}) : "";
   const p=document.createElement("div"); p.id="gpop"; p.setAttribute("role","dialog");
@@ -647,18 +673,29 @@ function openGloss(el){ closeGloss(); const A=D[el.dataset.a.toUpperCase()], i=+
     <div class="gpk">${esc(g.ko)}</div><div class="row" style="margin:6px 0 0"><button class="ico" aria-label="발음 듣기" onclick="gSpeak(${esc(JSON.stringify(surf))},this)">🔊</button>${st}</div>`;
   document.body.appendChild(p);
   const r=el.getBoundingClientRect(), W=Math.min(320,innerWidth-16); p.style.width=W+"px";
-  let top0=0; document.querySelectorAll(".stk").forEach(s=>{ const b=s.getBoundingClientRect(); if(b.height && b.top<=2 && b.bottom<innerHeight/2) top0=Math.max(top0,b.bottom); });
+  const top0=stickyBottom();
   const mi=document.getElementById("mini"), bot0 = mi && mi.offsetParent!==null ? mi.getBoundingClientRect().top : innerHeight;
   const h=p.offsetHeight; let y = r.bottom+8+h <= bot0-8 ? r.bottom+8 : (r.top-8-h >= top0+8 ? r.top-8-h : Math.max(top0+8, bot0-8-h));
   p.style.top=y+"px"; p.style.left=Math.max(8,Math.min(innerWidth-W-8, r.left+r.width/2-W/2))+"px"; }
 document.addEventListener("click", e=>{ const w=e.target.closest&&e.target.closest(".gw");
   if(w){ const sel=getSelection&&getSelection(); if(sel && !sel.isCollapsed && String(sel).trim()) return; if(w===gEl){ closeGloss(); return; } openGloss(w); return; }
   if(!(e.target.closest&&e.target.closest("#gpop"))) closeGloss(); });
-addEventListener("scroll", ()=>{ if(gEl && Math.abs(scrollY-gY)>40) closeGloss(); }, {passive:true});
+($wrap()||window).addEventListener("scroll", ()=>{ if(gEl && Math.abs(wrapY()-gY)>40) closeGloss(); }, {passive:true});
 addEventListener("keydown", e=>{ if(e.key==="Escape") closeGloss(); });
 function tgl(k,aid){ reveal[k]=!reveal[k]; drawLines(aid); }
-function setMode(aid,m){ modes[aid]=m; if(TAB.art===aid){ TAB.tab = m==="jik"?"jik":"en"; saveTab(); drawTabs(); } document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
-function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2; document.getElementById("lines-"+aid).innerHTML=linesHTML(A,modes[aid]); highlight(); }
+/* keep the reader at the same line when the view mode re-renders (anchor = first line below the sticky bars) */
+function stickyBottom(){ let b=0; document.querySelectorAll(".stk").forEach(s=>{ const r=s.getBoundingClientRect(); if(r.height && r.top<=2 && r.bottom<innerHeight/2) b=Math.max(b,r.bottom); });
+  document.querySelectorAll(".modebar").forEach(s=>{ if(!s.offsetParent) return; const r=s.getBoundingClientRect(); if(r.height && r.top<=b+2 && r.bottom<innerHeight/2) b=Math.max(b,r.bottom); }); return b; }
+function keepPlace(aid, fn){ const box=document.getElementById("lines-"+aid); if(!box||!box.offsetParent){ fn(); return; }
+  const top=stickyBottom(), kids=[...box.children], n=kids.length, br=box.getBoundingClientRect();
+  if(!n || br.top>=top || br.bottom<=top){ fn(); return; }        // lines not under the bars: nothing to keep
+  let i=kids.findIndex(k=>k.getBoundingClientRect().bottom>top+4); if(i<0) i=n-1; const off=kids[i].getBoundingClientRect().top-top;
+  fn();
+  const nk=box.children; if(!nk.length) return; const j=nk.length===n?i:Math.min(nk.length-1,Math.round(i*nk.length/n));
+  wrapScrollBy({top:nk[j].getBoundingClientRect().top-stickyBottom()-off}); }
+function setMode(aid,m){ if(modes[aid]!==m && TAB.art===aid){ keepPlace(aid,()=>setMode0(aid,m)); return; } setMode0(aid,m); }
+function setMode0(aid,m){ modes[aid]=m; if(TAB.art===aid){ TAB.tab = m==="jik"?"jik":"en"; saveTab(); drawTabs(); } document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
+function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2; document.getElementById("lines-"+aid).innerHTML=linesHTML(A,modes[aid]); highlight();  const tc=document.getElementById("tc-"+aid); if(tc) tc.hidden = modes[aid]==="jik"||modes[aid]==="ko"; }
 
 /* quiz/review UI language: English for lessons from 2026-11-05 (META.quizLang), Korean before */
 const QEN = META.quizLang==="en";
@@ -759,6 +796,85 @@ function writeHTML(aid){ const W=D.WRITE; if(!W) return ""; const v=wmAll()[META
     <div class="gres" id="wmg-${aid}" aria-live="polite"></div>
     ${W.example?`<details><summary>${WL.ex}</summary><p class="wmex">${esc(W.example)}</p></details>`:""}
     <div class="note">💬 쓴 문장을 채팅으로 답장해 주시면 첨삭해 드려요. 정답은 따로 없어요.</div></div>`; }
+/* ---------- ✏️ 먼저 해석해 보기 (article.translate_check; local keyword check, no network, nothing sent) ---------- */
+const TCS={};
+const tcNorm=t=>String(t||"").toLowerCase().replace(/[\s.,·…!?'"“”‘’()\[\]{}:;~\-–—/]+/g,"");
+function tcHTML(a){ const A=D[a.toUpperCase()]; if(!A||!A.tc||!A.tc.length) return "";
+  return `<div class="tc"><h3>✏️ 먼저 해석해 보기</h3><div class="note">직해를 보기 전에 직접 한국어로 옮겨 보세요. 확인은 이 기기 안에서만 핵심 포인트를 살펴봐요(전송 없음).</div>`+A.tc.map((t,n)=>{ const k=a+"-"+n, s=TCS[k]||{};
+    const res = s.chk ? `<div class="tcres">${t.c.map(c=>{ const hit=c.a.some(x=>{ const y=tcNorm(x); return y && tcNorm(s.v).includes(y); });
+      return `<div class="tcl ${hit?"ok":"no"}">${hit?"✅":"⚠️"} <b>${esc(c.l)}</b> — ${esc(hit?c.ok:c.no)}</div>`; }).join("")}</div>` : "";
+    return `<div class="q tci"><div class="tcen"><b>T${n+1}.</b> ${esc(strip(A.pairs[t.i].en))}</div>
+    <textarea id="tc-${k}" rows="3" maxlength="600" placeholder="한국어로 해석해 보세요" aria-label="해석 입력" oninput="TCS['${k}']={...(TCS['${k}']||{}),v:this.value}">${esc(s.v||"")}</textarea>
+    <div class="row"><button class="pri" onclick="tcCheck('${a}',${n})">확인</button><button onclick="tcShow('${a}',${n})">👀 모범 해석 보기</button></div>
+    ${res}${s.chk||s.show?`<div class="tcm"><span class="note">모범 해석</span><br>${esc(t.m)}</div>`:""}</div>`; }).join("")+`</div>`; }
+function tcDraw(a){ const el=document.getElementById("tc-"+a); if(el) el.innerHTML=tcHTML(a); }
+function tcCheck(a,n){ const k=a+"-"+n, el=document.getElementById("tc-"+k), v=el?el.value:""; if(!v.trim()){ el&&el.focus(); return; } TCS[k]={...(TCS[k]||{}),v,chk:true}; tcDraw(a); }
+function tcShow(a,n){ const k=a+"-"+n, el=document.getElementById("tc-"+k); TCS[k]={...(TCS[k]||{}),v:el?el.value:"",show:true}; tcDraw(a); }
+/* ---------- 📘 오늘의 문법 card (article.grammar_point), 문법 tab ---------- */
+const gpB=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+function gpDraw(a){ const el=document.getElementById("gp-"+a), g=D[a.toUpperCase()].gp; if(!el) return; if(!g){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="gp"><h3>📘 오늘의 문법 · ${esc(g.topic)}</h3>
+  <div class="gpl gpr">${esc(g.rule_ko)}</div>
+  <div class="gpl"><span class="gpt">기사</span> ${gpB(g.article_sentence)} <span class="gpk">${esc(g.article_ko)}</span></div>
+  <div class="gpl"><span class="gpt">예문</span> ${esc(g.example_en)} <span class="gpk">${esc(g.example_ko)}</span></div>
+  <div class="gpl"><span class="gpt">주의</span> ❌ <s>${esc(g.mistake_wrong)}</s> → ✅ <b>${esc(g.mistake_right)}</b></div></div>`; }
+/* ---------- 📐 Grammar Quiz (article.grammar_quiz; page-only state, no review linkage) ---------- */
+const GQS={};
+function gqHTML(a){ const A=D[a.toUpperCase()]; if(!A||!A.gq||!A.gq.length) return "";
+  return `<div class="gq"><h4>📐 Grammar Quiz</h4>`+A.gq.map((g,n)=>{ const k=a+"-"+n, s=GQS[k]||{p:[]};
+    const fb=ok=>`<div class="fb">${ok?`<span class="okc">✅ Correct!</span>`:`<span class="okc">👀 Answer</span>`} <b>${esc(g.t==="c"?g.o[g.a]:g.c)}</b><br><span class="gqx">${esc(g.x)}</span> <span class="note">· ${esc(g.tp)}</span></div>`;
+    if(g.t==="c"){ const done=s.p.length>0, pk=s.p[0];
+      return `<div class="q gqi"><div><b>G${n+1}. Choose the correct option.</b></div><div class="gqq">${esc(g.q).replace("___",'<span class="gqb">___</span>')}</div>
+      <div class="row">${g.o.map((o,i)=>`<button class="gqo ${done&&i===g.a?"pri":""} ${done&&i===pk&&i!==g.a?"gqw":""}" ${done?"disabled":""} onclick="gqPick('${a}',${n},${i})">${"ABC"[i]}. ${esc(o)}</button>`).join("")}</div>
+      ${done?(pk===g.a?fb(1):`<div class="fb"><span class="badc">❌ Not quite (${"ABC"[pk]})</span></div>`+fb(0)):""}</div>`; }
+    const solved=s.p.includes(g.i)||s.rev;
+    return `<div class="q gqi"><div><b>G${n+1}. Tap the word that is wrong.</b></div><div class="gqs">${g.w.map((w,i)=>`<button class="gqt ${i===g.i&&solved?"gqok":""} ${s.p.includes(i)&&i!==g.i?"gqw":""}" ${solved||s.p.includes(i)?"disabled":""} onclick="gqPick('${a}',${n},${i})">${esc(w)}</button>`).join(" ")}</div>
+    ${solved?(s.rev&&!s.p.includes(g.i)?fb(0):fb(1)):s.p.length?`<div class="fb"><span class="badc">❌ "${esc(g.w[s.p[s.p.length-1]])}" is correct here.</span> Try again.</div>`:""}
+    <div class="row">${!solved&&s.p.length?`<button onclick="gqRev('${a}',${n})">👀 Show answer</button>`:""}${s.p.length||s.rev?`<button onclick="gqReset('${a}',${n})">↺ Try again</button>`:""}</div></div>`; }).join("")+`</div>`; }
+function gqDraw(a){ const el=document.getElementById("gq-"+a); if(el) el.innerHTML=gqHTML(a); }
+function gqPick(a,n,i){ const k=a+"-"+n, s=GQS[k]||(GQS[k]={p:[]}); if(s.p.includes(i)) return; s.p.push(i); gqDraw(a); }
+function gqRev(a,n){ const k=a+"-"+n; (GQS[k]||(GQS[k]={p:[]})).rev=true; gqDraw(a); }
+function gqReset(a,n){ delete GQS[a+"-"+n]; gqDraw(a); }
+/* ---------- 💬 회화 tab (article.conversation; offline self-check, nothing sent) ---------- */
+const CV_KEY="ea-conv-v1", CVS={}, cvKo={};
+const cvB=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+const cvNorm=t=>" "+String(t||"").toLowerCase().replace(/[\u2018\u2019\u201B\u2032`´]/g,"'").replace(/[^a-z0-9' ]+/g," ").replace(/\s+/g," ").trim();
+const cvHit=(v,x)=>{ const y=cvNorm(x); return y.trim().length>0 && cvNorm(v).includes(y); };   // word-start match: stems OK
+function cvAll(){ try{ const o=JSON.parse(lsGet(CV_KEY)||"{}"); return o&&typeof o==="object"?o:{}; }catch(e){ return {}; } }
+function cvSave(a,v){ const o=cvAll(), d=o[META.date]||(o[META.date]={}); if(v.trim()) d[a]=v; else delete d[a]; if(!Object.keys(d).length) delete o[META.date]; lsSet(CV_KEY,JSON.stringify(o));
+  CVS[a]={...(CVS[a]||{}),v}; }
+function cvStar(A,x,i){ return star(A,"expr",x.en,x.ko,x.example_en,"",`${A.id}-c${i+1}`); }
+function cvHTML(a){ const A=D[a.toUpperCase()], C=A&&A.cv; if(!C) return `<div class="note" style="margin:12px 0">이 기사에는 회화 연습이 없어요.</div>`;
+  const all=!!cvKo[a+"*"], s=CVS[a]||(CVS[a]={v:(cvAll()[META.date]||{})[a]||""}), P=C.p;
+  const lines=C.d.map((l,i)=>{ const show=all||cvKo[a+i];
+    return `<div class="cvl ${l.s}" data-row="${a}d-${i}"><div class="cvav">${l.s}</div><div class="cvb">${cvB(l.en)}${show?`<div class="cvk">${esc(l.ko)}</div>`:""}</div>
+    <div class="cvbt"><button class="ico sp" data-sp="${a}d:${i}" aria-label="이 줄 듣기" onclick="spTap('${a}d',${i})">${spLbl(a+'d',i)}</button>${all?"":`<button onclick="cvKoT('${a}',${i})" aria-pressed="${!!show}">${show?"숨기기":"뜻"}</button>`}</div></div>`; }).join("");
+  const exps=C.x.map((x,i)=>`<div class="cvx" data-row="${a}c-${i}"><div class="dhd"><b>${esc(x.en)}</b><button class="ico sp" data-sp="${a}c:${i}" aria-label="듣기" onclick="spTap('${a}c',${i})">${spLbl(a+'c',i)}</button>${cvStar(A,x,i)}</div>
+    <div class="cvm">${esc(x.ko)}</div><div class="cvu">💡 ${esc(x.use_ko)}</div><div class="cve">${esc(x.example_en)}<span class="gpk">${esc(x.example_ko)}</span></div></div>`).join("");
+  let res="";
+  if(s.chk){ const tg=P.t.map(t=>{ const hit=cvHit(s.v,t)||cvHit(s.v,t.replace(/[.…!?]+$/,"").split(/[,…]/)[0]);
+      return `<div class="tcl ${hit?"ok":"no"}">${hit?"✅":"⚠️"} <b>${esc(t)}</b> — ${hit?"표현을 썼어요!":"이 표현을 넣어 다시 말해 보세요."}</div>`; }).join("");
+    const cps=P.c.map(c=>{ const hit=c.a.some(x=>cvHit(s.v,x)); return `<div class="tcl ${hit?"ok":"no"}">${hit?"✅":"⚠️"} <b>${esc(c.l)}</b> — ${esc(hit?c.ok:c.no)}</div>`; }).join("");
+    const n=s.v.trim().split(/\s+/).filter(Boolean).length;
+    res=`<div class="tcres">${tg}${cps}<div class="tcl ${n>=15?"ok":"no"}">${n>=15?"✅":"⚠️"} <b>길이</b> — ${n}단어 ${n>=15?"· 2~3문장 분량 좋아요":"· 이유나 예를 한 문장 더 붙여 보세요"}</div></div>`; }
+  const model = s.chk||s.show ? `<div class="tcm"><div class="cvq"><div><span class="note">모범 답안</span><br>${esc(P.m)}<br><span class="note">${esc(P.mk)}</span></div><button class="ico sp" data-sp="${a}p:1" aria-label="모범 답안 듣기" onclick="spTap('${a}p',1)">${spLbl(a+'p',1)}</button></div></div>` : "";
+  return `<h3>💬 이 기사로 대화하기</h3><div class="note">두 사람이 기사 이야기를 나누는 대화예요. 굵은 글씨가 오늘의 회화 표현이에요. 🔊 한 줄씩 듣고 따라 말해 보세요.</div>
+  <div class="row"><button class="pri sp" data-sp="${a}D:0" data-spl="▶ 전체 대화 듣기" onclick="spTap('${a}D',0)">${spActive(a+'D',0)?SP_ON:"▶ 전체 대화 듣기"}</button><button onclick="cvKoT('${a}','*')" aria-pressed="${all}">${all?"🇰🇷 한국어 숨기기":"🇰🇷 한국어 모두 보기"}</button></div>
+  <div class="cvd">${lines}</div>
+  <h3>🗣 회화 표현</h3><div class="note">🔊 영어 → 뜻 (반복·간격·속도는 ⚙️ 설정). ☆를 누르면 단어장에 저장돼요.</div>${exps}
+  <div class="cvp"><h4>🎤 말해 보기</h4>
+    <div class="cvq"><div><b>${esc(P.q)}</b><br><span class="note">${esc(P.qk)}</span></div><button class="ico sp" data-sp="${a}p:0" aria-label="질문 듣기" onclick="spTap('${a}p',0)">${spLbl(a+'p',0)}</button></div>
+    <div class="wmx">${P.t.map(t=>`<span class="tagc big">${esc(t)}</span>`).join("")}</div>
+    <div class="note">위 두 표현을 넣어 대화하듯 2~3문장으로 답해 보세요. 아이폰 키보드의 🎤(받아쓰기)로 말해도 돼요.</div>
+    <textarea id="cvin-${a}" rows="4" maxlength="1000" placeholder="Answer like you're talking to a friend…" aria-label="말해 보기 답" autocapitalize="sentences" spellcheck="true" oninput="cvSave('${a}',this.value)">${esc(s.v||"")}</textarea>
+    <div class="row"><button class="pri" onclick="cvCheck('${a}')">✅ 확인</button><button onclick="cvShow('${a}')">👀 모범 답안 보기</button>${s.chk||s.show?`<button onclick="cvReset('${a}')">↺ 다시</button>`:""}</div>
+    <div class="note">확인은 이 기기 안에서만 표현이 들어갔는지 살펴봐요(전송 없음). 문법 채점은 하지 않아요.</div>
+    <div id="cvr-${a}" aria-live="polite">${res}${model}</div></div>`; }
+function cvDraw(a){ const el=document.getElementById("cv-"+a); if(el) el.innerHTML=cvHTML(a); }
+function cvKoT(a,i){ const k=a+i; cvKo[k]=!cvKo[k]; cvDraw(a); }
+function cvCheck(a){ const el=document.getElementById("cvin-"+a), v=el?el.value:""; if(!v.trim()){ el&&el.focus(); return; } cvSave(a,v); CVS[a].chk=true; cvDraw(a); const r=document.getElementById("cvr-"+a); if(r) dVis(r); }
+function cvShow(a){ const el=document.getElementById("cvin-"+a); CVS[a]={...(CVS[a]||{}),v:el?el.value:(CVS[a]||{}).v||"",show:true}; cvDraw(a); const r=document.getElementById("cvr-"+a); if(r) dVis(r); }
+function cvReset(a){ CVS[a]={...(CVS[a]||{}),chk:false,show:false}; cvDraw(a); const el=document.getElementById("cvin-"+a); if(el){ el.focus({preventScroll:true}); } }
 /* ---------- 핵심 문장 따라 쓰기 (article.key_sentences) ---------- */
 const DS={};   // "a1-2" -> {hid, val, res}
 const dNorm=w=>w.toLowerCase().replace(/[\u2018\u2019\u201B\u2032`]/g,"'").replace(/[^a-z0-9]/g,"");
@@ -788,7 +904,7 @@ function dictCard(A,i,n){ const k=A.id+"-"+i, st=DS[k]||(DS[k]={hid:false,val:""
 function dRedraw(k, focus){ const [aid,i]=k.split("-"), A=D[aid.toUpperCase()], el=document.getElementById("dc-"+k); if(!el) return;
   el.outerHTML=dictCard(A,+i,A.keys.indexOf(+i)); if(focus){ const inp=document.getElementById("din-"+k); if(inp){ inp.focus({preventScroll:true}); dVis(inp); } } }
 function dVis(el){ setTimeout(()=>{ const r=el.getBoundingClientRect(), mi=document.getElementById("mini"), bot=mi&&mi.offsetParent!==null?mi.getBoundingClientRect().top:innerHeight;
-  if(r.bottom>bot-12) scrollBy({top:r.bottom-bot+24,behavior:"smooth"}); },60); }
+  if(r.bottom>bot-12) wrapScrollBy({top:r.bottom-bot+24,behavior:"smooth"}); },60); }
 function dHide(k){ DS[k].hid=true; DS[k].res=null; dRedraw(k,true); }
 function dShowAgain(k){ DS[k].hid=false; DS[k].res=null; dRedraw(k); }
 function dRetry(k){ DS[k].val=""; DS[k].res=null; dRedraw(k,true); }
@@ -823,10 +939,11 @@ function articleHTML(A){
   <div class="kicker">${esc(A.kicker)}</div><h2>${esc(A.headline)}</h2><div class="sub">${esc(A.koHeadline)}</div>
   <div class="pn pn-read">
   ${A.image?`<figure class="hero"><img src="${esc(A.image.src)}" ${A.id==="a1"?'loading="eager"':'loading="lazy"'} width="${A.image.w}" height="${A.image.h}" alt="${esc(A.image.alt||"")}" decoding="async"><figcaption>${esc(A.image.caption||"")}${A.image.credit?` <span class="credit">사진: <a href="${esc(A.image.creditUrl||A.source.href)}" target="_blank" rel="noopener">${esc(A.image.credit)}</a></span>`:""}</figcaption></figure>`:""}
-  <span class="seg" id="mode-${id}">${[["en","원문"],["jik","직해"],["ko","한국어"],["eo","영어만"]].map(([m,l])=>`<button data-m="${m}" class="${m==="jik"?"on":""}" onclick="setMode('${id}','${m}')">${l}</button>`).join("")}</span>
+  <div class="modebar" id="mbar-${id}"><span class="seg" id="mode-${id}">${[["en","원문"],["jik","직해"],["ko","한국어"],["eo","영어만"]].map(([m,l])=>`<button data-m="${m}" class="${m==="jik"?"on":""}" onclick="setMode('${id}','${m}')">${l}</button>`).join("")}</span></div>
   <div id="lines-${id}"></div>
   <h3>문장별 듣기</h3>
   ${seqPlayer(id+"s","문장",{shadow:true,rep:true})}
+  <div id="tc-${id}"></div>
   <a class="card" href="${A.source.href}" target="_blank" rel="noopener"><b>원문: ${esc(A.source.title)}</b><small>${esc(A.source.site)} · ${esc(A.source.date||META.ym)}</small></a>
   </div>
   <div class="pn pn-voc">
@@ -834,17 +951,19 @@ function articleHTML(A){
   ${ctlBar(id+"v","어휘")}
   <div class="note">▶ 전체 듣기 또는 🔊 하나씩: 영어 → 뜻 (반복·간격·속도는 ⚙️ 설정).</div>
   <div class="items"><div class="item ihdr"><div class="w">단어</div><div class="mean">뜻</div><div class="ex">기사 속 문장</div><div class="acts"></div></div>
-  ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico sp" data-sp="${id}v:${i}" aria-label="듣기" onclick="spTap('${id}v',${i})">${spLbl(id+'v',i)}</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
+  ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico sp" data-sp="${id}v:${i}" aria-label="듣기" onclick="spTap('${id}v',${i})">${spLbl(id+'v',i)}</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}${exKo(x)}</div></div>`).join("")}</div>
   </div>
   <div class="pn pn-exp">
   <h3>중요 표현</h3>
   ${ctlBar(id+"x","표현")}
   <div class="items"><div class="item ihdr"><div class="w">표현</div><div class="mean">뜻</div><div class="ex">기사 속 쓰임</div><div class="acts"></div></div>
-  ${A.exprs.map((x,i)=>`<div class="item" data-row="${id}x-${i}"><div class="w"><b>${esc(x.en)}</b></div><div class="acts"><button class="ico sp" data-sp="${id}x:${i}" aria-label="듣기" onclick="spTap('${id}x',${i})">${spLbl(id+'x',i)}</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
+  ${A.exprs.map((x,i)=>`<div class="item" data-row="${id}x-${i}"><div class="w"><b>${esc(x.en)}</b></div><div class="acts"><button class="ico sp" data-sp="${id}x:${i}" aria-label="듣기" onclick="spTap('${id}x',${i})">${spLbl(id+'x',i)}</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}${exKo(x)}</div></div>`).join("")}</div>
   </div>
   <div class="pn pn-quiz">
   <h3>${QT.quiz}</h3><div id="quiz-${id}"></div><div id="dict-${id}"></div><div id="wmbox-${id}"></div>
   </div>
+  <div class="pn pn-gram"><div id="gp-${id}"></div><div id="gq-${id}"></div></div>
+  <div class="pn pn-conv" id="cv-${id}"></div>
 </section>`;
 }
 
@@ -855,6 +974,11 @@ const enko = n => n;   // item.parts is computed on play: EN→KO × the listene
   seqs[A.id+"v"]={unit:"어휘",idx:0,rate:rateG(),list:A.vocab.map((x,i)=>({src:clip(`${A.id}-v${i+1}`),parts:enko(`${A.id}-v${i+1}`),title:`${x.w} (${x.pos})`,detail:x.ko}))};
   seqs[A.id+"x"]={unit:"표현",idx:0,rate:rateG(),list:A.exprs.map((x,i)=>({src:clip(`${A.id}-x${i+1}`),parts:enko(`${A.id}-x${i+1}`),title:x.en,detail:x.ko}))};
 });
+[D.A1,D.A2].forEach(A=>{ const C=A.cv; if(!C) return;   // 💬 회화: dialogue lines, full dialogue, expressions (EN→KO), question + model answer
+  seqs[A.id+"d"]={unit:"줄",idx:0,rate:rateG(),list:C.d.map((l,i)=>({src:clip(`${A.id}-d${i+1}`),title:l.en.replace(/\*\*/g,""),detail:l.ko}))};
+  seqs[A.id+"D"]={unit:"대화",idx:0,rate:rateG(),list:[{src:(META.dialog||{})[A.id],title:"전체 대화",detail:""}]};
+  seqs[A.id+"c"]={unit:"표현",idx:0,rate:rateG(),list:C.x.map((x,i)=>({src:clip(`${A.id}-c${i+1}`),parts:enko(`${A.id}-c${i+1}`),title:x.en,detail:x.ko}))};
+  seqs[A.id+"p"]={unit:"",idx:0,rate:rateG(),list:[{src:clip(`${A.id}-cq`),title:C.p.q,detail:""},{src:clip(`${A.id}-cm`),title:C.p.m,detail:""}]}; });
 seqs.rq={unit:"표현",idx:0,rate:rateG(),list:D.RQ.map((x,i)=>({src:clip(`rq${i+1}`),parts:enko(`rq${i+1}`),title:x.en,detail:""}))};
 document.getElementById("arts").innerHTML = articleHTML(D.A1)+articleHTML(D.A2);
 document.getElementById("mini").innerHTML = [D.A1,D.A2].map((A,n)=>miniPlayer(A.id, FULL[A.id], `🎧 기사 ${n+1} 전체 듣기`)).join("");
@@ -863,9 +987,9 @@ Object.values(seqs).forEach(S=>S.list.forEach(it=>{ if(typeof it.parts!=="string
 ["a1","a2"].forEach(id=>{ initFull(id, MARKS[id]); drawLines(id); });
 Object.keys(seqs).forEach(k=>renderSeq(k));
 document.getElementById("rqtitle").textContent=QT.rqT; if(QT.rqNote) document.getElementById("rqnote").textContent=QT.rqNote;
-drawQuiz(); drawRQ(); drawDict(); drawWrite(); addEventListener("load",()=>offDraw());
+drawQuiz(); drawRQ(); drawDict(); drawWrite(); ["a1","a2"].forEach(gpDraw); ["a1","a2"].forEach(gqDraw); ["a1","a2"].forEach(tcDraw); ["a1","a2"].forEach(cvDraw); addEventListener("load",()=>offDraw());
 /* ---------- tabs: article switcher + 원문|직해|어휘|표현|퀴즈 ---------- */
-const TABS=[["en","원문","read"],["jik","직해","read"],["voc","어휘","voc"],["exp","표현","exp"],["quiz","퀴즈","quiz"]];
+const TABS=[["en","원문","read"],["jik","직해","read"],["voc","어휘","voc"],["exp","표현","exp"],["quiz","퀴즈","quiz"]].concat([D.A1,D.A2].some(A=>A.gp||(A.gq&&A.gq.length))?[["gram","문법","gram"]]:[]).concat([D.A1,D.A2].some(A=>A.cv)?[["conv","회화","conv"]]:[]);
 // Every load opens on 기사 1 → 원문 (English). Only an explicit link hash (#a2, #a2-voc, #rq …) opens another view.
 try{ Object.keys(localStorage).filter(k=>k.startsWith("ea-tab-v1")).forEach(k=>localStorage.removeItem(k)); }catch(e){}
 const TAB=(()=>{ const h=location.hash.slice(1), PV=["rv","past","mywb","rq","review"], m=h.match(/^(a[12])(?:-(\w+))?$/);
@@ -884,14 +1008,17 @@ function drawTabs(){
   ["a1","a2"].forEach(a=>{ const el=document.getElementById(a); el.classList.toggle("cur",TAB.art===a); el.dataset.pn=TABS.find(x=>x[0]===TAB.tab)[2];
     document.getElementById("mp-"+a).classList.toggle("cur",(rv?TAB.last:TAB.art)===a); });
 }
-function toStudyTop(){ const st=document.getElementById("study"); const y=st.getBoundingClientRect().top+scrollY; if(scrollY>y) window.scrollTo(0,y); }
-function selTab(t){ if(t===TAB.tab) return; spStop(); TAB.tab=t; saveTab();
+function toStudyTop(){ const st=document.getElementById("study"); const y=st.getBoundingClientRect().top+wrapY(); if(wrapY()>y) wrapScrollTo(y); }
+function selTab(t){ if(t===TAB.tab) return; spStop();
+  if((t==="en"||t==="jik")&&(TAB.tab==="en"||TAB.tab==="jik")&&TAB.art!=="rv"){ const a=TAB.art; keepPlace(a,()=>selTab0(t,true)); return; }
+  selTab0(t,false); }
+function selTab0(t,keep){ TAB.tab=t; saveTab();
   if(t==="en"||t==="jik"){ ["a1","a2"].forEach(a=>{ if(t==="jik"? modes[a]!=="jik" : modes[a]==="jik"){ modes[a]=t; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===t)); drawLines(a); } }); }
-  drawTabs(); toStudyTop(); }
+  drawTabs(); if(!keep) toStudyTop(); }
 function selArt(a, target){ if(a!==TAB.art){ spStop(); if(a!=="rv"){ const old=fulls[TAB.last]; if(a!==TAB.last && old && !old.paused) old.pause(); TAB.last=a; }
     if(a!=="rv"){ closeGloss(); TAB.tab="en"; ["a1","a2"].forEach(x=>{ if(modes[x]==="jik"){ modes[x]="en"; document.querySelectorAll(`#mode-${x} button`).forEach(b=>b.classList.toggle("on",b.dataset.m==="en")); drawLines(x); } }); }   // a different article always opens on 원문, at its top
     TAB.art=a; saveTab(); drawTabs(); }
-  const el=target&&document.getElementById(target); if(el){ const bar=document.getElementById("sbar").offsetHeight; window.scrollTo(0, el.getBoundingClientRect().top+scrollY-bar-8); } else toStudyTop(); }
+  const el=target&&document.getElementById(target); if(el){ const bar=document.getElementById("sbar").offsetHeight; wrapScrollTo(el.getBoundingClientRect().top+wrapY()-bar-8); } else toStudyTop(); }
 addEventListener("hashchange",()=>{ const h=location.hash.slice(1);
   if(h==="a1"||h==="a2") selArt(h); else if(["rv","past","mywb","rq","review"].includes(h)) selArt("rv", h==="rv"?null:h); });
 if(TAB.tab!=="jik"){ ["a1","a2"].forEach(a=>{ modes[a]="en"; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m==="en")); drawLines(a); }); }
@@ -928,7 +1055,5 @@ if(HAS_WB){
   if(META.sunday){ document.getElementById("mywb").hidden=false; WB.quiz(document.getElementById("mywbbox"),{limit:10}); }
 }
 </script>
-<script>/* cover above sticky bars only while they are stuck */
-(function(){ const els=[...document.querySelectorAll(".stk")]; const f=()=>els.forEach(e=>e.classList.toggle("stuck", !e.hidden && e.getBoundingClientRect().top<=1 && scrollY>0)); addEventListener("scroll",f,{passive:true}); addEventListener("resize",f); f(); })();</script>
 </body>
 </html>
