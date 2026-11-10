@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=d9dd96e771" defer></script>
+<script src="./pwa.js?v=365baa4c68" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <title>영어 직독직해 · 전체 학습</title>
 <style>
@@ -234,6 +234,9 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .dms{background:rgba(255,200,0,.45);color:inherit;border-radius:3px;padding:0 2px;font-weight:700}
 .gw{cursor:pointer;text-decoration:underline dotted rgba(128,128,128,.55);text-decoration-thickness:1px;text-underline-offset:3px}
 .gw.gon{background:var(--accs);border-radius:3px;text-decoration-color:var(--acc)}
+.dw{cursor:pointer}.dw.gon{background:var(--accs);border-radius:3px}
+#gpop .gtag{display:inline-block;margin-top:2px;font-size:12px;font-weight:700;color:var(--tx2);border:1px solid var(--line);border-radius:999px;padding:0 7px}
+#gpop .gpd{margin:4px 0 0;padding-left:20px}#gpop .gpd li{margin:1px 0}#gpop .gpc{margin-top:6px;font-size:11.5px;line-height:1.35;color:var(--tx2)}#gpop .gpn{color:var(--tx2)}
 #gpop{position:fixed;z-index:30;box-sizing:border-box;padding:10px 12px;background:var(--card);color:var(--tx);border:1px solid var(--acc);border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,.18)}
 #gpop .gph{display:flex;align-items:flex-start;gap:8px}#gpop .gpw{flex:1;font-size:18px}#gpop .glem{font-weight:400;color:var(--tx2);font-size:15px}
 #gpop .gpk{margin-top:4px;font-size:17px;line-height:1.45}#gpop .gx{flex:none}
@@ -274,7 +277,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 <a class="card" href="./wordbook.html"><b>⭐ 나만의 단어장</b><small id="wbcount">저장한 단어·표현 보기, 복습 퀴즈, 백업</small></a>
 <section class="box" id="weekly">
   <h3 style="border:0;margin-top:0;padding-top:0">📚 주말 복습</h3>
-  <a class="card" href="./weekly/2026-11-01.html"><b>주말 복습 (10/26~10/31) · 핵심 표현 10개 + 퀴즈</b><small>2026-11-01<span class="wprog" data-date="2026-11-01" data-n="10"></span></small></a>
+  <a class="card" href="./weekly/2026-11-01.html"><b>주말 복습 (10/26~10/31) · 핵심 표현 10개 + 퀴즈</b><small>2026-11-01 · 📚 일요일 주간 복습<span class="wprog" data-date="2026-11-01" data-n="10" data-x="0"></span></small></a>
 </section>
 <section class="box">
   <h3 style="border:0;margin-top:0;padding-top:0">📚 전체 학습 (최신순)</h3>
@@ -290,7 +293,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 </section>
 </div>
 <script src="./wb.js?v=f18a0eee64"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="8cf055a790") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="766830d8a6") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}
@@ -300,7 +303,12 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 /* weekly review progress: {date:{heard:[...],quiz:bool}} → ✅ 완료 or 📖 n/(N+1) */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-wprog-v1")||"{}")||{}; }catch(e){}
   document.querySelectorAll(".wprog[data-date]").forEach(el=>{ const x=o[el.dataset.date]||{}, N=+el.dataset.n, h=(x.heard||[]).filter(i=>i<N).length+(x.quiz?1:0);
-    el.textContent = h>=N+1 ? " · ✅ 완료" : h ? ` · 📖 ${h}/${N+1}` : ""; }); })();
+    const X=+(el.dataset.x||0), e=X?(x.out?1:0)+(x.rq?1:0):0, T=N+1+X, H=h+Math.min(e,X);
+    el.textContent = H>=T ? " · ✅ 완료" : H ? ` · 📖 ${H}/${T}` : ""; }); })();
+/* Saturday review progress: {date:{read,quiz,out,rq}} → ✅ 완료 or 📖 n/parts */
+(function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-sprog-v1")||"{}")||{}; }catch(e){}
+  document.querySelectorAll(".sprog[data-date]").forEach(el=>{ const x=o[el.dataset.date]||{}, N=+el.dataset.n, h=["read","quiz","out","rq"].filter(k=>x[k]).length;
+    el.textContent = h>=N ? " · ✅ 완료" : h ? ` · 📖 ${h}/${N}` : ""; }); })();
 if(window.WB){ const n=WB.all().length; if(n) document.getElementById("wbcount").textContent=`저장 ${n}개 · 복습 퀴즈 · 백업`; }
 </script>
 </body>
