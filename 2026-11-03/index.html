@@ -7,6 +7,15 @@ function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get(
 <script>try{const f=parseFloat(localStorage.getItem("ea-fs-v1"));if([0.9,1,1.15,1.3].includes(f))document.documentElement.style.setProperty("--fs",f)}catch(e){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="직독직해">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script src="../pwa.js?v=177b989e2b" defer></script>
+<style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <title>11월 3일 직독직해 뉴스</title>
@@ -14,9 +23,10 @@ function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get(
 :root{--bg:#fafaf8;--card:#fff;--tx:#1b1b1b;--tx2:#5f6368;--line:#e4e4e0;--acc:#1a5fd6;--accs:#e8f0fe;--ok:#1e8e3e;--bad:#d93025;--btn:#f1f3f4}
 @media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1c1c1e;--tx:#ececec;--tx2:#a0a4a8;--line:#2e2e30;--acc:#8ab4f8;--accs:#1f2a3d;--ok:#81c995;--bad:#f28b82;--btn:#2a2a2d}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
-.wrap{max-width:720px;margin:0 auto;padding:16px 16px calc(80px + env(safe-area-inset-bottom))}
-header.mast{border-bottom:3px double var(--tx);padding:6px 0 10px;margin-bottom:14px}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);overscroll-behavior:none}
+body{color:var(--tx);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px calc(110px + env(safe-area-inset-bottom));height:100%;height:100svh;height:100dvh;max-height:100dvh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;background:var(--bg)}
+header.mast{border-bottom:3px double var(--tx);padding:16px 0 10px;margin-bottom:14px}
 .mast .date{font-size:13px;color:var(--tx2);letter-spacing:.04em}
 .mast h1{font:700 28px/1.2 Georgia,"Times New Roman",serif;margin:4px 0}
 .mast p{margin:4px 0 0;color:var(--tx2);font-size:15px}
@@ -89,7 +99,7 @@ label.tg input{width:22px;height:22px}
 .wbstar{font-size:18px}
 /* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
 #study{margin:18px 0}
-.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0 -4px;padding-left:4px;padding-right:4px;border-bottom:1px solid var(--line)}
+.sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0;border-bottom:1px solid var(--line)}
 .artsw{display:flex;gap:6px;margin-bottom:6px}
 .artsw button{flex:1;min-width:0;text-align:left;font-size:14px;line-height:1.3;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .artsw button b{margin-right:4px}
@@ -104,9 +114,12 @@ label.tg input{width:22px;height:22px}
 .artsw button.pv{flex:0 0 auto}
 #study section.art:not(.cur){display:none}
 .art .pn{display:none}
-.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz{display:block}
+.art[data-pn="read"] .pn-read,.art[data-pn="voc"] .pn-voc,.art[data-pn="exp"] .pn-exp,.art[data-pn="quiz"] .pn-quiz,.art[data-pn="gram"] .pn-gram,.art[data-pn="conv"] .pn-conv{display:block}
 .pn>h3:first-child{margin-top:4px;padding-top:0;border-top:0}
-.sent{scroll-margin-top:130px;scroll-margin-bottom:110px}
+.sent{scroll-margin-top:calc(var(--sbh,104px) + 64px);scroll-margin-bottom:110px}
+/* 원문/직해 view-mode row (원문·직해·한국어·영어만): pinned right under the sticky header while reading; opaque, full card width */
+.modebar{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:0 -16px 6px;padding:6px 16px 6px;border-bottom:1px solid var(--line);box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.modebar .seg{margin:0;background:var(--card)}
 /* compact sticky mini-player for the full article */
 #mini{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(0,0,0,.08);padding:6px 10px calc(6px + env(safe-area-inset-bottom))}
 #mini .mp{max-width:720px;margin:0 auto}
@@ -118,10 +131,9 @@ label.tg input{width:22px;height:22px}
 #mini button{min-height:38px;padding:6px 9px;font-size:14px}
 #mini .fpp{min-width:46px}
 #mini .bar{margin:5px 0 1px;height:5px}
-.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 #tabs[hidden],#pagev[hidden]{display:none}
 /* compact sticky control bar (어휘/표현 tabs): play-all + 반복 + 간격, right under the tab bar */
-.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px -16px 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
+.ctl{position:sticky;top:var(--sbh,104px);z-index:12;background:var(--card);margin:6px 0 10px;padding:8px 12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:0 6px 10px -8px rgba(0,0,0,.18)}
 .srep{align-items:center;gap:6px;margin:8px 0 2px}
 .srep .seg{margin:0}.srep .seg button{min-height:34px;padding:4px 10px;font-size:14px}
 .srep .lab{font-size:13px;color:var(--tx2)}
@@ -184,16 +196,66 @@ body.sheet-open{overflow:hidden}
 .tabs button .ck{color:var(--ok);font-size:12px;margin-left:2px;font-weight:700}
 .ctl .crow2 .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .srep{margin:6px 0 2px}
-/* ---------- sticky bars: flush at top:0 and opaque all the way up (iOS Safari shows page content behind/above the toolbar) ---------- */
-html{background:var(--bg)}
-.wrap{overflow-x:clip}
+.exk{margin-top:3px;font-size:.92em;color:var(--tx2);opacity:.9}.exk b{color:var(--tx);font-weight:700}
+/* ---------- contained scroll: document does not scroll; .wrap is the only scroller (iOS Safari tab chrome) ---------- */
 .stk{top:0!important}
-.stk.stuck::before{content:"";position:absolute;z-index:-1;left:calc(-1*var(--bleed,12px));right:calc(-1*var(--bleed,12px));bottom:0;height:calc(100% + 100vh + env(safe-area-inset-top));background:inherit;pointer-events:none}
-.sbar{--bleed:12px;box-shadow:0 1px 0 var(--line)}
-#wbctl{--bleed:17px}
+.sbar{box-shadow:0 1px 0 var(--line)}
+@media (display-mode:standalone),(display-mode:fullscreen){
+  .wrap{padding-top:env(safe-area-inset-top,0px)}
+  .stk{top:env(safe-area-inset-top,0px)!important}
+  .ctl,.modebar{top:calc(var(--sbh,104px) + env(safe-area-inset-top,0px))}
+}
 .dprog,.wprog{font-weight:600;color:var(--ok)}
 .wbtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wbtop .gear{flex:0 0 auto;font-size:17px;padding:4px 10px}
+.tc{margin-top:18px}.tcen{line-height:1.55;margin-bottom:8px}.tc textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}.tcres{margin-top:8px}.tcl{margin:5px 0;line-height:1.5}.tcl.ok b{color:#2e9d5b}.tcl.no b{color:#c77700}.tcm{margin-top:8px;padding:8px 10px;border-left:3px solid var(--line);line-height:1.55}
+.gp{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.gp h3{margin:0 0 8px;padding-top:0;border-top:0}.gpl{margin:6px 0;line-height:1.55}.gpr{font-weight:700}.gpt{display:inline-block;font-size:.8em;padding:1px 6px;border-radius:6px;background:var(--accs);color:var(--acc);margin-right:4px}.gpk{display:block;color:var(--tx2);font-size:.92em}.pn-gram .gq{margin-top:14px}
+.gq{margin-top:18px}.gqq{margin:6px 0;line-height:1.6}.gqb{font-weight:700;color:var(--tx)}.gqo{min-height:44px}.gqs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;line-height:1.3}.gqt{min-height:40px;min-width:40px;padding:6px 9px;font-size:1em;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}.gqt.gqw,.gqo.gqw{text-decoration:line-through;opacity:.55}.gqt.gqok{outline:2px solid #2e9d5b;text-decoration:line-through;text-decoration-color:#d33}.gqt:disabled{cursor:default}.gqx{font-weight:600}
+/* recall quiz, writing mission, review tags (since 2026-11-05) */
+.rcin input{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:10px 12px;font-size:max(16px,calc(17px*var(--fs,1)));border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--tx)}
+.rcin input:focus{outline:2px solid var(--acc);outline-offset:1px}
+.rcin input:disabled{opacity:.75}
+.tagc{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.6;background:var(--accs);color:var(--acc);white-space:nowrap;vertical-align:middle}
+.tagc.big{font-size:calc(14px*var(--fs,1));margin:0 6px 6px 0;padding:2px 10px}
+.wm{margin:18px 0 6px;padding:12px 14px;border:1px dashed var(--acc);border-radius:12px;background:var(--card)}
+.wm h4{margin:0 0 8px;font-size:calc(17px*var(--fs,1))}
+.wm p{margin:6px 0;font-size:calc(16px*var(--fs,1))}
+.wm textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}
+.wm details{margin:6px 0}.wm summary{cursor:pointer;color:var(--acc);font-size:14px}
+.wm .wmex{font-style:italic;color:var(--tx2)}
+button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;background:var(--acc);color:#fff;border-color:var(--acc)}
+.dict{margin:18px 0 6px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.dict h4{margin:0 0 6px;font-size:calc(17px*var(--fs,1))}
+.dcard{margin:12px 0 0;padding:10px 0 0;border-top:1px dashed var(--line)}
+.dcard .dhd{display:flex;align-items:center;gap:8px}
+.dsen{margin:6px 0;font-size:calc(17px*var(--fs,1));line-height:1.55}.dsen.dhid{color:var(--tx2);font-size:15px}
+.dcin{width:100%;box-sizing:border-box;padding:12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx)}
+.dict .row button{min-height:44px}
+.dres{margin:8px 0;font-size:calc(16px*var(--fs,1));line-height:1.7}.dline{margin:4px 0}.dl{display:inline-block;font-size:12px;font-weight:700;color:var(--tx2);margin-right:4px}
+.dwr{color:#d33;text-decoration:line-through;text-decoration-thickness:2px}
+.dms{background:rgba(255,200,0,.45);color:inherit;border-radius:3px;padding:0 2px;font-weight:700}
+.gw{cursor:pointer;text-decoration:underline dotted rgba(128,128,128,.55);text-decoration-thickness:1px;text-underline-offset:3px}
+.gw.gon{background:var(--accs);border-radius:3px;text-decoration-color:var(--acc)}
+#gpop{position:fixed;z-index:30;box-sizing:border-box;padding:10px 12px;background:var(--card);color:var(--tx);border:1px solid var(--acc);border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,.18)}
+#gpop .gph{display:flex;align-items:flex-start;gap:8px}#gpop .gpw{flex:1;font-size:18px}#gpop .glem{font-weight:400;color:var(--tx2);font-size:15px}
+#gpop .gpk{margin-top:4px;font-size:17px;line-height:1.45}#gpop .gx{flex:none}
+.wm .gres{margin:8px 0;font-size:calc(15px*var(--fs,1))}
+.wm .gtxt{padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.wm mark.gerr{background:rgba(230,80,60,.18);color:inherit;border-bottom:2px solid #e5533d;border-radius:3px;padding:0 1px}
+.wm ol.glist{margin:8px 0;padding-left:22px}.wm ol.glist li{margin:6px 0}
+.wm .gbad{text-decoration:line-through;color:#d33}.wm .gsug{font-weight:700;color:var(--acc)}
+.wm .glist button{padding:2px 8px;font-size:13px;margin-left:4px}
+.wm .gmsg{display:block;color:var(--tx2);font-size:13px}
+/* 💬 회화 tab (article.conversation) */
+.cvd{margin:8px 0 4px}.cvl{display:flex;gap:8px;align-items:flex-start;margin:10px 0}.cvl.B{flex-direction:row-reverse}
+.cvav{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:var(--accs);color:var(--acc)}.cvl.B .cvav{background:rgba(46,157,91,.16);color:#2e9d5b}
+.cvb{flex:0 1 auto;max-width:82%;padding:8px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card);line-height:1.5;font-size:calc(16.5px*var(--fs,1));transition:background .2s}.cvl.A .cvb{border-top-left-radius:4px}.cvl.B .cvb{border-top-right-radius:4px;background:var(--bg)}
+.cvl.on .cvb{background:var(--accs);border-color:var(--acc)}.cvb b{color:var(--acc)}.cvk{color:var(--tx2);font-size:.9em;margin-top:4px}
+.cvbt{display:flex;flex-direction:column;gap:4px;flex:none}.cvbt button{min-height:36px;padding:4px 8px;font-size:13px}
+.cvx{margin:10px 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.cvx .dhd{display:flex;align-items:center;gap:6px}.cvx .dhd b{flex:1;font-size:calc(16px*var(--fs,1))}
+.cvx .cvm{margin:4px 0;font-size:calc(15.5px*var(--fs,1))}.cvx .cvu{font-size:calc(14px*var(--fs,1));color:var(--tx2);margin:2px 0}.cvx .cve{margin-top:6px;font-size:calc(15px*var(--fs,1));line-height:1.5}.cvx .cve .gpk{font-size:.92em}
+.cvp{margin:18px 0 6px;padding:12px 14px;border:1px dashed var(--acc);border-radius:12px;background:var(--card)}.cvp h4{margin:0 0 6px;font-size:calc(17px*var(--fs,1))}.cvq{display:flex;gap:8px;align-items:flex-start;margin:6px 0}.cvq>div{flex:1;line-height:1.5;font-size:calc(16px*var(--fs,1))}
+.cvp textarea{width:100%;box-sizing:border-box;padding:10px 12px;font:inherit;font-size:max(16px,calc(16px*var(--fs,1)));line-height:1.5;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);resize:vertical}
 </style>
 </head>
 <body>
@@ -219,14 +281,20 @@ html{background:var(--bg)}
   <div id="mywbbox"></div>
 </section>
 <section class="box" id="rq">
-  <h3 style="border:0;margin-top:0;padding-top:0">🔁 복습 퀴즈</h3>
-  <div class="note">복습 기록에 있는 표현의 뜻을 골라 보세요. 🔊로 영어→뜻을 설정한 횟수(1~3회)만큼 들을 수 있어요.</div>
+  <h3 style="border:0;margin-top:0;padding-top:0" id="rqtitle">🔁 복습 퀴즈</h3>
+  <div class="note" id="rqnote">복습 기록에 있는 표현의 뜻을 골라 보세요. 🔊로 영어→뜻을 설정한 횟수(1~3회)만큼 들을 수 있어요.</div>
   <div id="rqbox"></div>
 </section>
 <section class="box" id="review">
   <h3 style="border:0;margin-top:0;padding-top:0">오늘의 복습 표현</h3>
   <div class="note" id="revnote"></div>
   <table class="tbl" id="revtbl"></table>
+</section>
+<section class="box" id="offbox" hidden>
+  <h3 style="border:0;margin-top:0;padding-top:0">📥 오프라인용 받기</h3>
+  <div class="note" id="offnote">이 날짜의 음성(기사·문장·단어·표현)을 미리 받아 두면 인터넷 없이도 들을 수 있어요.</div>
+  <div class="bar" id="offbar" hidden style="margin:8px 0"><i id="offbi"></i></div>
+  <div class="row" style="margin-top:8px"><button class="pri" id="offget" onclick="offGet()">📥 오프라인용 받기</button><button id="offdel" onclick="offDel()" hidden>🗑 저장한 음성 지우기</button></div>
 </section>
 <section class="box" id="past">
   <h3 style="border:0;margin-top:0;padding-top:0">지난 학습</h3>
@@ -241,10 +309,16 @@ html{background:var(--bg)}
 <div id="sheetbg" onclick="closeSheet()"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <audio id="clip" preload="none" playsinline></audio>
-<script src="../wb.js?v=ab1a2742e1"></script>
+<script src="../wb.js?v=f18a0eee64"></script>
 <script>
-const D = {"A1": {"id": "a1", "kicker": "기사 1 · SpaceX", "headline": "SpaceXAI Adds Two New Sites to Its Giant AI Data Center", "koHeadline": "SpaceXAI, 거대 AI 데이터센터에 새 부지 두 곳을 더하다", "pairs": [{"en": "Elon Musk's company SpaceXAI / is making its giant Colossus 2 data center / even bigger, / and it will add two new sites / in Southaven, Mississippi.", "ko": "일론 머스크의 회사 SpaceXAI는 / 거대한 콜로서스 2 데이터센터를 만들고 있다 / 훨씬 더 크게, / 그리고 새 부지 두 곳을 추가할 것이다 / 미시시피주 사우스헤이븐에."}, {"en": "The sites have funny names, / Gun Range and Spam, / because one used to be a training center / for police officers and firefighters, / and the other was a warehouse / that stored products from the company that makes Spam.", "ko": "그 부지들은 재미있는 이름을 갖고 있다, / 건 레인지와 스팸이라는, / 왜냐하면 한 곳은 예전에 훈련소였기 때문이다 / 경찰관과 소방관을 위한, / 그리고 다른 한 곳은 창고였다 / 스팸을 만드는 회사의 제품을 보관하던."}, {"en": "Together, / the two sites will hold / about four hundred twenty thousand Nvidia chips, / which will be used to train and run AI models / like the Grok chatbot.", "ko": "합쳐서, / 두 부지는 갖추게 될 것이다 / 약 42만 개의 엔비디아 칩을, / 그것들은 AI 모델을 훈련하고 돌리는 데 쓰일 것이다 / 그록 챗봇 같은."}, {"en": "Musk wrote on X / that he walked around the whole site at midnight, / and he said / Gun Range should be ready / by the end of November, / while Spam should follow in December.", "ko": "머스크는 X에 썼다 / 자정에 부지 전체를 걸어서 둘러봤다고, / 그리고 그는 말했다 / 건 레인지는 준비될 것이라고 / 11월 말까지, / 반면 스팸은 12월에 뒤따를 것이라고."}, {"en": "However, the project has also run into trouble, / because state officials say / the company started building / before it got the right permits, / and they may ask it to pay / about six million dollars.", "ko": "하지만 그 프로젝트는 어려움에도 부딪혔다, / 왜냐하면 주 당국자들이 말하기 때문이다 / 그 회사가 공사를 시작했다고 / 제대로 된 허가를 받기 전에, / 그리고 그들은 그 회사에 내라고 요구할 수도 있다 / 약 600만 달러를."}], "natural": ["일론 머스크의 SpaceXAI가 거대한 AI 데이터센터 콜로서스 2를 더 키운다. 미시시피주 사우스헤이븐에 새 부지 두 곳을 추가할 계획이다.", "두 부지의 이름은 '건 레인지(사격장)'와 '스팸'으로 재미있다. 한 곳은 예전에 경찰관과 소방관 훈련소였고, 다른 한 곳은 스팸 제조사의 제품을 보관하던 창고였기 때문이다. 두 곳에는 엔비디아 칩 약 42만 개가 들어가며, 그록 챗봇 같은 AI 모델을 훈련하고 돌리는 데 쓰인다.", "머스크는 X에 자정에 부지 전체를 걸어서 둘러봤다고 쓰면서, 건 레인지는 11월 말까지, 스팸은 12월에 가동될 것이라고 밝혔다. 하지만 어려움도 있다. 주 당국은 회사가 제대로 된 허가를 받기 전에 공사를 시작했다며 약 600만 달러를 물릴 수 있다고 밝혔다."], "exprs": [{"en": "even bigger", "ko": "훨씬 더 큰", "ex": "is making its giant Colossus 2 data center even bigger"}, {"en": "used to", "ko": "예전에 ~였다, ~하곤 했다", "ex": "one used to be a training center"}, {"en": "be used to train", "ko": "훈련하는 데 쓰이다", "ex": "which will be used to train and run AI models"}, {"en": "be ready by", "ko": "~까지 준비되다", "ex": "Gun Range should be ready by the end of November"}, {"en": "run into trouble", "ko": "어려움에 부딪히다", "ex": "the project has also run into trouble"}, {"en": "ask someone to pay", "ko": "~에게 돈을 내라고 요구하다", "ex": "they may ask it to pay about six million dollars"}], "vocab": [{"w": "data center", "pos": "명사", "ko": "데이터센터", "ex": "its giant Colossus 2 data center"}, {"w": "site", "pos": "명사", "ko": "부지, 현장", "ex": "two new sites"}, {"w": "firefighter", "pos": "명사", "ko": "소방관", "ex": "police officers and firefighters"}, {"w": "warehouse", "pos": "명사", "ko": "창고", "ex": "the other was a warehouse"}, {"w": "store", "pos": "동사", "ko": "보관하다, 저장하다", "ex": "a warehouse that stored products"}, {"w": "chip", "pos": "명사", "ko": "(반도체) 칩", "ex": "Nvidia chips"}, {"w": "official", "pos": "명사", "ko": "공무원, 당국자", "ex": "state officials say"}, {"w": "permit", "pos": "명사", "ko": "허가(증)", "ex": "before it got the right permits"}], "source": {"title": "SpaceXAI launching two additional data center campuses in Mississippi to further expand Colossus 2", "site": "DCD (Data Center Dynamics)", "href": "https://www.datacenterdynamics.com/en/news/spacexai-launching-two-additional-data-center-campuses-in-mississippi-to-further-expand-colossus-2/", "date": "2026-11-02"}, "image": {"src": "img/colossus2.jpg", "w": 1200, "h": 630, "alt": "The Colossus 2 data center", "caption": "SpaceXAI의 콜로서스 2 데이터센터", "credit": "DCD", "creditUrl": "https://www.datacenterdynamics.com/en/news/spacexai-launching-two-additional-data-center-campuses-in-mississippi-to-further-expand-colossus-2/"}}, "A2": {"id": "a2", "kicker": "기사 2 · 기술·AI", "headline": "The New York Times Sues Brave over AI and Copied News", "koHeadline": "뉴욕타임스, AI와 기사 무단 복제로 브레이브를 고소하다", "pairs": [{"en": "The New York Times has sued Brave, / the company behind the Brave web browser, / and it says / Brave copied its news articles / without permission.", "ko": "뉴욕타임스가 브레이브를 고소했다, / 브레이브 웹 브라우저를 만든 회사인, / 그리고 뉴욕타임스는 말한다 / 브레이브가 자사 기사를 복사했다고 / 허락 없이."}, {"en": "According to the lawsuit, / Brave collected huge amounts of online content / and then sold access to it / to AI companies / such as Anthropic, Perplexity and xAI.", "ko": "소송에 따르면, / 브레이브는 엄청난 양의 온라인 콘텐츠를 모았고 / 그다음 그것에 접근할 권리를 팔았다 / AI 회사들에, / 앤트로픽, 퍼플렉시티, xAI 같은."}, {"en": "Those companies can use the content / to train their AI models / or to answer users' questions, / but the publishers say / they never got paid for it.", "ko": "그 회사들은 그 콘텐츠를 쓸 수 있다 / 자사 AI 모델을 훈련하는 데 / 또는 사용자 질문에 답하는 데, / 하지만 언론사들은 말한다 / 그 대가를 한 번도 받은 적이 없다고."}, {"en": "On top of that, / the Brave browser has a tool called Paywall blocker, / which lets users read articles / that normally require a paid subscription.", "ko": "게다가, / 브레이브 브라우저에는 '페이월 차단기'라는 도구가 있다, / 그것은 사용자가 기사를 읽게 해 준다 / 보통은 유료 구독이 필요한."}, {"en": "Three other newspapers, / including the Chicago Tribune, / filed a similar lawsuit on the same day, / and Brave did not respond right away / when reporters asked for comment.", "ko": "다른 신문사 세 곳도, / 시카고 트리뷴을 포함해서, / 같은 날 비슷한 소송을 냈다, / 그리고 브레이브는 바로 답하지 않았다 / 기자들이 입장을 물었을 때."}], "natural": ["뉴욕타임스가 웹 브라우저 '브레이브'를 만든 회사 브레이브를 고소했다. 브레이브가 허락 없이 자사 기사를 복사했다는 것이다.", "소송에 따르면 브레이브는 엄청난 양의 온라인 콘텐츠를 모은 뒤, 앤트로픽, 퍼플렉시티, xAI 같은 AI 회사들에 이용 권한을 팔았다. 이 회사들은 그 콘텐츠로 AI 모델을 훈련하거나 사용자 질문에 답할 수 있지만, 언론사들은 그 대가를 한 푼도 받지 못했다고 주장한다. 게다가 브레이브 브라우저에는 원래 유료 구독이 필요한 기사를 읽게 해 주는 '페이월 차단기'라는 기능도 있다.", "시카고 트리뷴을 비롯한 다른 신문사 세 곳도 같은 날 비슷한 소송을 냈다. 브레이브는 기자들의 입장 요청에 바로 답하지 않았다."], "exprs": [{"en": "without permission", "ko": "허락 없이", "ex": "Brave copied its news articles without permission"}, {"en": "according to", "ko": "~에 따르면", "ex": "According to the lawsuit, ..."}, {"en": "sell access to", "ko": "~에 대한 이용 권한을 팔다", "ex": "sold access to it to AI companies"}, {"en": "get paid for", "ko": "~에 대한 대가를 받다", "ex": "they never got paid for it"}, {"en": "on top of that", "ko": "게다가, 그뿐 아니라", "ex": "On top of that, the Brave browser has a tool ..."}, {"en": "right away", "ko": "즉시, 바로", "ex": "Brave did not respond right away"}, {"en": "ask for comment", "ko": "입장을 요청하다, 논평을 구하다", "ex": "when reporters asked for comment"}], "vocab": [{"w": "sue", "pos": "동사", "ko": "고소하다, 소송을 걸다", "ex": "The New York Times has sued Brave"}, {"w": "browser", "pos": "명사", "ko": "(웹) 브라우저", "ex": "the Brave web browser"}, {"w": "lawsuit", "pos": "명사", "ko": "소송", "ex": "According to the lawsuit"}, {"w": "content", "pos": "명사", "ko": "콘텐츠, 내용물", "ex": "huge amounts of online content"}, {"w": "publisher", "pos": "명사", "ko": "언론사, 출판사", "ex": "the publishers say"}, {"w": "require", "pos": "동사", "ko": "필요로 하다, 요구하다", "ex": "articles that normally require a paid subscription"}, {"w": "subscription", "pos": "명사", "ko": "구독", "ex": "a paid subscription"}, {"w": "respond", "pos": "동사", "ko": "응답하다", "ex": "Brave did not respond right away"}], "source": {"title": "The New York Times sues Brave web browser for AI scraping and bypassing paywalls", "site": "The Verge", "href": "https://www.theverge.com/tech/1024588/brave-lawsuit-ai-scraping-new-york-times", "date": "2026-11-02"}, "image": {"src": "img/brave-lawsuit.jpg", "w": 1200, "h": 624, "alt": "New York City, United States.", "caption": "미국 뉴욕시 풍경", "credit": "NurPhoto via Getty Images / The Verge", "creditUrl": "https://www.theverge.com/tech/1024588/brave-lawsuit-ai-scraping-new-york-times"}}, "QUIZ": [{"q": "Q1. (기사 1) 새 부지 이름이 '스팸'인 이유는?", "opts": ["A. 스팸 메일을 막는 AI를 만들어서", "B. 예전에 스팸 제조사 제품을 보관하던 창고라서", "C. 머스크가 스팸을 좋아해서"], "ans": "B", "why": "두 부지 이름은 예전 용도에서 왔고, 스팸 부지는 스팸 제조사의 제품을 보관하던 창고였습니다.", "quote": "the other was a warehouse that stored products from the company that makes Spam"}, {"q": "Q2. (기사 1) 주 당국이 문제 삼은 것은 무엇인가요?", "opts": ["A. 허가를 받기 전에 공사를 시작한 것", "B. 칩을 너무 많이 산 것", "C. 부지 이름이 이상한 것"], "ans": "A", "why": "당국은 회사가 제대로 된 허가를 받기 전에 공사를 시작했다고 보고, 약 600만 달러를 물릴 수 있다고 했습니다.", "quote": "the company started building before it got the right permits"}, {"q": "Q3. (기사 2) 소송에 따르면 브레이브는 모은 콘텐츠로 무엇을 했나요?", "opts": ["A. 신문사에 다시 팔았다", "B. AI 회사들에 이용 권한을 팔았다", "C. 모두 삭제했다"], "ans": "B", "why": "브레이브는 모은 온라인 콘텐츠의 이용 권한을 앤트로픽, 퍼플렉시티, xAI 같은 AI 회사들에 팔았다고 합니다.", "quote": "sold access to it to AI companies such as Anthropic, Perplexity and xAI"}, {"q": "Q4. (기사 2) 'Paywall blocker'는 어떤 기능인가요?", "opts": ["A. 광고를 더 많이 보여 준다", "B. AI가 기사를 요약해 준다", "C. 보통 유료 구독이 필요한 기사를 읽게 해 준다"], "ans": "C", "why": "페이월 차단기는 원래 돈을 내고 구독해야 읽을 수 있는 기사를 읽게 해 주는 기능입니다.", "quote": "which lets users read articles that normally require a paid subscription"}], "HINTS": ["힌트: 기사 1의 두 번째 문장에서 the other was 다음을 보세요.", "힌트: 기사 1의 마지막 문장에서 before 다음을 보세요.", "힌트: 기사 2의 두 번째 문장에서 sold access to 다음을 보세요.", "힌트: 기사 2의 네 번째 문장에서 which lets users 다음을 보세요."], "RQ": [{"day": "10/31", "en": "just in time for", "opts": ["A. ~에 딱 맞춰", "B. ~보다 늦게", "C. 시간이 없어서"], "ans": "A", "hint": "힌트: in time은 '늦지 않게', just는 '딱'이에요."}, {"day": "10/31", "en": "beat the record", "opts": ["A. 기록을 지우다", "B. 기록을 깨다", "C. 기록을 세우지 못하다"], "ans": "B", "hint": "힌트: beat는 '이기다'예요."}, {"day": "10/31", "en": "would not have been possible without", "opts": ["A. ~와 함께라면 쉬웠을 것이다", "B. ~ 때문에 실패했다", "C. ~없이는 불가능했을 것이다"], "ans": "C", "hint": "힌트: not possible + without = '없었다면 안 됐다'."}]};
-const META = {"date": "2026-11-03", "build": "0a89bf2397", "label": "11월 3일(화)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 3일 화요일 · 가벼운 뉴스 2편 · B1", "short": ["SpaceXAI, AI 데이터센터 두 곳 추가", "NYT, AI 무단 수집으로 브레이브 고소"], "marks": {"a1": [4.72, 15.06, 28.01, 37.83, 47.89], "a2": [4.21, 13.08, 24.41, 32.96, 42.35]}, "full": {"a1": "colossus2.mp3", "a2": "brave-lawsuit.mp3"}, "fullx": {"a1": "colossus2-expr.mp3", "a2": "brave-lawsuit-expr.mp3"}, "todayReview": [{"en": "run into trouble", "ko": "어려움에 부딪히다"}, {"en": "without permission", "ko": "허락 없이"}, {"en": "on top of that", "ko": "게다가, 그뿐 아니라"}], "reviewNote": "11월 6일과 11월 10일 복습 퀴즈에 다시 나옵니다."};
+const D = {"A1": {"id": "a1", "kicker": "기사 1 · SpaceX", "headline": "SpaceXAI Adds Two New Sites to Its Giant AI Data Center", "koHeadline": "SpaceXAI, 거대 AI 데이터센터에 새 부지 두 곳을 더하다", "pairs": [{"en": "Elon Musk's company SpaceXAI / is making its giant Colossus 2 data center / even bigger, / and it will add two new sites / in Southaven, Mississippi.", "ko": "일론 머스크의 회사 SpaceXAI는 / 거대한 콜로서스 2 데이터센터를 만들고 있다 / 훨씬 더 크게, / 그리고 새 부지 두 곳을 추가할 것이다 / 미시시피주 사우스헤이븐에."}, {"en": "The sites have funny names, / Gun Range and Spam, / because one used to be a training center / for police officers and firefighters, / and the other was a warehouse / that stored products from the company that makes Spam.", "ko": "그 부지들은 재미있는 이름을 갖고 있다, / 건 레인지와 스팸이라는, / 왜냐하면 한 곳은 예전에 훈련소였기 때문이다 / 경찰관과 소방관을 위한, / 그리고 다른 한 곳은 창고였다 / 스팸을 만드는 회사의 제품을 보관하던."}, {"en": "Together, / the two sites will hold / about four hundred twenty thousand Nvidia chips, / which will be used to train and run AI models / like the Grok chatbot.", "ko": "합쳐서, / 두 부지는 갖추게 될 것이다 / 약 42만 개의 엔비디아 칩을, / 그것들은 AI 모델을 훈련하고 돌리는 데 쓰일 것이다 / 그록 챗봇 같은."}, {"en": "Musk wrote on X / that he walked around the whole site at midnight, / and he said / Gun Range should be ready / by the end of November, / while Spam should follow in December.", "ko": "머스크는 X에 썼다 / 자정에 부지 전체를 걸어서 둘러봤다고, / 그리고 그는 말했다 / 건 레인지는 준비될 것이라고 / 11월 말까지, / 반면 스팸은 12월에 뒤따를 것이라고."}, {"en": "However, the project has also run into trouble, / because state officials say / the company started building / before it got the right permits, / and they may ask it to pay / about six million dollars.", "ko": "하지만 그 프로젝트는 어려움에도 부딪혔다, / 왜냐하면 주 당국자들이 말하기 때문이다 / 그 회사가 공사를 시작했다고 / 제대로 된 허가를 받기 전에, / 그리고 그들은 그 회사에 내라고 요구할 수도 있다 / 약 600만 달러를."}], "natural": ["일론 머스크의 SpaceXAI가 거대한 AI 데이터센터 콜로서스 2를 더 키운다. 미시시피주 사우스헤이븐에 새 부지 두 곳을 추가할 계획이다.", "두 부지의 이름은 '건 레인지(사격장)'와 '스팸'으로 재미있다. 한 곳은 예전에 경찰관과 소방관 훈련소였고, 다른 한 곳은 스팸 제조사의 제품을 보관하던 창고였기 때문이다. 두 곳에는 엔비디아 칩 약 42만 개가 들어가며, 그록 챗봇 같은 AI 모델을 훈련하고 돌리는 데 쓰인다.", "머스크는 X에 자정에 부지 전체를 걸어서 둘러봤다고 쓰면서, 건 레인지는 11월 말까지, 스팸은 12월에 가동될 것이라고 밝혔다. 하지만 어려움도 있다. 주 당국은 회사가 제대로 된 허가를 받기 전에 공사를 시작했다며 약 600만 달러를 물릴 수 있다고 밝혔다."], "exprs": [{"en": "even bigger", "ko": "훨씬 더 큰", "ex": "is making its giant Colossus 2 data center even bigger"}, {"en": "used to", "ko": "예전에 ~였다, ~하곤 했다", "ex": "one used to be a training center"}, {"en": "be used to train", "ko": "훈련하는 데 쓰이다", "ex": "which will be used to train and run AI models"}, {"en": "be ready by", "ko": "~까지 준비되다", "ex": "Gun Range should be ready by the end of November"}, {"en": "run into trouble", "ko": "어려움에 부딪히다", "ex": "the project has also run into trouble"}, {"en": "ask someone to pay", "ko": "~에게 돈을 내라고 요구하다", "ex": "they may ask it to pay about six million dollars"}], "vocab": [{"w": "data center", "pos": "명사", "ko": "데이터센터", "ex": "its giant Colossus 2 data center"}, {"w": "site", "pos": "명사", "ko": "부지, 현장", "ex": "two new sites"}, {"w": "firefighter", "pos": "명사", "ko": "소방관", "ex": "police officers and firefighters"}, {"w": "warehouse", "pos": "명사", "ko": "창고", "ex": "the other was a warehouse"}, {"w": "store", "pos": "동사", "ko": "보관하다, 저장하다", "ex": "a warehouse that stored products"}, {"w": "chip", "pos": "명사", "ko": "(반도체) 칩", "ex": "Nvidia chips"}, {"w": "official", "pos": "명사", "ko": "공무원, 당국자", "ex": "state officials say"}, {"w": "permit", "pos": "명사", "ko": "허가(증)", "ex": "before it got the right permits"}], "source": {"title": "SpaceXAI launching two additional data center campuses in Mississippi to further expand Colossus 2", "site": "DCD (Data Center Dynamics)", "href": "https://www.datacenterdynamics.com/en/news/spacexai-launching-two-additional-data-center-campuses-in-mississippi-to-further-expand-colossus-2/", "date": "2026-11-02"}, "image": {"src": "img/colossus2.jpg", "w": 1200, "h": 630, "alt": "The Colossus 2 data center", "caption": "SpaceXAI의 콜로서스 2 데이터센터", "credit": "DCD", "creditUrl": "https://www.datacenterdynamics.com/en/news/spacexai-launching-two-additional-data-center-campuses-in-mississippi-to-further-expand-colossus-2/"}}, "A2": {"id": "a2", "kicker": "기사 2 · 기술·AI", "headline": "The New York Times Sues Brave over AI and Copied News", "koHeadline": "뉴욕타임스, AI와 기사 무단 복제로 브레이브를 고소하다", "pairs": [{"en": "The New York Times has sued Brave, / the company behind the Brave web browser, / and it says / Brave copied its news articles / without permission.", "ko": "뉴욕타임스가 브레이브를 고소했다, / 브레이브 웹 브라우저를 만든 회사인, / 그리고 뉴욕타임스는 말한다 / 브레이브가 자사 기사를 복사했다고 / 허락 없이."}, {"en": "According to the lawsuit, / Brave collected huge amounts of online content / and then sold access to it / to AI companies / such as Anthropic, Perplexity and xAI.", "ko": "소송에 따르면, / 브레이브는 엄청난 양의 온라인 콘텐츠를 모았고 / 그다음 그것에 접근할 권리를 팔았다 / AI 회사들에, / 앤트로픽, 퍼플렉시티, xAI 같은."}, {"en": "Those companies can use the content / to train their AI models / or to answer users' questions, / but the publishers say / they never got paid for it.", "ko": "그 회사들은 그 콘텐츠를 쓸 수 있다 / 자사 AI 모델을 훈련하는 데 / 또는 사용자 질문에 답하는 데, / 하지만 언론사들은 말한다 / 그 대가를 한 번도 받은 적이 없다고."}, {"en": "On top of that, / the Brave browser has a tool called Paywall blocker, / which lets users read articles / that normally require a paid subscription.", "ko": "게다가, / 브레이브 브라우저에는 '페이월 차단기'라는 도구가 있다, / 그것은 사용자가 기사를 읽게 해 준다 / 보통은 유료 구독이 필요한."}, {"en": "Three other newspapers, / including the Chicago Tribune, / filed a similar lawsuit on the same day, / and Brave did not respond right away / when reporters asked for comment.", "ko": "다른 신문사 세 곳도, / 시카고 트리뷴을 포함해서, / 같은 날 비슷한 소송을 냈다, / 그리고 브레이브는 바로 답하지 않았다 / 기자들이 입장을 물었을 때."}], "natural": ["뉴욕타임스가 웹 브라우저 '브레이브'를 만든 회사 브레이브를 고소했다. 브레이브가 허락 없이 자사 기사를 복사했다는 것이다.", "소송에 따르면 브레이브는 엄청난 양의 온라인 콘텐츠를 모은 뒤, 앤트로픽, 퍼플렉시티, xAI 같은 AI 회사들에 이용 권한을 팔았다. 이 회사들은 그 콘텐츠로 AI 모델을 훈련하거나 사용자 질문에 답할 수 있지만, 언론사들은 그 대가를 한 푼도 받지 못했다고 주장한다. 게다가 브레이브 브라우저에는 원래 유료 구독이 필요한 기사를 읽게 해 주는 '페이월 차단기'라는 기능도 있다.", "시카고 트리뷴을 비롯한 다른 신문사 세 곳도 같은 날 비슷한 소송을 냈다. 브레이브는 기자들의 입장 요청에 바로 답하지 않았다."], "exprs": [{"en": "without permission", "ko": "허락 없이", "ex": "Brave copied its news articles without permission"}, {"en": "according to", "ko": "~에 따르면", "ex": "According to the lawsuit, ..."}, {"en": "sell access to", "ko": "~에 대한 이용 권한을 팔다", "ex": "sold access to it to AI companies"}, {"en": "get paid for", "ko": "~에 대한 대가를 받다", "ex": "they never got paid for it"}, {"en": "on top of that", "ko": "게다가, 그뿐 아니라", "ex": "On top of that, the Brave browser has a tool ..."}, {"en": "right away", "ko": "즉시, 바로", "ex": "Brave did not respond right away"}, {"en": "ask for comment", "ko": "입장을 요청하다, 논평을 구하다", "ex": "when reporters asked for comment"}], "vocab": [{"w": "sue", "pos": "동사", "ko": "고소하다, 소송을 걸다", "ex": "The New York Times has sued Brave"}, {"w": "browser", "pos": "명사", "ko": "(웹) 브라우저", "ex": "the Brave web browser"}, {"w": "lawsuit", "pos": "명사", "ko": "소송", "ex": "According to the lawsuit"}, {"w": "content", "pos": "명사", "ko": "콘텐츠, 내용물", "ex": "huge amounts of online content"}, {"w": "publisher", "pos": "명사", "ko": "언론사, 출판사", "ex": "the publishers say"}, {"w": "require", "pos": "동사", "ko": "필요로 하다, 요구하다", "ex": "articles that normally require a paid subscription"}, {"w": "subscription", "pos": "명사", "ko": "구독", "ex": "a paid subscription"}, {"w": "respond", "pos": "동사", "ko": "응답하다", "ex": "Brave did not respond right away"}], "source": {"title": "The New York Times sues Brave web browser for AI scraping and bypassing paywalls", "site": "The Verge", "href": "https://www.theverge.com/tech/1024588/brave-lawsuit-ai-scraping-new-york-times", "date": "2026-11-02"}, "image": {"src": "img/brave-lawsuit.jpg", "w": 1200, "h": 624, "alt": "New York City, United States.", "caption": "미국 뉴욕시 풍경", "credit": "NurPhoto via Getty Images / The Verge", "creditUrl": "https://www.theverge.com/tech/1024588/brave-lawsuit-ai-scraping-new-york-times"}}, "QUIZ": [{"art": "a1", "q": "Q1. (기사 1) 새 부지 이름이 '스팸'인 이유는?", "opts": ["A. 스팸 메일을 막는 AI를 만들어서", "B. 예전에 스팸 제조사 제품을 보관하던 창고라서", "C. 머스크가 스팸을 좋아해서"], "ans": "B", "why": "두 부지 이름은 예전 용도에서 왔고, 스팸 부지는 스팸 제조사의 제품을 보관하던 창고였습니다.", "quote": "the other was a warehouse that stored products from the company that makes Spam"}, {"art": "a1", "q": "Q2. (기사 1) 주 당국이 문제 삼은 것은 무엇인가요?", "opts": ["A. 허가를 받기 전에 공사를 시작한 것", "B. 칩을 너무 많이 산 것", "C. 부지 이름이 이상한 것"], "ans": "A", "why": "당국은 회사가 제대로 된 허가를 받기 전에 공사를 시작했다고 보고, 약 600만 달러를 물릴 수 있다고 했습니다.", "quote": "the company started building before it got the right permits"}, {"art": "a2", "q": "Q3. (기사 2) 소송에 따르면 브레이브는 모은 콘텐츠로 무엇을 했나요?", "opts": ["A. 신문사에 다시 팔았다", "B. AI 회사들에 이용 권한을 팔았다", "C. 모두 삭제했다"], "ans": "B", "why": "브레이브는 모은 온라인 콘텐츠의 이용 권한을 앤트로픽, 퍼플렉시티, xAI 같은 AI 회사들에 팔았다고 합니다.", "quote": "sold access to it to AI companies such as Anthropic, Perplexity and xAI"}, {"art": "a2", "q": "Q4. (기사 2) 'Paywall blocker'는 어떤 기능인가요?", "opts": ["A. 광고를 더 많이 보여 준다", "B. AI가 기사를 요약해 준다", "C. 보통 유료 구독이 필요한 기사를 읽게 해 준다"], "ans": "C", "why": "페이월 차단기는 원래 돈을 내고 구독해야 읽을 수 있는 기사를 읽게 해 주는 기능입니다.", "quote": "which lets users read articles that normally require a paid subscription"}], "HINTS": ["힌트: 기사 1의 두 번째 문장에서 the other was 다음을 보세요.", "힌트: 기사 1의 마지막 문장에서 before 다음을 보세요.", "힌트: 기사 2의 두 번째 문장에서 sold access to 다음을 보세요.", "힌트: 기사 2의 네 번째 문장에서 which lets users 다음을 보세요."], "RQ": [{"day": "10/31", "en": "just in time for", "opts": ["A. ~에 딱 맞춰", "B. ~보다 늦게", "C. 시간이 없어서"], "ans": "A", "hint": "힌트: in time은 '늦지 않게', just는 '딱'이에요.", "tag": ""}, {"day": "10/31", "en": "beat the record", "opts": ["A. 기록을 지우다", "B. 기록을 깨다", "C. 기록을 세우지 못하다"], "ans": "B", "hint": "힌트: beat는 '이기다'예요.", "tag": ""}, {"day": "10/31", "en": "would not have been possible without", "opts": ["A. ~와 함께라면 쉬웠을 것이다", "B. ~ 때문에 실패했다", "C. ~없이는 불가능했을 것이다"], "ans": "C", "hint": "힌트: not possible + without = '없었다면 안 됐다'.", "tag": ""}]};
+/* .wrap is the page scroller (body/html overflow:hidden); window.scrollY stays 0 */
+const $wrap = () => document.querySelector(".wrap");
+const wrapY = () => { const w=$wrap(); return w ? w.scrollTop : (window.scrollY||0); };
+const wrapScrollTo = (top, opt) => { const w=$wrap(); const o=typeof top==="object"?top:{top, ...(opt||{})}; if(w) w.scrollTo(o); else window.scrollTo(o); };
+const wrapScrollBy = (o) => { const w=$wrap(); if(w) w.scrollBy(o); else window.scrollBy(o); };
+const META = {"date": "2026-11-03", "build": "ebbee3c8a0", "label": "11월 3일(화)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 3일 화요일 · 가벼운 뉴스 2편 · B1", "short": ["SpaceXAI, AI 데이터센터 두 곳 추가", "NYT, AI 무단 수집으로 브레이브 고소"], "marks": {"a1": [4.72, 15.06, 28.01, 37.83, 47.89], "a2": [4.21, 13.08, 24.41, 32.96, 42.35]}, "dur": {"a1": 59.02, "a2": 52.97}, "audio": ["brave-lawsuit-expr.mp3", "brave-lawsuit.mp3", "clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/a2-x7-en.mp3", "clips/a2-x7-ko.mp3", "clips/a2-x7.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "colossus2-expr.mp3", "colossus2.mp3"], "audioBytes": 5474592, "full": {"a1": "colossus2.mp3", "a2": "brave-lawsuit.mp3"}, "dialog": {}, "fullx": {"a1": "colossus2-expr.mp3", "a2": "brave-lawsuit-expr.mp3"}, "quizLang": "ko", "todayReview": [{"en": "run into trouble", "ko": "어려움에 부딪히다"}, {"en": "without permission", "ko": "허락 없이"}, {"en": "on top of that", "ko": "게다가, 그뿐 아니라"}], "reviewNote": "1·3·7·14·30일 뒤(11/4, 11/6, 11/10, 11/17, 12/3) 복습 퀴즈에 다시 나와요."};
+const DUR = META.dur||{};   // full-article seconds from the build (audio is not preloaded)
 const MARKS = META.marks, FULL = META.full, FULLX = META.fullx;
 const HAS_WB = typeof WB !== "undefined";
 const $ = (s, r=document) => r.querySelector(s);
@@ -259,7 +333,7 @@ const reveal = {};
 
 function stopWB(){ if(HAS_WB) WB.stop(); }
 function stopFulls(except){ Object.entries(fulls).forEach(([k,a]) => { if(k!==except && !a.paused){ a.pause(); } }); }
-function stopSeq(){ if(seq){ clearTimeout(seq.timer); const k=seq.key; seq=null; clipEl.pause(); hideCue(k); renderSeq(k); } }
+function stopSeq(){ if(seq){ clearTimeout(seq.timer); const k=seq.key; seq=null; clipEl.pause(); hideCue(k); renderSeq(k); } if(typeof spSync==='function') spSync(); }
 function hideCue(k){ const c=document.getElementById("cue-"+k); if(c) c.classList.remove("show"); }
 
 /* ---------- settings (one ⚙️ sheet) + per-date progress, all in localStorage ---------- */
@@ -305,7 +379,7 @@ function resetProg(all){ if(!confirm(all?"모든 날짜의 학습 진도(✓)를
   [viewT,played].forEach(m=>Object.keys(m).forEach(k=>delete m[k])); progChanged(); }
 function notePlayed(key,i){ const m=key.match(/^(a[12])([vx])$/); if(!m) return; const s=played[key]||(played[key]=new Set()); s.add(i);
   if(s.size>=seqs[key].list.length) markDone(m[1], m[2]==="v"?"voc":"exp"); }
-function quizProg(){ [["a1",[0,1]],["a2",[2,3]]].forEach(([a,q])=>{ if(q.every(i=>(tries[i]||[]).includes(D.QUIZ[i].ans))) markDone(a,"quiz"); }); }
+function quizProg(){ ["a1","a2"].forEach(a=>{ const q=artQ(a); if(q.length && q.every(qDone)) markDone(a,"quiz"); }); }
 function startProgress(){
   // 원문/직해: the tab stayed open VIEW_SEC seconds (page visible, sheet closed)
   setInterval(()=>{ if(document.hidden||sheetOpen()) return; const a=TAB.art, t=TAB.tab; if((a!=="a1"&&a!=="a2")||(t!=="en"&&t!=="jik")) return;
@@ -327,6 +401,7 @@ function drawSheet(){
   <div class="sg" id="sg-gen"><div class="sl">공통</div>
     <div class="sr"><span class="lab">재생 속도</span>${seg("srt",RATES,r,v=>v.toFixed(1)+"x","setRate")}</div>
     <div class="sr"><span class="lab">글자 크기</span><button class="fsm" aria-label="글자 작게" onclick="stepFs(-1)" ${fi<=0?"disabled":""}>가-</button><span class="fsz">${FSL[fi]}</span><button class="fsp" aria-label="글자 크게" onclick="stepFs(1)" ${fi>=FSS.length-1?"disabled":""}>가+</button></div></div>
+  <div class="sg" id="sg-gl"><div class="sl">원문</div><div class="sr"><label class="tg"><input type="checkbox" id="glck" ${glossOn()?"checked":""} onchange="setGloss(this.checked)"> 단어 뜻 보기 (탭)</label></div></div>
   <div class="sg" id="sg-sen"><div class="sl">문장별 듣기</div>
     <div class="sr"><span class="lab">문장 반복</span>${seg("srp",SREPS,srepN(),repLbl,"setSRep")}</div>
     <div class="sr"><label class="tg"><input type="checkbox" id="shck" ${shadowG()?"checked":""} onchange="setShadow(this.checked)"> 따라 말하기 (문장마다 잠시 멈춤)</label></div></div>
@@ -359,8 +434,39 @@ function setSRep(n){ try{ localStorage.setItem(SREP_KEY, n===Infinity?"inf":Stri
 function playPart(){ const it=seqs[seq.key].list[seqs[seq.key].idx]; const src=it.parts?it.parts[seq.part]:it.src;
   if(!clipEl.paused) seq.skipPause=true;
   clipEl.src=src; clipEl.playbackRate=seqs[seq.key].rate; clipEl.defaultPlaybackRate=seqs[seq.key].rate; clipEl.play().catch(()=>{}); }
+/* ---------- 📥 오프라인용 받기: this day's mp3s into the service-worker audio cache ---------- */
+const OFF_URLS = (META.audio||[]).map(f=>"./"+f);
+const mb = b => (b/1048576).toFixed(1)+"MB";
+async function offDraw(){ const box=document.getElementById("offbox"); if(!box||!window.PWA||!("caches" in window)||!OFF_URLS.length) return; box.hidden=false;
+  const st=await PWA.audioState(OFF_URLS), get=document.getElementById("offget"), del=document.getElementById("offdel"), note=document.getElementById("offnote");
+  const full=st.n>=st.total; get.hidden=full; del.hidden=!st.n;
+  note.textContent = full ? `✅ 오프라인 준비 완료 · 음성 ${st.total}개 (${mb(st.bytes)}) 저장됨` :
+    st.n ? `음성 ${st.n}/${st.total}개 저장됨 (${mb(st.bytes)}) · 나머지 약 ${mb(Math.max(0,(META.audioBytes||0)-st.bytes))}` :
+    `이 날짜의 음성(기사·문장·단어·표현) ${st.total}개, 약 ${mb(META.audioBytes||0)}를 미리 받아 두면 인터넷 없이도 들을 수 있어요.`;
+  get.textContent = st.n ? "📥 나머지 받기" : "📥 오프라인용 받기"; }
+async function offGet(){ const get=document.getElementById("offget"), bar=document.getElementById("offbar"), bi=document.getElementById("offbi"), note=document.getElementById("offnote");
+  if(navigator.onLine===false){ note.textContent="📴 오프라인이에요. 인터넷에 연결되면 받을 수 있어요."; return; }
+  get.disabled=true; bar.hidden=false; bi.style.width="0%";
+  const r=await PWA.saveAudio(OFF_URLS,(d,n)=>{ bi.style.width=(d/n*100)+"%"; get.textContent=`⏳ 받는 중… ${d}/${n}`; });
+  get.disabled=false; bar.hidden=true; await offDraw();
+  if(r.failed) note.textContent+=` · ⚠️ ${r.failed}개는 받지 못했어요. 다시 눌러 주세요.`; }
+async function offDel(){ await PWA.removeAudio(OFF_URLS); offDraw(); }
+/* ---------- single 🔊 buttons: one active playback; the button shows ⏹ 정지 while its item plays ---------- */
+const SP_ON="⏹ 정지";
+function spActive(key,i){ return !!(seq && seq.single && seq.key===key && seqs[key] && seqs[key].idx===i); }
+function spLbl(key,i){ return spActive(key,i)?SP_ON:"🔊"; }
+function spSync(){ document.querySelectorAll("button.sp").forEach(b=>{ const [k,i]=b.dataset.sp.split(":"), on=spActive(k,+i), off=b.dataset.spl||"🔊";
+  if(b.classList.contains("on")!==on || b.textContent!==(on?SP_ON:off)){ b.textContent=on?SP_ON:off; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on); } });
+  document.querySelectorAll(".cvl").forEach(r=>{ const [k,i]=r.dataset.row.split("-"); r.classList.toggle("on",spActive(k,+i)); }); }
+function spTap(key,i){ if(spActive(key,i)){ stopSeq(); spSync(); return; } ttsStop(); playSeq(key,i,true); spSync(); }
+function spStop(){ if(seq && seq.single) stopSeq(); ttsStop(); spSync(); }
+["play","pause","ended","emptied"].forEach(ev=>clipEl.addEventListener(ev,()=>setTimeout(spSync,0)));
+/* speechSynthesis (glossary 🔊) joins the same controller */
+let ttsBtn=null;
+function ttsStop(){ try{ if(window.speechSynthesis && (speechSynthesis.speaking||speechSynthesis.pending)) speechSynthesis.cancel(); }catch(e){} ttsReset(); }
+function ttsReset(){ if(ttsBtn){ ttsBtn.textContent="🔊"; ttsBtn.classList.remove("on"); ttsBtn.setAttribute("aria-pressed","false"); } ttsBtn=null; }
 function playSeq(key, i, single){
-  stopFulls(); stopWB(); if(seq && seq.key!==key) stopSeq();
+  stopFulls(); stopWB(); ttsStop(); if(seq && seq.key!==key) stopSeq();
   const S = seqs[key]; S.idx = i;
   if(seq) clearTimeout(seq.timer);
   seq = {key, single:!!single, timer:null, paused:false, part:0, done:0};
@@ -470,7 +576,7 @@ function fullPlayer(key, file, label, marks){
     <button onclick="fRestart('${key}')">↺ 처음부터</button>
   </div>
   <div class="row"><span class="seg">${[0.8,0.9,1,1.2].map(r=>`<button class="frt${r===1?" on":""}" data-r="${r}" onclick="fRate('${key}',${r})">${r.toFixed(1)}x</button>`).join("")}</span></div>
-  <audio id="fa-${key}" preload="metadata" playsinline src="${file}"></audio>
+  <audio id="fa-${key}" preload="none" playsinline src="${file}"></audio>
 </div>`;
 }
 function miniPlayer(key, file, label){
@@ -484,7 +590,7 @@ function miniPlayer(key, file, label){
     <button class="frep" aria-label="전체 반복" onclick="fRep('${key}')">🔁</button>
   </div>
   <div class="bar"><i id="fb-${key}"></i></div>
-  <audio id="fa-${key}" preload="metadata" playsinline src="${file}"></audio>
+  <audio id="fa-${key}" preload="none" playsinline src="${file}"></audio>
 </div></div>`;
 }
 function fRep(k){ const a=fulls[k]; a._rep=REPS[(REPS.indexOf(a._rep||0)+1)%REPS.length]; a._done=0; drawRep(k); }
@@ -494,17 +600,18 @@ function fRateCycle(k){ setRate(RATES[(RATES.indexOf(rateG())+1)%RATES.length]);
 function initFull(key, marks){
   const a=document.getElementById("fa-"+key); fulls[key]=a; a._marks=marks||null; a.defaultPlaybackRate=a.playbackRate=rateG();
   const m=document.querySelector(`#f-${key} .mrate`); if(m) m.textContent=rateG().toFixed(1)+"x";
-  const upd=()=>{ document.getElementById("ft-"+key).textContent=fmt(a.currentTime)+" / "+fmt(a.duration);
-    document.getElementById("fb-"+key).style.width=(a.duration?a.currentTime/a.duration*100:0)+"%";
+  const upd=()=>{ document.getElementById("ft-"+key).textContent=fmt(a.currentTime)+" / "+fmt(fDur(key));
+    document.getElementById("fb-"+key).style.width=(fDur(key)?a.currentTime/fDur(key)*100:0)+"%";
     const mini=!!document.getElementById("mp-"+key); document.querySelector(`#f-${key} .fpp`).textContent = mini ? (a.paused?"▶":"⏸") : (a.paused ? (a.currentTime>0?"▶ 이어 듣기":"▶ 재생") : "⏸ 일시정지"); highlight(); };
-  ["timeupdate","play","pause","loadedmetadata","ended","seeked"].forEach(e=>a.addEventListener(e,upd));
-  a.addEventListener("play",()=>{ stopSeq(); stopFulls(key); stopWB(); });
+  ["timeupdate","play","pause","loadedmetadata","ended","seeked"].forEach(e=>a.addEventListener(e,upd)); upd();
+  a.addEventListener("play",()=>{ stopSeq(); stopFulls(key); stopWB(); ttsStop(); });
   // 🔁 repeat the whole article N times (∞ = until turned off)
   a.addEventListener("ended",()=>{ markDone(key,"en"); if(TAB.art===key&&TAB.tab==="jik") markDone(key,"jik"); if(a._rep && (a._done||0)+1 < a._rep){ a._done=(a._done||0)+1; setTimeout(()=>{ a.currentTime=0; a.play().catch(()=>{}); }, 800); } else a._done=0; });
 }
 function fToggle(k){ const a=fulls[k]; if(a.paused) a.play().catch(()=>{}); else a.pause(); }
 function fStop(k){ const a=fulls[k]; a.pause(); a.currentTime=0; }
-function fSeek(k,s){ const a=fulls[k]; a.currentTime=Math.max(0,Math.min((a.duration||0)-0.1,a.currentTime+s)); }
+function fDur(k){ const a=fulls[k]; return (a && isFinite(a.duration) && a.duration) || DUR[k] || 0; }
+function fSeek(k,s){ const a=fulls[k]; a.currentTime=Math.max(0,Math.min(fDur(k)-0.1,a.currentTime+s)); }
 function fRestart(k){ const a=fulls[k]; a.currentTime=0; a.play().catch(()=>{}); }
 function fRate(k,r){ setRate(r); }
 
@@ -526,6 +633,8 @@ function highlight(){
   lastHi=hi;
 }
 
+/* Korean of the article example under the English (example_ko; **target** → bold) */
+function exKo(x){ return x.exk?`<div class="exk">${esc(x.exk).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")}</div>`:""; }
 /* ---------- article rendering ---------- */
 function linesHTML(A, mode){
   if(mode==="ko") return A.natural.map(t=>`<p>${esc(t)}</p>`).join("");
@@ -535,37 +644,288 @@ function linesHTML(A, mode){
       <div class="row" style="margin:4px 0 0"><button onclick="tgl('${k}','${A.id}')">${reveal[k]?"뜻 숨기기":"뜻 보기"}</button></div>
       ${reveal[k]?`<div style="margin-top:4px">${esc(p.en)}</div><div class="ko">${esc(p.ko)}</div>`:""}`; }
     else if(mode==="jik"){ inner=`<div>${i+1}. ${esc(p.en)}</div><div class="ko">${esc(p.ko)}</div>`; }
-    else inner=`<div>${esc(strip(p.en))}</div>`;
-    return `<div class="sent" id="s-${k}"><button class="ico" aria-label="문장 듣기" onclick="playSeq('${A.id}s',${i},true)">🔊</button><div class="t">${inner}</div></div>`;
+    else inner=`<div>${glossText(A,i)}</div>`;
+    return `<div class="sent" id="s-${k}"><button class="ico sp" data-sp="${A.id}s:${i}" aria-label="문장 듣기" onclick="spTap('${A.id}s',${i})">${spLbl(A.id+'s',i)}</button><div class="t">${inner}</div></div>`;
   }).join("");
 }
+/* ---------- tap a word in 원문 for its in-context meaning (article.glossary) ---------- */
+const GL_KEY="ea-gloss-v1";
+function glossOn(){ return lsGet(GL_KEY)!=="0"; }
+function setGloss(b){ lsSet(GL_KEY,b?"1":"0"); closeGloss(); ["a1","a2"].forEach(a=>{ if(D[a.toUpperCase()]) drawLines(a); }); settingsChanged(); }
+function glossText(A,i){ const t=strip(A.pairs[i].en), G=A.gloss&&A.gloss[i]; if(!G||!glossOn()) return esc(t);
+  let h="", p=0; G.t.forEach(([a,b,k])=>{ h+=esc(t.slice(p,a))+`<span class="gw" data-a="${A.id}" data-i="${i}" data-k="${k}">${esc(t.slice(a,b))}</span>`; p=b; });
+  return h+esc(t.slice(p)); }
+let gEl=null, gY=0;
+function closeGloss(){ const p=document.getElementById("gpop"); if(p){ if(ttsBtn&&p.contains(ttsBtn)) ttsStop(); p.remove(); } if(gEl) gEl.classList.remove("gon"); gEl=null; }
+function gSpeak(t, btn){ try{ const ss=window.speechSynthesis; if(!ss) return;
+  if(btn && ttsBtn===btn){ ttsStop(); return; }
+  ss.cancel(); ttsReset(); stopSeq(); stopFulls(); stopWB();
+  const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=0.9; const vs=ss.getVoices();
+  const v=vs.find(v=>/\bAva\b/.test(v.name)&&/^en[-_]US/i.test(v.lang))||vs.find(v=>/^en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang)); if(v) u.voice=v;
+  if(btn){ ttsBtn=btn; btn.textContent=SP_ON; btn.classList.add("on"); btn.setAttribute("aria-pressed","true"); }
+  const done=()=>{ if(ttsBtn===btn) ttsReset(); }; u.onend=done; u.onerror=done; ss.speak(u); }catch(e){} }
+function openGloss(el){ closeGloss(); const A=D[el.dataset.a.toUpperCase()], i=+el.dataset.i, g=A.gloss[i].g[+el.dataset.k]; if(!g) return;
+  gEl=el; el.classList.add("gon"); gY=wrapY();
+  const surf=el.textContent, head=g.lemma&&g.lemma.toLowerCase()!==surf.toLowerCase() ? `${esc(surf)} <span class="glem">← ${esc(g.lemma)}</span>` : esc(surf);
+  const st=HAS_WB ? WB.starHTML({type:"word",en:g.lemma||g.w,ko:g.ko,ex:strip(A.pairs[i].en),pos:"",date:META.date,article:A.headline,clip:"",page:location.href.split("#")[0]}) : "";
+  const p=document.createElement("div"); p.id="gpop"; p.setAttribute("role","dialog");
+  p.innerHTML=`<div class="gph"><b class="gpw">${head}</b><button class="ico gx" aria-label="닫기" onclick="closeGloss()">✕</button></div>
+    <div class="gpk">${esc(g.ko)}</div><div class="row" style="margin:6px 0 0"><button class="ico" aria-label="발음 듣기" onclick="gSpeak(${esc(JSON.stringify(surf))},this)">🔊</button>${st}</div>`;
+  document.body.appendChild(p);
+  const r=el.getBoundingClientRect(), W=Math.min(320,innerWidth-16); p.style.width=W+"px";
+  const top0=stickyBottom();
+  const mi=document.getElementById("mini"), bot0 = mi && mi.offsetParent!==null ? mi.getBoundingClientRect().top : innerHeight;
+  const h=p.offsetHeight; let y = r.bottom+8+h <= bot0-8 ? r.bottom+8 : (r.top-8-h >= top0+8 ? r.top-8-h : Math.max(top0+8, bot0-8-h));
+  p.style.top=y+"px"; p.style.left=Math.max(8,Math.min(innerWidth-W-8, r.left+r.width/2-W/2))+"px"; }
+document.addEventListener("click", e=>{ const w=e.target.closest&&e.target.closest(".gw");
+  if(w){ const sel=getSelection&&getSelection(); if(sel && !sel.isCollapsed && String(sel).trim()) return; if(w===gEl){ closeGloss(); return; } openGloss(w); return; }
+  if(!(e.target.closest&&e.target.closest("#gpop"))) closeGloss(); });
+($wrap()||window).addEventListener("scroll", ()=>{ if(gEl && Math.abs(wrapY()-gY)>40) closeGloss(); }, {passive:true});
+addEventListener("keydown", e=>{ if(e.key==="Escape") closeGloss(); });
 function tgl(k,aid){ reveal[k]=!reveal[k]; drawLines(aid); }
-function setMode(aid,m){ modes[aid]=m; if(TAB.art===aid){ TAB.tab = m==="jik"?"jik":"en"; saveTab(); drawTabs(); } document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
-function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2; document.getElementById("lines-"+aid).innerHTML=linesHTML(A,modes[aid]); highlight(); }
+/* keep the reader at the same line when the view mode re-renders (anchor = first line below the sticky bars) */
+function stickyBottom(){ let b=0; document.querySelectorAll(".stk").forEach(s=>{ const r=s.getBoundingClientRect(); if(r.height && r.top<=2 && r.bottom<innerHeight/2) b=Math.max(b,r.bottom); });
+  document.querySelectorAll(".modebar").forEach(s=>{ if(!s.offsetParent) return; const r=s.getBoundingClientRect(); if(r.height && r.top<=b+2 && r.bottom<innerHeight/2) b=Math.max(b,r.bottom); }); return b; }
+function keepPlace(aid, fn){ const box=document.getElementById("lines-"+aid); if(!box||!box.offsetParent){ fn(); return; }
+  const top=stickyBottom(), kids=[...box.children], n=kids.length, br=box.getBoundingClientRect();
+  if(!n || br.top>=top || br.bottom<=top){ fn(); return; }        // lines not under the bars: nothing to keep
+  let i=kids.findIndex(k=>k.getBoundingClientRect().bottom>top+4); if(i<0) i=n-1; const off=kids[i].getBoundingClientRect().top-top;
+  fn();
+  const nk=box.children; if(!nk.length) return; const j=nk.length===n?i:Math.min(nk.length-1,Math.round(i*nk.length/n));
+  wrapScrollBy({top:nk[j].getBoundingClientRect().top-stickyBottom()-off}); }
+function setMode(aid,m){ if(modes[aid]!==m && TAB.art===aid){ keepPlace(aid,()=>setMode0(aid,m)); return; } setMode0(aid,m); }
+function setMode0(aid,m){ modes[aid]=m; if(TAB.art===aid){ TAB.tab = m==="jik"?"jik":"en"; saveTab(); drawTabs(); } document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
+function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2; document.getElementById("lines-"+aid).innerHTML=linesHTML(A,modes[aid]); highlight();  const tc=document.getElementById("tc-"+aid); if(tc) tc.hidden = modes[aid]==="jik"||modes[aid]==="ko"; }
 
-const tries = {};
+/* quiz/review UI language: English for lessons from 2026-11-05 (META.quizLang), Korean before */
+const QEN = META.quizLang==="en";
+const QT = QEN ? {quiz:"Quiz", ok:"✅ Correct!", ev:"Evidence", bad:"❌ Not quite", again:"Try again.", reset:"↺ Try again", check:"Check", hint:"💡 Hint", show:"👀 Show answer",
+    ph:"Type the English expression", ans:"Answer", notyet:"❌ Not yet", rqT:"🔁 Review Quiz", rqNote:"Choose the meaning of each expression from your review log. 🔊 plays English → meaning (repeat count from ⚙️).",
+    rqQ:(d,en)=>`[${d}] What does '${en}' mean?`}
+  : {quiz:"퀴즈", ok:"✅ 정답!", ev:"근거", bad:"❌ 오답", again:"다시 골라 보세요.", reset:"↺ 다시 풀기", check:"확인", hint:"💡 힌트", show:"👀 정답 보기",
+    ph:"영어 표현을 입력하세요", ans:"정답", notyet:"❌ 아직이에요", rqT:"🔁 복습 퀴즈", rqNote:null, rqQ:(d,en)=>`[${d} 학습] '${en}'의 뜻은?`};
+const tries = {}, rec = {};      // MC picks per question; recall state {v,ok,shown,hint,wrong}
+const artOf = qi => D.QUIZ[qi].art || (qi<2 ? "a1" : "a2");      // pages built before 11/05 have no .art
+const artQ = aid => D.QUIZ.map((_,i)=>i).filter(i=>artOf(i)===aid);
+const normA = s => String(s||"").toLowerCase().replace(/[’‘`´]/g,"'").replace(/[^a-z0-9]+/g," ").trim();
+function qDone(qi){ const x=D.QUIZ[qi], r=rec[qi]||{}; return x.type==="recall" ? !!(r.ok||r.shown) : (tries[qi]||[]).includes(x.ans); }
+function recallHTML(qi){ const x=D.QUIZ[qi], r=rec[qi]||{}, fin=r.ok||r.shown;
+  return `<div class="q rc" data-q="${qi}"><div><b>${esc(x.q)}</b></div>
+    <div class="rcin"><input type="text" id="rc-${qi}" value="${esc(r.v||"")}" ${fin?"disabled":""} placeholder="${QT.ph}" aria-label="${QT.ph}"
+      autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done"
+      oninput="rec[${qi}]={...(rec[${qi}]||{}),v:this.value}" onkeydown="if(event.key==='Enter'){event.preventDefault();rcheck(${qi})}"></div>
+    <div class="row"><button class="pri" onclick="rcheck(${qi})" ${fin?"disabled":""}>${QT.check}</button><button onclick="rhint(${qi})" ${fin||r.hint?"disabled":""}>${QT.hint}</button><button onclick="rshow(${qi})" ${fin?"disabled":""}>${QT.show}</button></div>
+    ${r.ok?`<div class="fb"><span class="okc">${QT.ok} (${esc(x.ans)})</span> ${esc(x.why)}${x.quote?`<br><span class="note">${QT.ev}: "${esc(x.quote)}"</span>`:""}</div>`:""}
+    ${r.shown&&!r.ok?`<div class="fb"><span class="badc">${QT.ans}: ${esc(x.ans)}</span> ${esc(x.why)}${x.quote?`<br><span class="note">${QT.ev}: "${esc(x.quote)}"</span>`:""}</div>`:""}
+    ${!fin&&r.wrong?`<div class="fb"><span class="badc">${QT.notyet}${r.last?` ('${esc(r.last)}')`:""}</span> ${QEN?"Try again.":"다시 써 보세요."}</div>`:""}
+    ${!fin&&r.hint?`<div class="fb note">💡 ${esc(D.HINTS[qi])}</div>`:""}</div>`; }
+function rcheck(qi){ const el=document.getElementById("rc-"+qi), v=el?el.value:"", x=D.QUIZ[qi], r=rec[qi]={...(rec[qi]||{}), v};
+  if(!v.trim()){ if(el) el.focus(); return; }
+  if([x.ans,...(x.accept||[])].some(a=>normA(a)===normA(v))) r.ok=true; else { r.wrong=(r.wrong||0)+1; r.last=v.trim(); r.hint=true; }
+  drawQuiz(); quizProg(); if(!r.ok){ const e=document.getElementById("rc-"+qi); if(e){ e.focus(); e.select(); } } }
+function rhint(qi){ rec[qi]={...(rec[qi]||{}), hint:true}; drawQuiz(); }
+function rshow(qi){ const el=document.getElementById("rc-"+qi); rec[qi]={...(rec[qi]||{}), v:el?el.value:"", shown:true}; drawQuiz(); quizProg(); }
 function quizHTML(qis){
-  return qis.map(qi=>{ const x=D.QUIZ[qi], t=tries[qi]||[], solved=t.includes(x.ans), wrong=!solved&&t.length>0;
+  return qis.map(qi=>{ const x=D.QUIZ[qi]; if(x.type==="recall") return recallHTML(qi);
+    const t=tries[qi]||[], solved=t.includes(x.ans), wrong=!solved&&t.length>0;
     return `<div class="q"><div><b>${esc(x.q)}</b></div>${x.opts.map(o=>`<div class="opt">${esc(o)}</div>`).join("")}
     <div class="row">${x.opts.map(o=>{const L=o[0];return `<button class="${solved&&L===x.ans?"pri":""}" ${solved||t.includes(L)?"disabled":""} onclick="pick(${qi},'${L}')">${L}</button>`}).join("")}</div>
-    ${solved?`<div class="fb"><span class="okc">✅ 정답! (${x.ans})</span> ${esc(x.why)}<br><span class="note">근거: "${esc(x.quote)}"</span></div>`:""}
-    ${wrong?`<div class="fb"><span class="badc">❌ 오답 (${t[t.length-1]})</span> ${esc(D.HINTS[qi])} 다시 골라 보세요.</div>`:""}</div>`; }).join("")
-    + `<div class="row"><button onclick="resetQ([${qis}])">↺ 다시 풀기</button></div>`;
+    ${solved?`<div class="fb"><span class="okc">${QT.ok} (${x.ans})</span> ${esc(x.why)}${x.quote?`<br><span class="note">${QT.ev}: "${esc(x.quote)}"</span>`:""}</div>`:""}
+    ${wrong?`<div class="fb"><span class="badc">${QT.bad} (${t[t.length-1]})</span> ${esc(D.HINTS[qi])} ${QT.again}</div>`:""}</div>`; }).join("")
+    + `<div class="row"><button onclick="resetQ([${qis}])">${QT.reset}</button></div>`;
 }
 function pick(qi,L){ const t=tries[qi]||[]; if(t.includes(D.QUIZ[qi].ans)||t.includes(L)) return; tries[qi]=[...t,L]; drawQuiz(); quizProg(); }
-function resetQ(a){ a.forEach(i=>delete tries[i]); drawQuiz(); }
-function drawQuiz(){ document.getElementById("quiz-a1").innerHTML=quizHTML([0,1]); document.getElementById("quiz-a2").innerHTML=quizHTML([2,3]); }
+function resetQ(a){ a.forEach(i=>{ delete tries[i]; delete rec[i]; }); drawQuiz(); }
+function drawQuiz(){ document.getElementById("quiz-a1").innerHTML=quizHTML(artQ("a1")); document.getElementById("quiz-a2").innerHTML=quizHTML(artQ("a2")); }
+/* ---------- ✍️ writing mission (text kept per date in localStorage; no answer — reply in the chat for a correction) ---------- */
+const WM_KEY="ea-write-v1";
+const WL = QEN ? {title:"✍️ Writing Mission", ph:"Write in English here", saved:"✓ Saved on this device", copy:"📋 Copy", copied:"📋 Copied", ex:"Show example"}
+               : {title:"✍️ 영작 미션", ph:"여기에 영어로 써 보세요", saved:"✓ 이 기기에 저장됨", copy:"📋 복사", copied:"📋 복사했어요", ex:"예시 문장 보기"};
+function wmAll(){ try{ return JSON.parse(localStorage.getItem(WM_KEY)||"{}")||{}; }catch(e){ return {}; } }
+function wmSave(v, from){ const a=wmAll(); if(v.trim()) a[META.date]=v; else delete a[META.date]; try{ localStorage.setItem(WM_KEY, JSON.stringify(a)); }catch(e){}
+  document.querySelectorAll(".wm textarea").forEach(t=>{ if(t.id!==from) t.value=v; });
+  document.querySelectorAll(".wm .wms").forEach(e=>e.textContent = v.trim() ? WL.saved : "");
+  if(!GC.busy) document.querySelectorAll(".wm .gres").forEach(e=>e.innerHTML=""); GC.m=null; }
+function wmCopy(aid){ const t=document.getElementById("wm-"+aid); if(!t||!t.value.trim()) return; t.select();
+  (navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>WB&&WB.toast&&WB.toast(WL.copied),()=>{ try{ document.execCommand("copy"); }catch(e){} }); }
+/* free grammar/spelling check via LanguageTool public API (no key; text is sent to languagetool.org) */
+const GC={busy:false, m:null, text:"", max:1000};
+function gShow(aid, html){ const e=document.getElementById("wmg-"+aid); if(e) e.innerHTML=html; }
+async function gCheck(aid){
+  const t=document.getElementById("wm-"+aid), btn=document.getElementById("wmb-"+aid); if(!t||GC.busy) return;
+  const text=t.value.trim();
+  if(!text){ gShow(aid,`<div class="note">✏️ Write your sentences first.</div>`); t.focus(); return; }
+  if(text.length>GC.max){ gShow(aid,`<div class="note badc">✂️ Too long (${text.length} chars). Please keep it under ${GC.max} characters.</div>`); return; }
+  if(navigator.onLine===false){ gShow(aid,`<div class="note badc">📴 오프라인이에요. 문법 검사는 인터넷에 연결되면 쓸 수 있어요. 쓴 글은 이 기기에 저장돼 있어요.</div>`); return; }
+  GC.busy=true; btn.disabled=true; const lbl=btn.textContent; btn.textContent="⏳ Checking…";
+  gShow(aid,`<div class="note">⏳ Checking…</div>`);
+  const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),8000);
+  try{
+    const r=await fetch("https://api.languagetool.org/v2/check",{method:"POST",signal:ac.signal,
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({language:"en-US",text})});
+    if(r.status===429) throw new Error("rate");
+    if(!r.ok) throw new Error("http "+r.status);
+    const j=await r.json(); GC.m=(j.matches||[]).filter(m=>m.length>0).sort((a,b)=>a.offset-b.offset); GC.text=text;
+    gRender(aid);
+  }catch(e){
+    if(navigator.onLine===false || e instanceof TypeError){ gShow(aid,`<div class="note badc">📴 오프라인이에요. 문법 검사는 인터넷에 연결되면 쓸 수 있어요. 쓴 글은 이 기기에 저장돼 있어요.</div>`); return; }
+    const msg = e.name==="AbortError" ? "⌛ The checker took too long (8 s)." : e.message==="rate" ? "🚦 Too many checks right now." : "⚠️ Couldn't reach the checker.";
+    gShow(aid,`<div class="note badc">${msg} Please try again in a minute.</div>`);
+  }finally{ clearTimeout(tm); GC.busy=false; btn.disabled=false; btn.textContent=lbl; }
+}
+function gRender(aid){ const M=GC.m||[], T=GC.text;
+  if(!M.length){ gShow(aid,`<div class="okc">👍 No grammar or spelling issues found</div>`); return; }
+  let h="", p=0; M.forEach((m,i)=>{ if(m.offset<p) return; h+=esc(T.slice(p,m.offset))+`<mark class="gerr" title="${esc(m.message||"")}">${esc(T.substr(m.offset,m.length))}<sup>${i+1}</sup></mark>`; p=m.offset+m.length; });
+  h+=esc(T.slice(p));
+  const li=M.map((m,i)=>{ const sg=(m.replacements||[]).slice(0,2).map(x=>x.value);
+    return `<li><span class="gbad">${esc(T.substr(m.offset,m.length))}</span> → ${sg.length?sg.map((v,k)=>`<span class="gsug">${esc(v)||"(delete)"}</span><button onclick="gApply('${aid}',${i},${k})">Apply</button>`).join(" / "):"<i>no suggestion</i>"}
+      <span class="gmsg">${esc(m.message||"")}</span></li>`; }).join("");
+  gShow(aid,`<div class="gtxt">${h}</div><div class="note">${M.length} issue${M.length>1?"s":""} found</div><ol class="glist">${li}</ol>`); }
+function gApply(aid,i,k){ const t=document.getElementById("wm-"+aid), m=GC.m&&GC.m[i]; if(!t||!m) return;
+  if(t.value.trim()!==GC.text){ gCheck(aid); return; }
+  const lead=t.value.length-t.value.trimStart().length, o=lead+m.offset;
+  const v=t.value.slice(0,o)+m.replacements[k].value+t.value.slice(o+m.length);
+  t.value=v; wmSave(v,null); gCheck(aid); }
+function writeHTML(aid){ const W=D.WRITE; if(!W) return ""; const v=wmAll()[META.date]||"";
+  return `<div class="wm"><h4>${WL.title}</h4>
+    <div class="wmx">${W.expressions.map(e=>`<span class="tagc big">${esc(e)}</span>`).join("")}</div>
+    <p>${esc(W.prompt)}</p>
+    <textarea id="wm-${aid}" rows="4" maxlength="1200" placeholder="${WL.ph}" aria-label="영작" autocapitalize="sentences" spellcheck="true" oninput="wmSave(this.value,this.id)">${esc(v)}</textarea>
+    <div class="row"><button class="pri" id="wmb-${aid}" onclick="gCheck('${aid}')">✅ Check</button><button onclick="wmCopy('${aid}')">${WL.copy}</button><span class="note wms">${v.trim()?WL.saved:""}</span></div>
+    <div class="note">🔎 문법·철자만 검사해요; 더 자연스러운 표현은 채팅으로 보내면 고쳐 드려요. (Check 누르면 글이 LanguageTool로 전송돼요)</div>
+    <div class="gres" id="wmg-${aid}" aria-live="polite"></div>
+    ${W.example?`<details><summary>${WL.ex}</summary><p class="wmex">${esc(W.example)}</p></details>`:""}
+    <div class="note">💬 쓴 문장을 채팅으로 답장해 주시면 첨삭해 드려요. 정답은 따로 없어요.</div></div>`; }
+/* ---------- ✏️ 먼저 해석해 보기 (article.translate_check; local keyword check, no network, nothing sent) ---------- */
+const TCS={};
+const tcNorm=t=>String(t||"").toLowerCase().replace(/[\s.,·…!?'"“”‘’()\[\]{}:;~\-–—/]+/g,"");
+function tcHTML(a){ const A=D[a.toUpperCase()]; if(!A||!A.tc||!A.tc.length) return "";
+  return `<div class="tc"><h3>✏️ 먼저 해석해 보기</h3><div class="note">직해를 보기 전에 직접 한국어로 옮겨 보세요. 확인은 이 기기 안에서만 핵심 포인트를 살펴봐요(전송 없음).</div>`+A.tc.map((t,n)=>{ const k=a+"-"+n, s=TCS[k]||{};
+    const res = s.chk ? `<div class="tcres">${t.c.map(c=>{ const hit=c.a.some(x=>{ const y=tcNorm(x); return y && tcNorm(s.v).includes(y); });
+      return `<div class="tcl ${hit?"ok":"no"}">${hit?"✅":"⚠️"} <b>${esc(c.l)}</b> — ${esc(hit?c.ok:c.no)}</div>`; }).join("")}</div>` : "";
+    return `<div class="q tci"><div class="tcen"><b>T${n+1}.</b> ${esc(strip(A.pairs[t.i].en))}</div>
+    <textarea id="tc-${k}" rows="3" maxlength="600" placeholder="한국어로 해석해 보세요" aria-label="해석 입력" oninput="TCS['${k}']={...(TCS['${k}']||{}),v:this.value}">${esc(s.v||"")}</textarea>
+    <div class="row"><button class="pri" onclick="tcCheck('${a}',${n})">확인</button><button onclick="tcShow('${a}',${n})">👀 모범 해석 보기</button></div>
+    ${res}${s.chk||s.show?`<div class="tcm"><span class="note">모범 해석</span><br>${esc(t.m)}</div>`:""}</div>`; }).join("")+`</div>`; }
+function tcDraw(a){ const el=document.getElementById("tc-"+a); if(el) el.innerHTML=tcHTML(a); }
+function tcCheck(a,n){ const k=a+"-"+n, el=document.getElementById("tc-"+k), v=el?el.value:""; if(!v.trim()){ el&&el.focus(); return; } TCS[k]={...(TCS[k]||{}),v,chk:true}; tcDraw(a); }
+function tcShow(a,n){ const k=a+"-"+n, el=document.getElementById("tc-"+k); TCS[k]={...(TCS[k]||{}),v:el?el.value:"",show:true}; tcDraw(a); }
+/* ---------- 📘 오늘의 문법 card (article.grammar_point), 문법 tab ---------- */
+const gpB=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+function gpDraw(a){ const el=document.getElementById("gp-"+a), g=D[a.toUpperCase()].gp; if(!el) return; if(!g){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="gp"><h3>📘 오늘의 문법 · ${esc(g.topic)}</h3>
+  <div class="gpl gpr">${esc(g.rule_ko)}</div>
+  <div class="gpl"><span class="gpt">기사</span> ${gpB(g.article_sentence)} <span class="gpk">${esc(g.article_ko)}</span></div>
+  <div class="gpl"><span class="gpt">예문</span> ${esc(g.example_en)} <span class="gpk">${esc(g.example_ko)}</span></div>
+  <div class="gpl"><span class="gpt">주의</span> ❌ <s>${esc(g.mistake_wrong)}</s> → ✅ <b>${esc(g.mistake_right)}</b></div></div>`; }
+/* ---------- 📐 Grammar Quiz (article.grammar_quiz; page-only state, no review linkage) ---------- */
+const GQS={};
+function gqHTML(a){ const A=D[a.toUpperCase()]; if(!A||!A.gq||!A.gq.length) return "";
+  return `<div class="gq"><h4>📐 Grammar Quiz</h4>`+A.gq.map((g,n)=>{ const k=a+"-"+n, s=GQS[k]||{p:[]};
+    const fb=ok=>`<div class="fb">${ok?`<span class="okc">✅ Correct!</span>`:`<span class="okc">👀 Answer</span>`} <b>${esc(g.t==="c"?g.o[g.a]:g.c)}</b><br><span class="gqx">${esc(g.x)}</span> <span class="note">· ${esc(g.tp)}</span></div>`;
+    if(g.t==="c"){ const done=s.p.length>0, pk=s.p[0];
+      return `<div class="q gqi"><div><b>G${n+1}. Choose the correct option.</b></div><div class="gqq">${esc(g.q).replace("___",'<span class="gqb">___</span>')}</div>
+      <div class="row">${g.o.map((o,i)=>`<button class="gqo ${done&&i===g.a?"pri":""} ${done&&i===pk&&i!==g.a?"gqw":""}" ${done?"disabled":""} onclick="gqPick('${a}',${n},${i})">${"ABC"[i]}. ${esc(o)}</button>`).join("")}</div>
+      ${done?(pk===g.a?fb(1):`<div class="fb"><span class="badc">❌ Not quite (${"ABC"[pk]})</span></div>`+fb(0)):""}</div>`; }
+    const solved=s.p.includes(g.i)||s.rev;
+    return `<div class="q gqi"><div><b>G${n+1}. Tap the word that is wrong.</b></div><div class="gqs">${g.w.map((w,i)=>`<button class="gqt ${i===g.i&&solved?"gqok":""} ${s.p.includes(i)&&i!==g.i?"gqw":""}" ${solved||s.p.includes(i)?"disabled":""} onclick="gqPick('${a}',${n},${i})">${esc(w)}</button>`).join(" ")}</div>
+    ${solved?(s.rev&&!s.p.includes(g.i)?fb(0):fb(1)):s.p.length?`<div class="fb"><span class="badc">❌ "${esc(g.w[s.p[s.p.length-1]])}" is correct here.</span> Try again.</div>`:""}
+    <div class="row">${!solved&&s.p.length?`<button onclick="gqRev('${a}',${n})">👀 Show answer</button>`:""}${s.p.length||s.rev?`<button onclick="gqReset('${a}',${n})">↺ Try again</button>`:""}</div></div>`; }).join("")+`</div>`; }
+function gqDraw(a){ const el=document.getElementById("gq-"+a); if(el) el.innerHTML=gqHTML(a); }
+function gqPick(a,n,i){ const k=a+"-"+n, s=GQS[k]||(GQS[k]={p:[]}); if(s.p.includes(i)) return; s.p.push(i); gqDraw(a); }
+function gqRev(a,n){ const k=a+"-"+n; (GQS[k]||(GQS[k]={p:[]})).rev=true; gqDraw(a); }
+function gqReset(a,n){ delete GQS[a+"-"+n]; gqDraw(a); }
+/* ---------- 💬 회화 tab (article.conversation; offline self-check, nothing sent) ---------- */
+const CV_KEY="ea-conv-v1", CVS={}, cvKo={};
+const cvB=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+const cvNorm=t=>" "+String(t||"").toLowerCase().replace(/[\u2018\u2019\u201B\u2032`´]/g,"'").replace(/[^a-z0-9' ]+/g," ").replace(/\s+/g," ").trim();
+const cvHit=(v,x)=>{ const y=cvNorm(x); return y.trim().length>0 && cvNorm(v).includes(y); };   // word-start match: stems OK
+function cvAll(){ try{ const o=JSON.parse(lsGet(CV_KEY)||"{}"); return o&&typeof o==="object"?o:{}; }catch(e){ return {}; } }
+function cvSave(a,v){ const o=cvAll(), d=o[META.date]||(o[META.date]={}); if(v.trim()) d[a]=v; else delete d[a]; if(!Object.keys(d).length) delete o[META.date]; lsSet(CV_KEY,JSON.stringify(o));
+  CVS[a]={...(CVS[a]||{}),v}; }
+function cvStar(A,x,i){ return star(A,"expr",x.en,x.ko,x.example_en,"",`${A.id}-c${i+1}`); }
+function cvHTML(a){ const A=D[a.toUpperCase()], C=A&&A.cv; if(!C) return `<div class="note" style="margin:12px 0">이 기사에는 회화 연습이 없어요.</div>`;
+  const all=!!cvKo[a+"*"], s=CVS[a]||(CVS[a]={v:(cvAll()[META.date]||{})[a]||""}), P=C.p;
+  const lines=C.d.map((l,i)=>{ const show=all||cvKo[a+i];
+    return `<div class="cvl ${l.s}" data-row="${a}d-${i}"><div class="cvav">${l.s}</div><div class="cvb">${cvB(l.en)}${show?`<div class="cvk">${esc(l.ko)}</div>`:""}</div>
+    <div class="cvbt"><button class="ico sp" data-sp="${a}d:${i}" aria-label="이 줄 듣기" onclick="spTap('${a}d',${i})">${spLbl(a+'d',i)}</button>${all?"":`<button onclick="cvKoT('${a}',${i})" aria-pressed="${!!show}">${show?"숨기기":"뜻"}</button>`}</div></div>`; }).join("");
+  const exps=C.x.map((x,i)=>`<div class="cvx" data-row="${a}c-${i}"><div class="dhd"><b>${esc(x.en)}</b><button class="ico sp" data-sp="${a}c:${i}" aria-label="듣기" onclick="spTap('${a}c',${i})">${spLbl(a+'c',i)}</button>${cvStar(A,x,i)}</div>
+    <div class="cvm">${esc(x.ko)}</div><div class="cvu">💡 ${esc(x.use_ko)}</div><div class="cve">${esc(x.example_en)}<span class="gpk">${esc(x.example_ko)}</span></div></div>`).join("");
+  let res="";
+  if(s.chk){ const tg=P.t.map(t=>{ const hit=cvHit(s.v,t)||cvHit(s.v,t.replace(/[.…!?]+$/,"").split(/[,…]/)[0]);
+      return `<div class="tcl ${hit?"ok":"no"}">${hit?"✅":"⚠️"} <b>${esc(t)}</b> — ${hit?"표현을 썼어요!":"이 표현을 넣어 다시 말해 보세요."}</div>`; }).join("");
+    const cps=P.c.map(c=>{ const hit=c.a.some(x=>cvHit(s.v,x)); return `<div class="tcl ${hit?"ok":"no"}">${hit?"✅":"⚠️"} <b>${esc(c.l)}</b> — ${esc(hit?c.ok:c.no)}</div>`; }).join("");
+    const n=s.v.trim().split(/\s+/).filter(Boolean).length;
+    res=`<div class="tcres">${tg}${cps}<div class="tcl ${n>=15?"ok":"no"}">${n>=15?"✅":"⚠️"} <b>길이</b> — ${n}단어 ${n>=15?"· 2~3문장 분량 좋아요":"· 이유나 예를 한 문장 더 붙여 보세요"}</div></div>`; }
+  const model = s.chk||s.show ? `<div class="tcm"><div class="cvq"><div><span class="note">모범 답안</span><br>${esc(P.m)}<br><span class="note">${esc(P.mk)}</span></div><button class="ico sp" data-sp="${a}p:1" aria-label="모범 답안 듣기" onclick="spTap('${a}p',1)">${spLbl(a+'p',1)}</button></div></div>` : "";
+  return `<h3>💬 이 기사로 대화하기</h3><div class="note">두 사람이 기사 이야기를 나누는 대화예요. 굵은 글씨가 오늘의 회화 표현이에요. 🔊 한 줄씩 듣고 따라 말해 보세요.</div>
+  <div class="row"><button class="pri sp" data-sp="${a}D:0" data-spl="▶ 전체 대화 듣기" onclick="spTap('${a}D',0)">${spActive(a+'D',0)?SP_ON:"▶ 전체 대화 듣기"}</button><button onclick="cvKoT('${a}','*')" aria-pressed="${all}">${all?"🇰🇷 한국어 숨기기":"🇰🇷 한국어 모두 보기"}</button></div>
+  <div class="cvd">${lines}</div>
+  <h3>🗣 회화 표현</h3><div class="note">🔊 영어 → 뜻 (반복·간격·속도는 ⚙️ 설정). ☆를 누르면 단어장에 저장돼요.</div>${exps}
+  <div class="cvp"><h4>🎤 말해 보기</h4>
+    <div class="cvq"><div><b>${esc(P.q)}</b><br><span class="note">${esc(P.qk)}</span></div><button class="ico sp" data-sp="${a}p:0" aria-label="질문 듣기" onclick="spTap('${a}p',0)">${spLbl(a+'p',0)}</button></div>
+    <div class="wmx">${P.t.map(t=>`<span class="tagc big">${esc(t)}</span>`).join("")}</div>
+    <div class="note">위 두 표현을 넣어 대화하듯 2~3문장으로 답해 보세요. 아이폰 키보드의 🎤(받아쓰기)로 말해도 돼요.</div>
+    <textarea id="cvin-${a}" rows="4" maxlength="1000" placeholder="Answer like you're talking to a friend…" aria-label="말해 보기 답" autocapitalize="sentences" spellcheck="true" oninput="cvSave('${a}',this.value)">${esc(s.v||"")}</textarea>
+    <div class="row"><button class="pri" onclick="cvCheck('${a}')">✅ 확인</button><button onclick="cvShow('${a}')">👀 모범 답안 보기</button>${s.chk||s.show?`<button onclick="cvReset('${a}')">↺ 다시</button>`:""}</div>
+    <div class="note">확인은 이 기기 안에서만 표현이 들어갔는지 살펴봐요(전송 없음). 문법 채점은 하지 않아요.</div>
+    <div id="cvr-${a}" aria-live="polite">${res}${model}</div></div>`; }
+function cvDraw(a){ const el=document.getElementById("cv-"+a); if(el) el.innerHTML=cvHTML(a); }
+function cvKoT(a,i){ const k=a+i; cvKo[k]=!cvKo[k]; cvDraw(a); }
+function cvCheck(a){ const el=document.getElementById("cvin-"+a), v=el?el.value:""; if(!v.trim()){ el&&el.focus(); return; } cvSave(a,v); CVS[a].chk=true; cvDraw(a); const r=document.getElementById("cvr-"+a); if(r) dVis(r); }
+function cvShow(a){ const el=document.getElementById("cvin-"+a); CVS[a]={...(CVS[a]||{}),v:el?el.value:(CVS[a]||{}).v||"",show:true}; cvDraw(a); const r=document.getElementById("cvr-"+a); if(r) dVis(r); }
+function cvReset(a){ CVS[a]={...(CVS[a]||{}),chk:false,show:false}; cvDraw(a); const el=document.getElementById("cvin-"+a); if(el){ el.focus({preventScroll:true}); } }
+/* ---------- 핵심 문장 따라 쓰기 (article.key_sentences) ---------- */
+const DS={};   // "a1-2" -> {hid, val, res}
+const dNorm=w=>w.toLowerCase().replace(/[\u2018\u2019\u201B\u2032`]/g,"'").replace(/[^a-z0-9]/g,"");
+const dToks=t=>t.split(/\s+/).filter(Boolean).map(w=>({w,k:dNorm(w)})).filter(x=>x.k);
+function dDiff(orig, typed){ const a=dToks(orig), b=dToks(typed), n=a.length, m=b.length;
+  const L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]= a[i].k===b[j].k ? L[i+1][j+1]+1 : Math.max(L[i+1][j],L[i][j+1]);
+  const okA=new Array(n).fill(false), okB=new Array(m).fill(false); let i=0,j=0;
+  while(i<n&&j<m){ if(a[i].k===b[j].k){ okA[i]=okB[j]=true; i++; j++; } else if(L[i+1][j]>=L[i][j+1]) i++; else j++; }
+  return {a,b,okA,okB,miss:okA.filter(x=>!x).length,extra:okB.filter(x=>!x).length}; }
+function dictCard(A,i,n){ const k=A.id+"-"+i, st=DS[k]||(DS[k]={hid:false,val:"",res:null}), t=strip(A.pairs[i].en);
+  let body;
+  if(!st.hid) body=`<div class="dsen">${esc(t)}</div><div class="row"><button class="pri" onclick="dHide('${k}')">🙈 가리기</button></div>`;
+  else { const r=st.res;
+    body=`<div class="dsen dhid">🙈 문장을 가렸어요. 기억나는 대로 써 보세요.</div>
+    <input class="dcin" id="din-${k}" type="text" value="${esc(st.val)}" placeholder="Type the sentence from memory" aria-label="문장 따라 쓰기"
+      autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done"
+      oninput="DS['${k}'].val=this.value" onkeydown="if(event.key==='Enter'){event.preventDefault();dCheck('${k}')}">
+    <div class="row"><button class="pri" onclick="dCheck('${k}')">✅ 확인</button><button onclick="dRetry('${k}')">↺ 다시</button><button onclick="dShowAgain('${k}')">👀 문장 보기</button></div>`;
+    if(r){ const typed=r.b.map((x,j)=>r.okB[j]?esc(x.w):`<del class="dwr">${esc(x.w)}</del>`).join(" ")||"<i>(비어 있음)</i>";
+      const right=r.a.map((x,j)=>r.okA[j]?esc(x.w):`<mark class="dms">${esc(x.w)}</mark>`).join(" ");
+      body+= r.miss||r.extra ? `<div class="dres"><div class="badc">❌ 틀리거나 빠진 단어 ${r.miss}개${r.extra?` · 다른/추가 단어 ${r.extra}개`:""}</div>
+          <div class="dline"><span class="dl">내 답</span> ${typed}</div><div class="dline"><span class="dl">정답</span> ${right}</div>
+          <div class="note">빨간 줄 = 틀리거나 필요 없는 단어, 노란색 = 빠졌거나 틀린 자리의 정답 단어</div></div>`
+        : `<div class="dres"><div class="okc">✅ 완벽해요! 모든 단어가 맞았어요.</div><div class="dline">${esc(t)}</div></div>`; } }
+  return `<div class="dcard" id="dc-${k}"><div class="dhd"><b>${"①②③④"[n]||n+1}</b><button class="ico sp" data-sp="${A.id}s:${i}" aria-label="문장 듣기" onclick="spTap('${A.id}s',${i})">${spLbl(A.id+'s',i)}</button></div>${body}</div>`; }
+function dRedraw(k, focus){ const [aid,i]=k.split("-"), A=D[aid.toUpperCase()], el=document.getElementById("dc-"+k); if(!el) return;
+  el.outerHTML=dictCard(A,+i,A.keys.indexOf(+i)); if(focus){ const inp=document.getElementById("din-"+k); if(inp){ inp.focus({preventScroll:true}); dVis(inp); } } }
+function dVis(el){ setTimeout(()=>{ const r=el.getBoundingClientRect(), mi=document.getElementById("mini"), bot=mi&&mi.offsetParent!==null?mi.getBoundingClientRect().top:innerHeight;
+  if(r.bottom>bot-12) wrapScrollBy({top:r.bottom-bot+24,behavior:"smooth"}); },60); }
+function dHide(k){ DS[k].hid=true; DS[k].res=null; dRedraw(k,true); }
+function dShowAgain(k){ DS[k].hid=false; DS[k].res=null; dRedraw(k); }
+function dRetry(k){ DS[k].val=""; DS[k].res=null; dRedraw(k,true); }
+function dCheck(k){ const inp=document.getElementById("din-"+k); if(inp) DS[k].val=inp.value; const [aid,i]=k.split("-");
+  DS[k].res=dDiff(strip(D[aid.toUpperCase()].pairs[+i].en), DS[k].val); dRedraw(k); const r=document.querySelector(`#dc-${k} .dres`); if(r) dVis(r); }
+function drawDict(){ ["a1","a2"].forEach(a=>{ const A=D[a.toUpperCase()], el=document.getElementById("dict-"+a); if(!el) return;
+  if(!A||!A.keys||!A.keys.length){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="dict"><h4>✍️ 핵심 문장 따라 쓰기</h4><div class="note">문장을 읽고(🔊 듣고) '가리기'를 누른 뒤 기억나는 대로 써 보세요. 대소문자·문장부호는 채점하지 않아요.</div>
+    ${A.keys.map((i,n)=>dictCard(A,i,n)).join("")}</div>`; }); }
+function drawWrite(){ ["a1","a2"].forEach(a=>{ const el=document.getElementById("wmbox-"+a); if(el) el.innerHTML=writeHTML(a); }); }
 
 const rtries = {};
 function drawRQ(){
   document.getElementById("rqbox").innerHTML = D.RQ.map((x,i)=>{ const t=rtries[i]||[], solved=t.includes(x.ans), wrong=!solved&&t.length>0;
     const right=x.opts.find(o=>o[0]===x.ans).slice(3);
-    return `<div class="q"><div class="row" style="margin:0"><button class="ico" onclick="playSeq('rq',${i},true)">🔊</button><b>R${i+1}. [${x.day} 학습] '${esc(x.en)}'의 뜻은?</b></div>
+    return `<div class="q"><div class="row" style="margin:0"><button class="ico sp" data-sp="rq:${i}" onclick="spTap('rq',${i})">${spLbl('rq',i)}</button><b>R${i+1}. ${esc(QT.rqQ(x.day,x.en))}</b>${x.tag?`<span class="tagc">${esc(x.tag)}</span>`:""}</div>
     ${x.opts.map(o=>`<div class="opt">${esc(o)}</div>`).join("")}
     <div class="row">${x.opts.map(o=>{const L=o[0];return `<button class="${solved&&L===x.ans?"pri":""}" ${solved||t.includes(L)?"disabled":""} onclick="rpick(${i},'${L}')">${L}</button>`}).join("")}</div>
-    ${solved?`<div class="fb"><span class="okc">✅ 정답! (${x.ans})</span> ${esc(x.en)} = ${esc(right)}</div>`:""}
-    ${wrong?`<div class="fb"><span class="badc">❌ 오답 (${t[t.length-1]})</span> ${esc(x.hint)} 다시 골라 보세요.</div>`:""}</div>`; }).join("")
-    + `<div class="row"><button onclick="for(const k in rtries) delete rtries[k]; drawRQ()">↺ 다시 풀기</button></div>`;
+    ${solved?`<div class="fb"><span class="okc">${QT.ok} (${x.ans})</span> ${esc(x.en)} = ${esc(right)}</div>`:""}
+    ${wrong?`<div class="fb"><span class="badc">${QT.bad} (${t[t.length-1]})</span> ${esc(x.hint)} ${QT.again}</div>`:""}</div>`; }).join("")
+    + `<div class="row"><button onclick="for(const k in rtries) delete rtries[k]; drawRQ()">${QT.reset}</button></div>`;
 }
 function rpick(i,L){ const t=rtries[i]||[]; if(t.includes(D.RQ[i].ans)||t.includes(L)) return; rtries[i]=[...t,L]; drawRQ(); }
 
@@ -578,11 +938,12 @@ function articleHTML(A){
   return `<section class="art" id="${id}" data-pn="read">
   <div class="kicker">${esc(A.kicker)}</div><h2>${esc(A.headline)}</h2><div class="sub">${esc(A.koHeadline)}</div>
   <div class="pn pn-read">
-  ${A.image?`<figure class="hero"><img src="${esc(A.image.src)}" width="${A.image.w}" height="${A.image.h}" alt="${esc(A.image.alt||"")}" decoding="async"><figcaption>${esc(A.image.caption||"")}${A.image.credit?` <span class="credit">사진: <a href="${esc(A.image.creditUrl||A.source.href)}" target="_blank" rel="noopener">${esc(A.image.credit)}</a></span>`:""}</figcaption></figure>`:""}
-  <span class="seg" id="mode-${id}">${[["en","원문"],["jik","직해"],["ko","한국어"],["eo","영어만"]].map(([m,l])=>`<button data-m="${m}" class="${m==="jik"?"on":""}" onclick="setMode('${id}','${m}')">${l}</button>`).join("")}</span>
+  ${A.image?`<figure class="hero"><img src="${esc(A.image.src)}" ${A.id==="a1"?'loading="eager"':'loading="lazy"'} width="${A.image.w}" height="${A.image.h}" alt="${esc(A.image.alt||"")}" decoding="async"><figcaption>${esc(A.image.caption||"")}${A.image.credit?` <span class="credit">사진: <a href="${esc(A.image.creditUrl||A.source.href)}" target="_blank" rel="noopener">${esc(A.image.credit)}</a></span>`:""}</figcaption></figure>`:""}
+  <div class="modebar" id="mbar-${id}"><span class="seg" id="mode-${id}">${[["en","원문"],["jik","직해"],["ko","한국어"],["eo","영어만"]].map(([m,l])=>`<button data-m="${m}" class="${m==="jik"?"on":""}" onclick="setMode('${id}','${m}')">${l}</button>`).join("")}</span></div>
   <div id="lines-${id}"></div>
   <h3>문장별 듣기</h3>
   ${seqPlayer(id+"s","문장",{shadow:true,rep:true})}
+  <div id="tc-${id}"></div>
   <a class="card" href="${A.source.href}" target="_blank" rel="noopener"><b>원문: ${esc(A.source.title)}</b><small>${esc(A.source.site)} · ${esc(A.source.date||META.ym)}</small></a>
   </div>
   <div class="pn pn-voc">
@@ -590,17 +951,19 @@ function articleHTML(A){
   ${ctlBar(id+"v","어휘")}
   <div class="note">▶ 전체 듣기 또는 🔊 하나씩: 영어 → 뜻 (반복·간격·속도는 ⚙️ 설정).</div>
   <div class="items"><div class="item ihdr"><div class="w">단어</div><div class="mean">뜻</div><div class="ex">기사 속 문장</div><div class="acts"></div></div>
-  ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}v',${i},true)">🔊</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
+  ${A.vocab.map((x,i)=>`<div class="item" data-row="${id}v-${i}"><div class="w"><b>${esc(x.w)}</b>${x.pos?`<span class="pos">${esc(x.pos)}</span>`:""}</div><div class="acts"><button class="ico sp" data-sp="${id}v:${i}" aria-label="듣기" onclick="spTap('${id}v',${i})">${spLbl(id+'v',i)}</button>${star(A,"word",x.w,x.ko,x.ex,x.pos,`${id}-v${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}${exKo(x)}</div></div>`).join("")}</div>
   </div>
   <div class="pn pn-exp">
   <h3>중요 표현</h3>
   ${ctlBar(id+"x","표현")}
   <div class="items"><div class="item ihdr"><div class="w">표현</div><div class="mean">뜻</div><div class="ex">기사 속 쓰임</div><div class="acts"></div></div>
-  ${A.exprs.map((x,i)=>`<div class="item" data-row="${id}x-${i}"><div class="w"><b>${esc(x.en)}</b></div><div class="acts"><button class="ico" aria-label="듣기" onclick="playSeq('${id}x',${i},true)">🔊</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}</div></div>`).join("")}</div>
+  ${A.exprs.map((x,i)=>`<div class="item" data-row="${id}x-${i}"><div class="w"><b>${esc(x.en)}</b></div><div class="acts"><button class="ico sp" data-sp="${id}x:${i}" aria-label="듣기" onclick="spTap('${id}x',${i})">${spLbl(id+'x',i)}</button>${star(A,"expr",x.en,x.ko,x.ex,"",`${id}-x${i+1}`)}</div><div class="mean">${esc(x.ko)}</div><div class="ex">${esc(x.ex)}${exKo(x)}</div></div>`).join("")}</div>
   </div>
   <div class="pn pn-quiz">
-  <h3>퀴즈</h3><div id="quiz-${id}"></div>
+  <h3>${QT.quiz}</h3><div id="quiz-${id}"></div><div id="dict-${id}"></div><div id="wmbox-${id}"></div>
   </div>
+  <div class="pn pn-gram"><div id="gp-${id}"></div><div id="gq-${id}"></div></div>
+  <div class="pn pn-conv" id="cv-${id}"></div>
 </section>`;
 }
 
@@ -611,6 +974,11 @@ const enko = n => n;   // item.parts is computed on play: EN→KO × the listene
   seqs[A.id+"v"]={unit:"어휘",idx:0,rate:rateG(),list:A.vocab.map((x,i)=>({src:clip(`${A.id}-v${i+1}`),parts:enko(`${A.id}-v${i+1}`),title:`${x.w} (${x.pos})`,detail:x.ko}))};
   seqs[A.id+"x"]={unit:"표현",idx:0,rate:rateG(),list:A.exprs.map((x,i)=>({src:clip(`${A.id}-x${i+1}`),parts:enko(`${A.id}-x${i+1}`),title:x.en,detail:x.ko}))};
 });
+[D.A1,D.A2].forEach(A=>{ const C=A.cv; if(!C) return;   // 💬 회화: dialogue lines, full dialogue, expressions (EN→KO), question + model answer
+  seqs[A.id+"d"]={unit:"줄",idx:0,rate:rateG(),list:C.d.map((l,i)=>({src:clip(`${A.id}-d${i+1}`),title:l.en.replace(/\*\*/g,""),detail:l.ko}))};
+  seqs[A.id+"D"]={unit:"대화",idx:0,rate:rateG(),list:[{src:(META.dialog||{})[A.id],title:"전체 대화",detail:""}]};
+  seqs[A.id+"c"]={unit:"표현",idx:0,rate:rateG(),list:C.x.map((x,i)=>({src:clip(`${A.id}-c${i+1}`),parts:enko(`${A.id}-c${i+1}`),title:x.en,detail:x.ko}))};
+  seqs[A.id+"p"]={unit:"",idx:0,rate:rateG(),list:[{src:clip(`${A.id}-cq`),title:C.p.q,detail:""},{src:clip(`${A.id}-cm`),title:C.p.m,detail:""}]}; });
 seqs.rq={unit:"표현",idx:0,rate:rateG(),list:D.RQ.map((x,i)=>({src:clip(`rq${i+1}`),parts:enko(`rq${i+1}`),title:x.en,detail:""}))};
 document.getElementById("arts").innerHTML = articleHTML(D.A1)+articleHTML(D.A2);
 document.getElementById("mini").innerHTML = [D.A1,D.A2].map((A,n)=>miniPlayer(A.id, FULL[A.id], `🎧 기사 ${n+1} 전체 듣기`)).join("");
@@ -618,9 +986,10 @@ Object.values(seqs).forEach(S=>S.list.forEach(it=>{ if(typeof it.parts!=="string
   Object.defineProperty(it,"parts",{get(){ const e=clip(n+"-en"), k=clip(n+"-ko"); return Array.from({length:repsN()},()=>[e,k]).flat(); }}); }));
 ["a1","a2"].forEach(id=>{ initFull(id, MARKS[id]); drawLines(id); });
 Object.keys(seqs).forEach(k=>renderSeq(k));
-drawQuiz(); drawRQ();
+document.getElementById("rqtitle").textContent=QT.rqT; if(QT.rqNote) document.getElementById("rqnote").textContent=QT.rqNote;
+drawQuiz(); drawRQ(); drawDict(); drawWrite(); ["a1","a2"].forEach(gpDraw); ["a1","a2"].forEach(gqDraw); ["a1","a2"].forEach(tcDraw); ["a1","a2"].forEach(cvDraw); addEventListener("load",()=>offDraw());
 /* ---------- tabs: article switcher + 원문|직해|어휘|표현|퀴즈 ---------- */
-const TABS=[["en","원문","read"],["jik","직해","read"],["voc","어휘","voc"],["exp","표현","exp"],["quiz","퀴즈","quiz"]];
+const TABS=[["en","원문","read"],["jik","직해","read"],["voc","어휘","voc"],["exp","표현","exp"],["quiz","퀴즈","quiz"]].concat([D.A1,D.A2].some(A=>A.gp||(A.gq&&A.gq.length))?[["gram","문법","gram"]]:[]).concat([D.A1,D.A2].some(A=>A.cv)?[["conv","회화","conv"]]:[]);
 // Every load opens on 기사 1 → 원문 (English). Only an explicit link hash (#a2, #a2-voc, #rq …) opens another view.
 try{ Object.keys(localStorage).filter(k=>k.startsWith("ea-tab-v1")).forEach(k=>localStorage.removeItem(k)); }catch(e){}
 const TAB=(()=>{ const h=location.hash.slice(1), PV=["rv","past","mywb","rq","review"], m=h.match(/^(a[12])(?:-(\w+))?$/);
@@ -639,13 +1008,17 @@ function drawTabs(){
   ["a1","a2"].forEach(a=>{ const el=document.getElementById(a); el.classList.toggle("cur",TAB.art===a); el.dataset.pn=TABS.find(x=>x[0]===TAB.tab)[2];
     document.getElementById("mp-"+a).classList.toggle("cur",(rv?TAB.last:TAB.art)===a); });
 }
-function toStudyTop(){ const st=document.getElementById("study"); const y=st.getBoundingClientRect().top+scrollY; if(scrollY>y) window.scrollTo(0,y); }
-function selTab(t){ if(t===TAB.tab) return; TAB.tab=t; saveTab();
+function toStudyTop(){ const st=document.getElementById("study"); const y=st.getBoundingClientRect().top+wrapY(); if(wrapY()>y) wrapScrollTo(y); }
+function selTab(t){ if(t===TAB.tab) return; spStop();
+  if((t==="en"||t==="jik")&&(TAB.tab==="en"||TAB.tab==="jik")&&TAB.art!=="rv"){ const a=TAB.art; keepPlace(a,()=>selTab0(t,true)); return; }
+  selTab0(t,false); }
+function selTab0(t,keep){ TAB.tab=t; saveTab();
   if(t==="en"||t==="jik"){ ["a1","a2"].forEach(a=>{ if(t==="jik"? modes[a]!=="jik" : modes[a]==="jik"){ modes[a]=t; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===t)); drawLines(a); } }); }
-  drawTabs(); toStudyTop(); }
-function selArt(a, target){ if(a!==TAB.art){ if(a!=="rv"){ const old=fulls[TAB.last]; if(a!==TAB.last && old && !old.paused) old.pause(); TAB.last=a; }
+  drawTabs(); if(!keep) toStudyTop(); }
+function selArt(a, target){ if(a!==TAB.art){ spStop(); if(a!=="rv"){ const old=fulls[TAB.last]; if(a!==TAB.last && old && !old.paused) old.pause(); TAB.last=a; }
+    if(a!=="rv"){ closeGloss(); TAB.tab="en"; ["a1","a2"].forEach(x=>{ if(modes[x]==="jik"){ modes[x]="en"; document.querySelectorAll(`#mode-${x} button`).forEach(b=>b.classList.toggle("on",b.dataset.m==="en")); drawLines(x); } }); }   // a different article always opens on 원문, at its top
     TAB.art=a; saveTab(); drawTabs(); }
-  const el=target&&document.getElementById(target); if(el){ const bar=document.getElementById("sbar").offsetHeight; window.scrollTo(0, el.getBoundingClientRect().top+scrollY-bar-8); } else toStudyTop(); }
+  const el=target&&document.getElementById(target); if(el){ const bar=document.getElementById("sbar").offsetHeight; wrapScrollTo(el.getBoundingClientRect().top+wrapY()-bar-8); } else toStudyTop(); }
 addEventListener("hashchange",()=>{ const h=location.hash.slice(1);
   if(h==="a1"||h==="a2") selArt(h); else if(["rv","past","mywb","rq","review"].includes(h)) selArt("rv", h==="rv"?null:h); });
 if(TAB.tab!=="jik"){ ["a1","a2"].forEach(a=>{ modes[a]="en"; document.querySelectorAll(`#mode-${a} button`).forEach(b=>b.classList.toggle("on",b.dataset.m==="en")); drawLines(a); }); }
@@ -676,13 +1049,11 @@ fetch("../days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ i
   if(w){ const el=document.getElementById("weeklink"); el.hidden=false;
     el.innerHTML=`<h3 style="border:0;margin-top:0;padding-top:0">📚 주말 복습</h3><a class="card" href="../${esc(w.url)}"><b>${esc(w.label)} · 핵심 표현 ${w.count}개 + 퀴즈</b><small>이번 주 표현을 듣고 퀴즈로 마무리해요</small></a>`; } }).catch(()=>{});
 if(HAS_WB){
-  WB.onPlay = () => { stopSeq(); stopFulls(); };
+  WB.onPlay = () => { stopSeq(); stopFulls(); ttsStop(); };
   const cnt=()=>{ const n=WB.all().length; document.getElementById("wbcount").textContent = n? `저장 ${n}개` : "아직 비어 있어요"; };
   cnt(); WB.onChange(()=>{ cnt(); WB.refreshStars(); });
   if(META.sunday){ document.getElementById("mywb").hidden=false; WB.quiz(document.getElementById("mywbbox"),{limit:10}); }
 }
 </script>
-<script>/* cover above sticky bars only while they are stuck */
-(function(){ const els=[...document.querySelectorAll(".stk")]; const f=()=>els.forEach(e=>e.classList.toggle("stuck", !e.hidden && e.getBoundingClientRect().top<=1 && scrollY>0)); addEventListener("scroll",f,{passive:true}); addEventListener("resize",f); f(); })();</script>
 </body>
 </html>
