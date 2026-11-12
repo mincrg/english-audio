@@ -1,10 +1,10 @@
-/* 직독직해 service worker — version 365baa4c68
+/* 직독직해 service worker — version ee9d7e1013
    HTML / JSON / JS / manifest : network-first, cache fallback (fresh lessons online, last copy offline)
    images / icons               : cache-first after first sight
    dict/en-ko.json (?v=hash)    : cache-first in its own cache, only the current version kept (사전 뜻 works offline after the first tap)
    mp3                          : never precached; cached in full the first time it is played (or via
                                   "오프라인용 받기"), Range requests are answered as 206 slices of the cached file */
-const V = "365baa4c68";
+const V = "ee9d7e1013";
 const PAGES = "ea-pages-" + V, IMGS = "ea-img-v1", AUDIO = "ea-audio-v1", DICT = "ea-dict-v1";
 const KEEP = [PAGES, IMGS, AUDIO, DICT];
 

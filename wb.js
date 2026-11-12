@@ -3,7 +3,26 @@
 const KEY = "ea-wordbook-v1";
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const POOL = ["~을 포기하다","증가하다","결정하다","놀라운","~에 반대하여","주목할 만한","줄어들다","~에 의존하다","예상하다","가능성","영향을 미치다","확인하다","~을 대신하여","드문, 희귀한","발표하다","~에 따르면"];
-function load(){ try{ const a=JSON.parse(localStorage.getItem(KEY)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+/* 회화 카드 clip only (표현 탭은 aN-xK, 어휘는 aN-vK, 복습은 rqN) */
+const CONV_CLIP = /(?:^|\/)clips\/a\d+-c\d+(?:-(?:en|ko))?\.mp3(?:\?|#|$)/i;
+function isConv(it){ return !!(it && (it.src==="conv" || CONV_CLIP.test(String(it.clip||"")))); }
+function matchFilt(it, filt){
+  const f=filt||"all";
+  if(f==="all") return true;
+  if(f==="conv") return isConv(it);
+  if(f==="article") return !isConv(it);
+  if(f==="word"||f==="expr") return !isConv(it) && (it.type||"word")===f;
+  return true;
+}
+function kindLabel(it){ return isConv(it)?"회화 표현":((it.type||"word")==="expr"?"표현":"단어"); }
+function withConvSrc(it){ if(!it||it.src==="conv") return it; return isConv(it)?Object.assign({},it,{src:"conv"}):it; }
+function migrate(a){
+  let dirty=false;
+  const out=a.map(it=>{ const n=withConvSrc(it); if(n!==it) dirty=true; return n; });
+  return dirty?out:a;
+}
+function load(){ try{ const a=JSON.parse(localStorage.getItem(KEY)||"[]"); if(!Array.isArray(a)) return [];
+    const m=migrate(a); if(m!==a) save(m); return m; }catch(e){ return []; } }
 function save(a){ try{ localStorage.setItem(KEY, JSON.stringify(a)); return true; }catch(e){ alert("저장 공간을 쓸 수 없어요 (사파리 개인정보 보호 모드인지 확인해 주세요)."); return false; } }
 const idOf = it => (it.type||"word")+"|"+String(it.en).trim().toLowerCase();
 const listeners = [];
@@ -108,11 +127,12 @@ function ttsSay(en, ko, id){
 }
 
 const WB = {
-  KEY, esc,
+  KEY, esc, isConv, matchFilt, kindLabel,
   all: load,
   has: it => load().some(x => x.id===idOf(it)),
   add(it){ const a=load(), id=idOf(it); if(a.some(x=>x.id===id)) return;
-    a.unshift({id, type:it.type||"word", en:it.en, ko:it.ko, pos:it.pos||"", ex:it.ex||"", date:it.date||"", article:it.article||"", clip:it.clip||"", page:it.page||"", saved:new Date().toISOString()});
+    const src = it.src==="conv" || isConv(it) ? "conv" : (it.src||"");
+    a.unshift({id, type:it.type||"word", en:it.en, ko:it.ko, pos:it.pos||"", ex:it.ex||"", date:it.date||"", article:it.article||"", clip:it.clip||"", page:it.page||"", src, saved:new Date().toISOString()});
     if(save(a)) changed(); },
   remove(id){ if(save(load().filter(x=>x.id!==id))) changed(); },
   toggle(it){ if(WB.has(it)) WB.remove(idOf(it)); else WB.add(it); return WB.has(it); },
@@ -153,7 +173,7 @@ const WB = {
   importText(t){ let items; try{ const o=JSON.parse(t); items=Array.isArray(o)?o:o.items; }catch(e){ throw new Error("JSON 형식이 아니에요."); }
     if(!Array.isArray(items)) throw new Error("items 목록이 없어요.");
     const a=load(), have=new Set(a.map(x=>x.id)); let n=0;
-    items.forEach(it=>{ if(!it||!it.en||!it.ko) return; const id=it.id||idOf(it); if(have.has(id)) return; have.add(id); a.push({...it,id}); n++; });
+    items.forEach(it=>{ if(!it||!it.en||!it.ko) return; const id=it.id||idOf(it); if(have.has(id)) return; have.add(id); a.push(withConvSrc({...it,id})); n++; });
     save(a); changed(); return n; },
 
   /* ---- star button helpers ---- */
@@ -169,7 +189,7 @@ const WB = {
     const st={ items:[], tries:{}, limit:opts.limit||10, type:opts.type||"all" };
     function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
     function build(){
-      const all=load(), pool=all.filter(x=>st.type==="all"||x.type===st.type);
+      const all=load(), pool=all.filter(x=>matchFilt(x, st.type));
       st.items=shuffle(pool.slice()).slice(0,st.limit).map(x=>{
         const same=all.filter(y=>y.id!==x.id&&y.ko!==x.ko&&y.type===x.type).map(y=>y.ko);
         const other=all.filter(y=>y.id!==x.id&&y.ko!==x.ko).map(y=>y.ko);
@@ -179,13 +199,13 @@ const WB = {
       st.tries={}; draw();
     }
     function hint(x){ const where = x.date ? `${x.date}${x.article?` '${x.article}'`:""} 기사` : "저장한 기사";
-      return `힌트: ${where}에 나온 ${x.type==="expr"?"표현":"단어"}이에요.${x.ex?` 기사 속 쓰임: "${x.ex}"`:""}${x.pos?` (${x.pos})`:""}`; }
+      return `힌트: ${where}에 나온 ${kindLabel(x)}이에요.${x.ex?` 기사 속 쓰임: "${x.ex}"`:""}${x.pos?` (${x.pos})`:""}`; }
     function draw(){
       if(!st.items.length){ el.innerHTML=`<div class="note">${load().length? "이 종류로 저장한 항목이 없어요." : "아직 저장한 단어·표현이 없어요. 각 날짜 페이지의 ☆ 버튼을 눌러 저장해 보세요."}</div>`; return; }
       const L="ABC";
       el.innerHTML = st.items.map((q,i)=>{ const t=st.tries[i]||[], solved=t.includes(q.ans), wrong=!solved&&t.length>0;
         const sid="q"+i, speaking=WB.isPlaying(sid)||WB.isTts(sid);
-        return `<div class="q"><div class="row" style="margin:0"><button class="ico" data-speak="${i}" aria-label="듣기">${speaking?"⏹ 정지":"🔊"}</button><b>W${i+1}. '${esc(q.x.en)}'의 뜻은?</b> <span class="note">${q.x.type==="expr"?"표현":"단어"}</span></div>
+        return `<div class="q"><div class="row" style="margin:0"><button class="ico" data-speak="${i}" aria-label="듣기">${speaking?"⏹ 정지":"🔊"}</button><b>W${i+1}. '${esc(q.x.en)}'의 뜻은?</b> <span class="note">${kindLabel(q.x)}</span></div>
         ${q.choices.map((c,j)=>`<div class="opt">${L[j]}. ${esc(c)}</div>`).join("")}
         <div class="row">${q.choices.map((c,j)=>`<button class="${solved&&j===q.ans?"pri":""}" ${solved||t.includes(j)?"disabled":""} data-i="${i}" data-j="${j}">${L[j]}</button>`).join("")}</div>
         ${solved?`<div class="fb"><span class="okc">✅ 정답! (${L[q.ans]})</span> ${esc(q.x.en)} = ${esc(q.x.ko)}</div>`:""}
