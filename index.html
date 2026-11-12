@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=ee9d7e1013" defer></script>
+<script src="./pwa.js?v=f70c125034" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <title>영어 직독직해 · 전체 학습</title>
 <style>
@@ -95,13 +95,13 @@ label.tg input{width:22px;height:22px}
 .note{font-size:14px;color:var(--tx2)}
 .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--tx2)}
 .wbstar{font-size:18px}
-/* wordbook: 전체 / 단어·표현 / 회화 표현 filter + 💬 badge (wordbook.html uses this <style>) */
+/* wordbook: 전체 / 🔤 단어 / 📰 표현 / 💬 회화 filter + badges (wordbook.html uses this <style>) */
 #filt.seg{display:flex;width:100%}
-#filt button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:5px 4px;font-size:13.5px;line-height:1.25;white-space:nowrap}
+#filt button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:5px 3px;font-size:13px;line-height:1.2;white-space:nowrap}
 #filt button .n{font-size:11px;font-weight:600;opacity:.8}
 .cbadge{display:inline-block;margin-right:4px;font-size:14px;vertical-align:middle;line-height:1}
-.item.conv .w b{vertical-align:middle}
-@media (max-width:400px){#filt button{font-size:12.5px;padding:5px 2px}}
+.item .w b{vertical-align:middle}
+@media (max-width:400px){#filt button{font-size:11.5px;padding:4px 1px}}
 /* ---------- study area: sticky article switcher + tabs, one panel at a time ---------- */
 #study{margin:18px 0}
 .sbar{position:sticky;top:0;z-index:15;background:var(--bg);padding:8px 0 6px;margin:0;border-bottom:1px solid var(--line)}
@@ -301,8 +301,8 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
   <a class="card" href="./2026-10-31/index.html"><b>10월 31일(토) · 잭오랜턴 세계 기록 / AI 박쥐 조사</b><small>2026-10-31<span class="dprog" data-date="2026-10-31"></span></small></a>
 </section>
 </div>
-<script src="./wb.js?v=77756962dc"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="b1580ea5c3") freshen(v); }).catch(()=>{});</script>
+<script src="./wb.js?v=402d71540f"></script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.root; if(v&&v!=="c96b970429") freshen(v); }).catch(()=>{});</script>
 <script>
 /* per-day progress written by the day pages: {date:{a1:[...],a2:[...]}} → ✅ 완료 or 📖 n/10 */
 (function(){ let o={}; try{ o=JSON.parse(localStorage.getItem("ea-prog-v1")||"{}")||{}; }catch(e){}

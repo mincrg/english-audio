@@ -3,18 +3,25 @@
 const KEY = "ea-wordbook-v1";
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const POOL = ["~을 포기하다","증가하다","결정하다","놀라운","~에 반대하여","주목할 만한","줄어들다","~에 의존하다","예상하다","가능성","영향을 미치다","확인하다","~을 대신하여","드문, 희귀한","발표하다","~에 따르면"];
-/* 회화 카드 clip only (표현 탭은 aN-xK, 어휘는 aN-vK, 복습은 rqN) */
-const CONV_CLIP = /(?:^|\/)clips\/a\d+-c\d+(?:-(?:en|ko))?\.mp3(?:\?|#|$)/i;
-function isConv(it){ return !!(it && (it.src==="conv" || CONV_CLIP.test(String(it.clip||"")))); }
+/* clip patterns: 회화 aN-cK, 어휘 탭 aN-vK, 표현 탭 aN-xK, 복습 rqN / weekly */
+const CLIP = kind => new RegExp("(?:^|/)clips/a\\d+-" + kind + "\\d+(?:-(?:en|ko))?\\.mp3(?:\\?|#|$)", "i");
+const CONV_CLIP = CLIP("c"), VOCAB_CLIP = CLIP("v"), EXPR_CLIP = CLIP("x");
+function clipOf(it){ return String(it && it.clip || ""); }
+function isConv(it){ return !!(it && (it.src==="conv" || CONV_CLIP.test(clipOf(it)))); }
+function kind(it){
+  if(!it) return "word";
+  if(isConv(it)) return "conv";
+  if(VOCAB_CLIP.test(clipOf(it)) || (it.type||"word")==="word") return "word";
+  return "expr";   // 표현 탭 aN-xK, 주간 복습, 그 외 non-conv expr
+}
 function matchFilt(it, filt){
   const f=filt||"all";
   if(f==="all") return true;
-  if(f==="conv") return isConv(it);
-  if(f==="article") return !isConv(it);
-  if(f==="word"||f==="expr") return !isConv(it) && (it.type||"word")===f;
-  return true;
+  if(f==="article") return kind(it)!=="conv";   // old combined 단어·표현
+  return kind(it)===f;
 }
-function kindLabel(it){ return isConv(it)?"회화 표현":((it.type||"word")==="expr"?"표현":"단어"); }
+function kindLabel(it){ return {word:"단어", expr:"표현", conv:"회화"}[kind(it)]||"단어"; }
+function kindBadge(it){ return {word:"🔤", expr:"📰", conv:"💬"}[kind(it)]||""; }
 function withConvSrc(it){ if(!it||it.src==="conv") return it; return isConv(it)?Object.assign({},it,{src:"conv"}):it; }
 function migrate(a){
   let dirty=false;
@@ -127,7 +134,7 @@ function ttsSay(en, ko, id){
 }
 
 const WB = {
-  KEY, esc, isConv, matchFilt, kindLabel,
+  KEY, esc, isConv, kind, kindBadge, matchFilt, kindLabel,
   all: load,
   has: it => load().some(x => x.id===idOf(it)),
   add(it){ const a=load(), id=idOf(it); if(a.some(x=>x.id===id)) return;
