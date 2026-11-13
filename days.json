@@ -1,8 +1,8 @@
 {
- "updated": "2026-11-13",
+ "updated": "2026-11-14",
  "assets": {
   "wb": "7ca4fe584c",
-  "root": "37f6aa412b",
+  "root": "c691ba330c",
   "wordbook": "70205d702f",
   "pwa": "b9e021528a"
  },
@@ -15,7 +15,7 @@
     "젠슨 황, 엔비디아 CEO 전격 사임…크레스 CFO가 임시 CEO"
    ],
    "url": "2026-11-13/index.html",
-   "build": "c0e66f5e41"
+   "build": "09c0bc78eb"
   },
   {
    "date": "2026-11-12",
@@ -137,6 +137,18 @@
    "count": 10,
    "url": "weekly/2026-11-01.html",
    "build": "e65bf2265d"
+  }
+ ],
+ "saturdays": [
+  {
+   "date": "2026-11-14",
+   "label": "11월 14일(토)",
+   "title": "엔비디아 충격 딛고 낙폭 만회한 뉴욕 증시, 국채 금리는 5% 돌파",
+   "src": "2026-11-13",
+   "art": 1,
+   "url": "2026-11-14/index.html",
+   "parts": 4,
+   "build": "d6857eda6d"
   }
  ]
 }
