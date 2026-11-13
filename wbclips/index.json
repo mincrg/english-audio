@@ -17762,6 +17762,36 @@
    66.657,
    69.382,
    "wbclips/ko-24.mp3"
+  ],
+  "arriving right before a deadline or event": [
+   0.21,
+   3.178,
+   "wbclips/ko-25.mp3"
+  ],
+  "to do better than the best result ever achieved": [
+   3.358,
+   6.568,
+   "wbclips/ko-25.mp3"
+  ],
+  "something happened only thanks to someone or something": [
+   6.748,
+   9.789,
+   "wbclips/ko-25.mp3"
+  ],
+  "to protest publicly in large groups": [
+   9.969,
+   12.624,
+   "wbclips/ko-25.mp3"
+  ],
+  "to try hard to make someone act or decide": [
+   12.804,
+   16.212,
+   "wbclips/ko-25.mp3"
+  ],
+  "to reduce a punishment to a less severe one": [
+   16.392,
+   19.56,
+   "wbclips/ko-25.mp3"
   ]
  },
  "day": {
@@ -18521,7 +18551,16 @@
   "room to grow|성장할 여지": "weekly/2026-11-01/clips/rq3.mp3",
   "room to grow": "weekly/2026-11-01/clips/rq3.mp3",
   "come in below expectations|예상에 못 미치다": "weekly/2026-11-01/clips/rq4.mp3",
-  "come in below expectations": "weekly/2026-11-01/clips/rq4.mp3"
+  "come in below expectations": "weekly/2026-11-01/clips/rq4.mp3",
+  "claw back|되찾다, 만회하다": "2026-11-14/clips/rq1.mp3",
+  "all but certain|사실상 확실한": "2026-11-14/clips/rq2.mp3",
+  "raise questions about|~에 대해 의문을 낳다": "2026-11-14/clips/rq3.mp3",
+  "just in time for|arriving right before a deadline or event": "2026-11-14/clips/rq1.mp3",
+  "beat the record|to do better than the best result ever achieved": "2026-11-14/clips/rq2.mp3",
+  "would not have been possible without|something happened only thanks to someone or something": "2026-11-14/clips/rq3.mp3",
+  "take to the streets|to protest publicly in large groups": "2026-11-14/clips/rq4.mp3",
+  "put pressure on|to try hard to make someone act or decide": "2026-11-14/clips/rq5.mp3",
+  "commute a sentence|to reduce a punishment to a less severe one": "2026-11-14/clips/rq6.mp3"
  },
  "packs": {
   "en": [
@@ -18558,7 +18597,8 @@
    "wbclips/ko-21.mp3",
    "wbclips/ko-22.mp3",
    "wbclips/ko-23.mp3",
-   "wbclips/ko-24.mp3"
+   "wbclips/ko-24.mp3",
+   "wbclips/ko-25.mp3"
   ]
  }
 }
