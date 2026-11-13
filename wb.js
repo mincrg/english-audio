@@ -48,39 +48,121 @@ function getReps(){ try{ const v=parseInt(localStorage.getItem(REPS_KEY),10); re
 const RATE_KEY = "ea-rate-v1", RATES = [0.8, 0.9, 1, 1.2];
 function getRate(){ try{ const v=parseFloat(localStorage.getItem(RATE_KEY)); return RATES.includes(v)?v:1; }catch(e){ return 1; } }
 const enkoParts = (e, k) => Array.from({length:getReps()}, () => [e, k]).flat();
-function partsFor(url){ const m=String(url||"").match(/^(.*\/clips\/(?:a\d+-[vxc]\d+|rq\d+))\.mp3$/); if(!m) return [url]; return enkoParts(m[1]+"-en.mp3", m[1]+"-ko.mp3"); }
-let cur = null;                      // {id, url, parts, i, timer, list?, li?, paused?, held?}  list = play-all queue [{id,url}]
+function isSprite(p){ return !!(p && typeof p==="object" && p.src!=null && p.start!=null && p.end!=null); }
+function partsFor(url){
+  if(!url) return [];
+  if(url.parts) return url.parts;
+  if(typeof url!=="string") return [url];
+  const m=url.match(/^(.*\/clips\/(?:a\d+-[vxc]\d+|rq\d+))\.mp3$/);
+  if(!m) return [url];
+  return enkoParts(m[1]+"-en.mp3", m[1]+"-ko.mp3");
+}
+function sameSrc(a, b){ try{ return new URL(a, location.href).href===new URL(b, location.href).href; }catch(e){ return a===b; } }
+let cur = null;                      // {id, url, parts, i, timer, list?, li?, paused?, held?, spriteEnd?}
 let playingId = null;
 const ITEM_GAP = 0.9;                // pause between items when playing the whole list
-function finish(){ if(cur && cur.timer) clearTimeout(cur.timer); cur=null; playingId=null; changed(); }
-function playPart(){ if(!audio.paused) skipPause=true; audio.src=cur.parts[cur.i]; audio.defaultPlaybackRate=audio.playbackRate=getRate(); audio.play().catch(()=>{}); }
+function finish(){ if(cur && cur.timer) clearTimeout(cur.timer); if(cur) cur.spriteEnd=null; cur=null; playingId=null; changed(); }
+function afterPart(){ if(!cur) return;
+  const more = cur.i+1 < cur.parts.length, next = cur.list && cur.li+1 < cur.list.length;
+  if(more || next) cur.timer=setTimeout(advance, (more ? getGap() : ITEM_GAP)*1000); else finish(); }
+function playPart(){
+  if(!audio.paused) skipPause=true;
+  const p=cur.parts[cur.i];
+  audio.defaultPlaybackRate=audio.playbackRate=getRate();
+  cur.spriteEnd=null;
+  if(isSprite(p)){
+    cur.spriteEnd=p.end;
+    const kick=()=>{
+      const go=()=>{ if(!cur||cur.parts[cur.i]!==p) return; audio.play().catch(()=>{}); };
+      try{ audio.currentTime=p.start; }catch(e){}
+      if(Math.abs((audio.currentTime||0)-p.start)<0.12) go();
+      else audio.addEventListener("seeked", go, {once:true});
+    };
+    if(sameSrc(audio.src, p.src) && audio.readyState>=2) kick();
+    else { audio.src=p.src; audio.addEventListener("loadeddata", kick, {once:true}); audio.load(); }
+  } else {
+    audio.src=p; audio.play().catch(()=>{});
+  }
+}
 function loadItem(li){ const it=cur.list[li]; cur.li=li; cur.id=it.id; cur.url=it.url; cur.parts=partsFor(it.url); cur.i=0; playingId=it.id; playPart(); changed(); }
 function advance(){ if(!cur) return; cur.timer=null;
   if(cur.i+1 < cur.parts.length){ cur.i++; playPart(); }
   else if(cur.list && cur.li+1 < cur.list.length) loadItem(cur.li+1);
   else finish(); }
-audio.addEventListener("ended", () => { if(!cur) return;
-  const more = cur.i+1 < cur.parts.length, next = cur.list && cur.li+1 < cur.list.length;
-  if(more || next) cur.timer=setTimeout(advance, (more ? getGap() : ITEM_GAP)*1000); else finish(); });
+audio.addEventListener("ended", () => { if(!cur) return; if(cur.spriteEnd!=null) return; afterPart(); });
+audio.addEventListener("timeupdate", () => {
+  if(!cur || cur.spriteEnd==null || cur.paused) return;
+  if(audio.currentTime >= cur.spriteEnd - 0.02){
+    cur.spriteEnd=null; skipPause=true; try{ audio.pause(); }catch(e){} afterPart();
+  }
+});
 let skipPause = false;
-audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && cur.list) return; if(cur && !audio.ended && !cur.timer) finish(); });
-audio.addEventListener("error", () => { if(cur && cur.parts.length>1){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
+audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && cur.list) return; if(cur && !audio.ended && !cur.timer && cur.spriteEnd==null) finish(); });
+audio.addEventListener("error", () => { if(cur && cur.parts.length>1 && typeof cur.url==="string"){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
 window.addEventListener("storage", e => { if(e.key===GAP_KEY||e.key===REPS_KEY||e.key===RATE_KEY){ if(e.key===RATE_KEY) audio.playbackRate=getRate(); WB.refreshGap(); if(WB.onGap) WB.onGap(); } });
 
+/* Ava/SunHi mp3 library for rows saved without a day clip (glossary / 📖 사전 뜻 ☆). */
+const WB_BASE = (()=>{ const s=document.currentScript || [...document.scripts].find(x=>/wb\.js(\?|$)/.test(x.src||"")); return s ? s.src.replace(/wb\.js(\?.*)?$/,"") : "./"; })();
+const normEn = s => String(s||"").replace(/[\u2018\u2019\u02BC`´]/g,"'").toLowerCase().replace(/\s+/g," ").trim();
+const normKo = s => String(s||"").replace(/\s+/g," ").trim();
+let clipIdx = null, clipWait = null;
+function loadClips(){
+  if(clipIdx) return Promise.resolve(clipIdx);
+  if(!clipWait) clipWait = fetch(WB_BASE+"wbclips/index.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null)
+    .then(j=>{ clipIdx=j||{}; changed(); return clipIdx; })
+    .catch(()=>{ clipIdx={}; return clipIdx; });
+  return clipWait;
+}
+loadClips();
+function absClip(rel){ try{ return new URL(rel, WB_BASE).href; }catch(e){ return rel; } }
+function spriteHit(kind, key){
+  const map=clipIdx && clipIdx[kind]; if(!map||!key) return null;
+  if(map[key]) return map[key];
+  if(kind!=="ko") return null;
+  const hit=Object.keys(map).find(x=>x===key||x.startsWith(key+",")||x.startsWith(key+" ")||x.startsWith(key+" (")||key.startsWith(x+",")||key.startsWith(x+" ")||key.startsWith(x+" ("));
+  return hit ? map[hit] : null;
+}
+function spriteOf(kind, text){
+  const key = kind==="en" ? normEn(text) : normKo(text);
+  const hit = spriteHit(kind, key);
+  if(!hit) return null;
+  const url = hit[2] || clipIdx[kind+"Url"] || ("wbclips/"+kind+".mp3");
+  return {src: absClip(url), start:hit[0], end:hit[1]};
+}
+function resolveClip(it){
+  if(!it) return null;
+  if(it.clip) return it.clip;
+  if(!clipIdx) return null;
+  const en=normEn(it.en), ko=normKo(it.ko);
+  const exact = ko && (clipIdx.day||{})[en+"|"+ko];
+  if(exact) return absClip(exact);
+  const pe=spriteOf("en", it.en), pk=ko ? spriteOf("ko", it.ko) : null;
+  if(pe && pk) return {parts: enkoParts(pe, pk)};
+  if(pe) return {parts: Array.from({length:getReps()},()=>pe)};   // same Ava EN even if the saved 뜻 is not in the library
+  return null;
+}
+function hasClip(it){ return !!(it && (it.clip || resolveClip(it))); }
 
-/* speechSynthesis EN→KO for wordbook rows saved without mp3 clips (glossary ☆). Ava/SunHi are Edge neural
-   names for the day mp3s — iPhone Safari usually has other en-US / ko-KR system voices; we pick the best available. */
+/* speechSynthesis EN→KO for wordbook rows still missing mp3s. Ava/SunHi are Edge neural
+   names for the day mp3s — iPhone/iPad Safari usually has Samantha / Yuna; we pick those first. */
 let ttsId = null, ttsTimer = null;
 function ttsClearTimer(){ if(ttsTimer){ clearTimeout(ttsTimer); ttsTimer=null; } }
 function ttsStop(){ ttsClearTimer(); try{ speechSynthesis.cancel(); }catch(e){} const was=ttsId; ttsId=null; if(was!==null) changed(); }
 function pickVoices(vs){
   vs = vs || [];
-  const en = vs.find(v=>/\bAva\b/.test(v.name)&&/^en[-_]US/i.test(v.lang))
-    || vs.find(v=>/^en[-_]US/i.test(v.lang))
-    || vs.find(v=>/^en/i.test(v.lang));
-  const ko = vs.find(v=>/(SunHi|Google\s*한국어|\bYuna\b)/i.test(v.name)&&/^ko/i.test(v.lang))
-    || vs.find(v=>/^ko[-_]?KR/i.test(v.lang))
-    || vs.find(v=>/^ko/i.test(v.lang));
+  const named = (re, lang) => vs.find(v=>re.test(v.name)&&lang.test(v.lang));
+  const lang = re => vs.find(v=>re.test(v.lang));
+  const en = named(/\bAva\b/, /^en[-_]US/i)
+    || named(/\bSamantha\b/, /^en[-_]US/i)
+    || named(/\bNicky\b/, /^en[-_]US/i)
+    || named(/\bAllison\b/, /^en[-_]US/i)
+    || named(/\bSusan\b/, /^en[-_]US/i)
+    || named(/\bSamantha\b/, /^en/i)
+    || lang(/^en[-_]US/i)
+    || lang(/^en/i);
+  const ko = named(/(SunHi|Google\s*한국어|\bYuna\b|\bSora\b)/i, /^ko/i)
+    || lang(/^ko[-_]?KR/i)
+    || lang(/^ko/i);
   return {en, ko};
 }
 function ttsSay(en, ko, id){
@@ -142,12 +224,28 @@ const WB = {
     a.unshift({id, type:it.type||"word", en:it.en, ko:it.ko, pos:it.pos||"", ex:it.ex||"", date:it.date||"", article:it.article||"", clip:it.clip||"", page:it.page||"", src, saved:new Date().toISOString()});
     if(save(a)) changed(); },
   remove(id){ if(save(load().filter(x=>x.id!==id))) changed(); },
+  removeMany(ids){
+    const set=new Set(ids||[]); const a=load();
+    const removed=a.map((x,i)=>({x,i})).filter(p=>set.has(p.x.id));
+    if(!removed.length) return [];
+    if(!save(a.filter(x=>!set.has(x.id)))) return [];
+    changed(); return removed;
+  },
+  restoreMany(removed){
+    if(!removed||!removed.length) return;
+    const a=load(), have=new Set(a.map(x=>x.id));
+    removed.filter(p=>p&&p.x&&!have.has(p.x.id)).slice().sort((p,q)=>p.i-q.i)
+      .forEach(p=>{ a.splice(Math.min(p.i, a.length), 0, p.x); have.add(p.x.id); });
+    if(save(a)) changed();
+  },
   toggle(it){ if(WB.has(it)) WB.remove(idOf(it)); else WB.add(it); return WB.has(it); },
   idOf, onChange: f => listeners.push(f),
   onPlay: null,                        // set by a host page to stop its own audio
   ttsSay, ttsStop, isTts: id => ttsId===id,
+  loadClips, resolveClip, hasClip,
+  playItem(it, id){ if(!it) return; const c=resolveClip(it); if(c) WB.play(c, id||it.id); else ttsSay(it.en, it.ko, id||it.id); },
   play(url, id){ if(!url) return; ttsStop(); if(WB.onPlay) WB.onPlay();
-    const pid=id||url;
+    const pid=id|| (typeof url==="string"?url:"item");
     if(cur && cur.id===pid){ WB.stop(); return; }
     if(cur && cur.timer) clearTimeout(cur.timer);
     cur={id:pid, url, parts:partsFor(url), i:0, timer:null}; playingId=pid; playPart(); changed(); },
@@ -187,9 +285,22 @@ const WB = {
   starHTML: (it) => `<button class="ico wbstar" data-wbid="${esc(idOf(it))}" aria-label="단어장에 저장" onclick='WB._star(this)' data-wb='${esc(JSON.stringify(it))}'>${WB.has(it)?"⭐":"☆"}</button>`,
   _star(btn){ const it=JSON.parse(btn.dataset.wb); const on=WB.toggle(it); btn.textContent=on?"⭐":"☆"; WB.toast(on?"⭐ 단어장에 저장했어요":"단어장에서 뺐어요"); },
   refreshStars(root=document){ const ids=new Set(load().map(x=>x.id)); root.querySelectorAll(".wbstar").forEach(b=>b.textContent=ids.has(b.dataset.wbid)?"⭐":"☆"); },
-  toast(msg){ let t=document.getElementById("wbtoast"); if(!t){ t=document.createElement("div"); t.id="wbtoast";
-      t.style.cssText="position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#333;color:#fff;padding:8px 14px;border-radius:999px;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none"; document.body.appendChild(t); }
-    t.textContent=msg; t.style.opacity="1"; clearTimeout(t._h); t._h=setTimeout(()=>t.style.opacity="0",1400); },
+  toast(msg, opt){ opt=opt||{};
+    let t=document.getElementById("wbtoast"); if(!t){ t=document.createElement("div"); t.id="wbtoast"; document.body.appendChild(t); }
+    clearTimeout(t._h);
+    t.style.cssText="position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#333;color:#fff;padding:8px 14px;border-radius:999px;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;display:flex;gap:10px;align-items:center;max-width:min(92vw,420px);box-sizing:border-box";
+    t.style.pointerEvents = opt.action ? "auto" : "none";
+    t.textContent="";
+    const s=document.createElement("span"); s.textContent=msg; t.appendChild(s);
+    if(opt.action){
+      const b=document.createElement("button"); b.type="button"; b.textContent=opt.action;
+      b.style.cssText="font:inherit;font-weight:700;font-size:14px;border:0;background:transparent;color:#8ab4f8;min-height:44px;min-width:44px;padding:0 8px;cursor:pointer;-webkit-tap-highlight-color:transparent";
+      b.addEventListener("click", ev=>{ ev.preventDefault(); ev.stopPropagation(); t.style.opacity="0"; t.style.pointerEvents="none"; if(opt.onAction) opt.onAction(); });
+      t.appendChild(b);
+    }
+    t.style.opacity="1";
+    t._h=setTimeout(()=>{ t.style.opacity="0"; t.style.pointerEvents="none"; }, opt.ms || (opt.action?5500:1400));
+  },
 
   /* ---- multiple-choice review quiz over saved items ---- */
   quiz(el, opts={}){
@@ -223,7 +334,7 @@ const WB = {
       if(b.dataset.act==="again"){ st.tries={}; draw(); return; }
       if(b.dataset.act==="new"){ build(); return; }
       if(b.dataset.speak!==undefined){ const i=+b.dataset.speak, q=st.items[i], sid="q"+i; if(!q) return;
-        if(q.x.clip) WB.play(q.x.clip, sid); else WB.ttsSay(q.x.en, q.x.ko, sid); draw(); return; }
+        WB.playItem(q.x, sid); draw(); return; }
       if(b.dataset.j!==undefined){ const i=+b.dataset.i, j=+b.dataset.j, t=st.tries[i]||[]; if(t.includes(st.items[i].ans)||t.includes(j)) return; st.tries[i]=[...t,j]; draw(); } });
     WB.onChange(()=>{ if(el.isConnected) draw(); });
     build();
