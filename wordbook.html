@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=f70c125034" defer></script>
+<script src="./pwa.js?v=444e80c583" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -273,6 +273,12 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
 .anote{margin:6px 0 2px;padding:6px 10px;border-left:3px solid var(--acc);background:var(--accs);border-radius:0 8px 8px 0;font-size:calc(14px*var(--fs,1));line-height:1.5;color:var(--tx)}.anote div+div{margin-top:3px}
 .anleg{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0 8px;font-size:12px;color:var(--tx2)}.anleg span{display:inline-flex;align-items:center;gap:4px}.anleg i{display:inline-block;width:14px;height:3px;background:var(--c);border-radius:2px}
+
+/* no accidental text selection on study chrome / 직해 (Apple Pencil and finger taps on iPad Safari otherwise leave a stuck highlight + 복사하기 menu) */
+button, nav.toc a, .artsw, .tabs, .seg, .modebar, .sbar, .ctl, .chip, .anleg, .cvbt, .cvav, .gw, .dw{
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ko,.sen-ko,.anote,.cvk,.exk,.jiklines,.jiklines *{
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 </style>
 </head>
 <body>
@@ -311,7 +317,7 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=402d71540f"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="2038d7eb56") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="0d1c9392ea") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 const FILT_KEY="ea-wb-filt-v1", FILTS=["all","word","expr","conv"];
