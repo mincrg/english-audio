@@ -14,7 +14,7 @@ function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get(
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="../pwa.js?v=444e80c583" defer></script>
+<script src="../pwa.js?v=4d51e1d76f" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -270,6 +270,26 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .ap{--c:#7f8c8d}.ap-S{--c:#1a5fd6}.ap-V{--c:#d93025}.ap-O{--c:#1e8e3e}.ap-C{--c:#8e44ad}.ap-M{--c:#7f8c8d}.ap-REL{--c:#00897b}.ap-PART{--c:#e67e22}.ap-CONJ{--c:#b8860b}
 @media (prefers-color-scheme:dark){.ap-S{--c:#8ab4f8}.ap-V{--c:#f28b82}.ap-O{--c:#81c995}.ap-C{--c:#c58af9}.ap-REL{--c:#4dd0c4}.ap-PART{--c:#fcad70}.ap-CONJ{--c:#e6c35c}}
 .apx{border-bottom:2.5px solid var(--c);padding-bottom:1px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* 🖍️ 형광펜 (templates/_hl.html): token spans .hw / gap spans .hg, color in data-c */
+.hw[data-c],.hg[data-c]{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hw[data-c=y],.hg[data-c=y]{background:rgba(255,221,0,.5)}.hw[data-c=g],.hg[data-c=g]{background:rgba(70,215,115,.42)}.hw[data-c=p],.hg[data-c=p]{background:rgba(255,120,190,.42)}
+@media (prefers-color-scheme:dark){.hw[data-c=y],.hg[data-c=y]{background:rgba(255,214,0,.36)}.hw[data-c=g],.hg[data-c=g]{background:rgba(70,200,110,.36)}.hw[data-c=p],.hg[data-c=p]{background:rgba(255,110,180,.38)}}
+.hw.hlpv,.hg.hlpv{background:rgba(26,95,214,.22);box-shadow:inset 0 -2px 0 var(--acc)}
+.modebar.hlbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.hlw:not([hidden]){display:contents}
+.hlb{min-width:44px;min-height:44px;padding:0 8px;font-size:20px;line-height:1}
+.hlb.on{background:var(--acc);border-color:var(--acc)}
+.hlpal{display:flex;flex-wrap:wrap;align-items:center;gap:6px;width:100%}.hlpal[hidden]{display:none}
+.hlcs{display:inline-flex;gap:4px}
+.hlc{min-width:44px;min-height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.hlc i{display:block;width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,.18)}
+.hlc.on{outline:3px solid var(--acc);outline-offset:-3px}
+.hl-y i{background:#ffdd00}.hl-g i{background:#46d773}.hl-p i{background:#ff78be}
+.hlclr{min-height:44px;font-size:14px}
+.hlhint{width:100%;font-size:12.5px;color:var(--tx2);line-height:1.35;padding-bottom:2px}
+.hlon .hlok .sent .t{cursor:text;touch-action:pan-y;touch-action:pan-y pinch-zoom}
+.hlon .hlok .sent .t .gw{text-decoration-color:transparent}
+.sn{color:inherit}
 .apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
 .anote{margin:6px 0 2px;padding:6px 10px;border-left:3px solid var(--acc);background:var(--accs);border-radius:0 8px 8px 0;font-size:calc(14px*var(--fs,1));line-height:1.5;color:var(--tx)}.anote div+div{margin-top:3px}
@@ -333,7 +353,94 @@ button, nav.toc a, .artsw, .tabs, .seg, .modebar, .sbar, .ctl, .chip, .anleg, .c
 <div id="sheetbg" onclick="closeSheet()"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <audio id="clip" preload="none" playsinline></audio>
-<script src="../wb.js?v=402d71540f"></script>
+<script>
+/* 🖍️ 형광펜 (원문 · 직해 영어): no native text selection (study text is user-select:none for the iPad Pencil fix).
+   Words are wrapped as .hw[data-t] (token index within the sentence, same for 원문 and 직해 because the token regex
+   never matches the ' / ' chunk marks), spaces/punctuation between tokens n and n+1 as .hg[data-g=n].
+   Saved per date + article + sentence + token: localStorage ea-hl-v1 = {date:{"a1-3":{"5":"y"}}}.
+   Mode on: tap word = toggle, drag word→word = range (Pencil/mouse at once; finger: sideways drag or hold ~0.3 s). */
+const HL=(function(){
+  const KEY="ea-hl-v1", CKEY="ea-hl-color-v1", COLORS=[["y","노랑"],["g","초록"],["p","분홍"]];
+  const TOK=/[\p{L}\p{N}]+(?:['’.\-][\p{L}\p{N}]+)*/gu;
+  let cfg=null, on=false, drag=null, suppress=0;
+  const lsG=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } }, lsS=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+  function all(){ try{ const o=JSON.parse(lsG(KEY)||"{}"); return o&&typeof o==="object"&&!Array.isArray(o)?o:{}; }catch(e){ return {}; } }
+  function color(){ const c=lsG(CKEY); return COLORS.some(x=>x[0]===c)?c:"y"; }
+  function sentMap(o,sc,i,make){ const d=o[sc.d]||(make?(o[sc.d]={}):null); if(!d) return {}; const k=sc.a+"-"+i; return d[k]||(make?(d[k]={}):{}); }
+  function tidy(o){ Object.keys(o).forEach(d=>{ Object.keys(o[d]).forEach(k=>{ if(!Object.keys(o[d][k]).length) delete o[d][k]; }); if(!Object.keys(o[d]).length) delete o[d]; }); return o; }
+  function save(o){ lsS(KEY,JSON.stringify(tidy(o))); }
+  const sIdx=se=>{ const m=se.id&&se.id.match(/-(\d+)$/); return m?+m[1]:-1; };
+  /* wrap the English text of one sentence (.t > div:first-child, minus the 'N. ' number and the role tags) */
+  function wrapSent(se){ const host=se.querySelector(".t > div"); if(!host||host.classList.contains("eo-t")||host.dataset.hl) return; host.dataset.hl="1";
+    const nodes=[], tw=document.createTreeWalker(host,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentNode.closest(".apt,.sn")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+    let n, full=""; while((n=tw.nextNode())){ nodes.push([n,full.length]); full+=n.nodeValue; }
+    const toks=[]; full.replace(TOK,(m,off)=>{ toks.push([off,off+m.length]); return m; }); if(!toks.length) return;
+    nodes.forEach(([node,base])=>{ const s=node.nodeValue, end=base+s.length; let p=base; const frag=document.createDocumentFragment(); let any=false;
+      const push=(a,b,cls,attr,val)=>{ if(b<=a) return; const txt=s.slice(a-base,b-base); if(!cls){ frag.appendChild(document.createTextNode(txt)); return; }
+        const sp=document.createElement("span"); sp.className=cls; sp.dataset[attr]=val; sp.textContent=txt; frag.appendChild(sp); any=true; };
+      for(let t=0;t<toks.length&&p<end;t++){ const [a,b]=toks[t];
+        if(b<=p) continue; if(a>=end){ push(p,end,t>0?"hg":"",t>0?"g":"",t-1); p=end; break; }
+        if(a>p) push(p,a,t>0?"hg":"",t>0?"g":"",t-1);
+        const ta=Math.max(a,p), tb=Math.min(b,end); push(ta,tb,"hw","t",t); p=tb; }
+      if(p<end) push(p,end,"",""); if(any) node.parentNode.replaceChild(frag,node); }); }
+  function paint(aid){ const box=cfg.box(aid); if(!box) return; const sc=cfg.scope(aid), o=all();
+    box.querySelectorAll(".sent").forEach(se=>{ const i=sIdx(se); if(i<0) return; const M=sentMap(o,sc,i,false);
+      se.querySelectorAll(".hw").forEach(w=>{ const c=M[w.dataset.t]; if(c) w.dataset.c=c; else delete w.dataset.c; });
+      se.querySelectorAll(".hg").forEach(g=>{ const k=+g.dataset.g, c=M[k]; if(c&&M[k+1]===c) g.dataset.c=c; else delete g.dataset.c; }); });
+    const n=count(aid), b=cfg.bar(aid); if(b){ const x=b.querySelector(".hlclr"); if(x){ x.disabled=!n; x.textContent=n?`🗑 모두 지우기 (${n})`:"🗑 모두 지우기"; } } }
+  function count(aid){ const sc=cfg.scope(aid), d=all()[sc.d]||{}; let n=0; Object.keys(d).forEach(k=>{ if(k.startsWith(sc.a+"-")) n+=Object.keys(d[k]).length; }); return n; }
+  function barHTML(aid){ const c=color();
+    return `<button class="hlb${on?" on":""}" aria-pressed="${on}" aria-label="형광펜" title="형광펜" onclick="HL.toggle()">🖍️</button>
+      <div class="hlpal"${on?"":" hidden"}><span class="hlcs">${COLORS.map(([k,l])=>`<button class="hlc hl-${k}${k===c?" on":""}" data-c="${k}" aria-label="${l}" aria-pressed="${k===c}" onclick="HL.setColor('${k}')"><i></i></button>`).join("")}</span>
+      <button class="hlclr" onclick="HL.clear('${aid}')">🗑 모두 지우기</button><div class="hlhint">단어 탭 = 칠하기 · 단어에서 단어로 끌기 = 범위 · 칠한 곳 탭 = 지우기</div></div>`; }
+  function draw(aid,mode){ const box=cfg.box(aid); if(!box) return; const ok=mode==="en"||mode==="jik";
+    const b=cfg.bar(aid); if(b){ let w=b.querySelector(".hlw"); if(!w){ w=document.createElement("span"); w.className="hlw"; b.appendChild(w); b.classList.add("hlbar"); } w.hidden=!ok; w.innerHTML=barHTML(aid); }
+    box.classList.toggle("hlok",ok); if(!ok) return; box.querySelectorAll(".sent").forEach(wrapSent); paint(aid); }
+  function redrawBars(){ cfg.aids().forEach(aid=>{ const b=cfg.bar(aid), w=b&&b.querySelector(".hlw"); if(w) w.innerHTML=barHTML(aid); paint(aid); }); }
+  function toggle(){ on=!on; document.documentElement.classList.toggle("hlon",on); if(on&&cfg.onStart) cfg.onStart();
+    if(on) document.addEventListener("touchmove",tmove,{passive:false}); else document.removeEventListener("touchmove",tmove,{passive:false});
+    redrawBars(); }
+  function setColor(c){ lsS(CKEY,c); redrawBars(); }
+  function clear(aid){ const n=count(aid); if(!n||!confirm(`이 기사의 하이라이트 ${n}개를 모두 지울까요?`)) return;
+    const sc=cfg.scope(aid), o=all(), d=o[sc.d]||{}; Object.keys(d).forEach(k=>{ if(k.startsWith(sc.a+"-")) delete d[k]; }); save(o); paint(aid); }
+  /* ---- input ---- */
+  const aidOf=el=>{ const box=el&&el.closest&&el.closest(".hlok"); return box?cfg.aids().find(a=>cfg.box(a)===box):null; };
+  const keyOf=w=>[sIdx(w.closest(".sent")),+w.dataset.t];
+  function order(box){ const L=[], seen=new Set(); box.querySelectorAll(".hw").forEach(w=>{ const [s,t]=keyOf(w), k=s+":"+t; if(!seen.has(k)){ seen.add(k); L.push(k); } }); return L; }
+  function rangeKeys(d){ const a=d.L.indexOf(d.k0), b=d.L.indexOf(d.k1); if(a<0||b<0) return [d.k0]; return d.L.slice(Math.min(a,b),Math.max(a,b)+1); }
+  function preview(d){ const box=cfg.box(d.aid), S=new Set(rangeKeys(d));
+    box.querySelectorAll(".hw").forEach(w=>{ const [s,t]=keyOf(w); w.classList.toggle("hlpv",S.has(s+":"+t)); });
+    box.querySelectorAll(".hg").forEach(g=>{ const s=sIdx(g.closest(".sent")), k=+g.dataset.g; g.classList.toggle("hlpv",S.has(s+":"+k)&&S.has(s+":"+(k+1))); }); }
+  function unpreview(aid){ const box=cfg.box(aid); if(box) box.querySelectorAll(".hlpv").forEach(x=>x.classList.remove("hlpv")); }
+  function commit(d,tap){ const sc=cfg.scope(d.aid), o=all(), c=color(); const [s0,t0]=d.k0.split(":").map(Number);
+    if(tap){ const M=sentMap(o,sc,s0,true), cur=M[t0];
+      if(cur){ let a=t0,b=t0; while(M[a-1]===cur) a--; while(M[b+1]===cur) b++; for(let t=a;t<=b;t++) delete M[t]; } else M[t0]=c; }
+    else { const R=rangeKeys(d).map(k=>k.split(":").map(Number)); const allSame=R.every(([s,t])=>sentMap(o,sc,s,false)[t]===c);
+      R.forEach(([s,t])=>{ const M=sentMap(o,sc,s,true); if(allSame) delete M[t]; else M[t]=c; }); }
+    save(o); paint(d.aid); }
+  function startActive(d){ d.active=true; if(d.timer){ clearTimeout(d.timer); d.timer=0; } preview(d); }
+  document.addEventListener("pointerdown",e=>{ if(!on||e.isPrimary===false||(e.button&&e.button!==0)) return; const w=e.target.closest&&e.target.closest(".hw"); const aid=w&&aidOf(w); if(!aid) return;
+    const [s,t]=keyOf(w), d={id:e.pointerId,aid,x:e.clientX,y:e.clientY,type:e.pointerType,k0:s+":"+t,k1:s+":"+t,L:order(cfg.box(aid)),active:false,dead:false,timer:0};
+    drag=d; if(d.type!=="touch") startActive(d); else d.timer=setTimeout(()=>{ if(drag===d&&!d.dead) startActive(d); },300); });
+  function moveTo(d,x,y){ const el=document.elementFromPoint(x,y), w=el&&el.closest&&el.closest(".hw"); if(!w||aidOf(w)!==d.aid) return; const [s,t]=keyOf(w), k=s+":"+t; if(k!==d.k1){ d.k1=k; preview(d); } }
+  function decide(d,x,y,stylus){ if(d.active||d.dead) return; const dx=x-d.x, dy=y-d.y; if(Math.hypot(dx,dy)<8) return;
+    if(stylus||Math.abs(dx)>Math.abs(dy)) startActive(d); else { d.dead=true; if(d.timer){ clearTimeout(d.timer); d.timer=0; } } }
+  document.addEventListener("pointermove",e=>{ const d=drag; if(!d||e.pointerId!==d.id) return; decide(d,e.clientX,e.clientY,d.type==="pen"); if(d.active) moveTo(d,e.clientX,e.clientY); });
+  function tmove(e){ const d=drag; if(!d||d.dead) return; const t=e.touches&&e.touches[0]; if(!t) return;
+    decide(d,t.clientX,t.clientY,d.type==="pen"||t.touchType==="stylus"); if(d.active){ if(e.cancelable) e.preventDefault(); moveTo(d,t.clientX,t.clientY); } }
+  document.addEventListener("pointerup",e=>{ const d=drag; if(!d||e.pointerId!==d.id) return; drag=null; if(d.timer) clearTimeout(d.timer);
+    const far=Math.hypot(e.clientX-d.x,e.clientY-d.y)>=10; unpreview(d.aid);
+    if(d.dead) return; if(!far&&d.k0===d.k1) commit(d,true); else if(d.active) commit(d,false); suppress=Date.now(); });
+  document.addEventListener("pointercancel",e=>{ const d=drag; if(!d||e.pointerId!==d.id) return; drag=null; if(d.timer) clearTimeout(d.timer); unpreview(d.aid); });
+  /* while the pen is on, a tap on the text never opens the word popup (capture phase, before the page's own click handler) */
+  document.addEventListener("click",e=>{ if(!on) return; const inText=e.target.closest&&e.target.closest(".hlok .sent .t");
+    if(inText||Date.now()-suppress<500){ if(inText){ e.stopPropagation(); e.preventDefault(); } } },true);
+  document.addEventListener("contextmenu",e=>{ if(on&&e.target.closest&&e.target.closest(".hlok .sent .t")) e.preventDefault(); });
+  return {init(c){ cfg=c; }, draw, toggle, setColor, clear, get on(){ return on; }};
+})();
+</script>
+
+<script src="../wb.js?v=7ca4fe584c"></script>
 <script src="../dict.js?v=7262349920"></script>
 <script>
 const D = {"A1": {"id": "a1", "kicker": "기사 1 · Tesla", "headline": "Tesla's Robotaxi Now Runs Until Two in the Morning", "koHeadline": "테슬라 로보택시, 이제 새벽 2시까지 달린다", "pairs": [{"en": "Tesla's Robotaxi service in the United States / now runs for most of the day, / because riders can call a driverless car / from six in the morning / until two at night.", "ko": "미국의 테슬라 로보택시 서비스는 / 이제 하루 대부분 운행된다, / 승객들이 무인 자동차를 부를 수 있기 때문에 / 아침 6시부터 / 새벽 2시까지."}, {"en": "That adds up to / twenty hours of service a day, / which leaves only a four-hour break / when the cars are not available.", "ko": "그것은 합쳐서 ~가 된다 / 하루 20시간의 서비스가, / 그래서 단 4시간의 휴식만 남는다 / 차를 이용할 수 없는."}, {"en": "Along with the longer hours, / Tesla added several new features for passengers, / such as a rear camera view on the screen / and trip sharing, / so that a friend can follow / where you are.", "ko": "더 길어진 운행 시간과 함께, / 테슬라는 승객을 위한 몇 가지 새 기능을 추가했다, / 화면의 후방 카메라 영상 같은 / 그리고 이동 공유 같은, / 친구가 따라볼 수 있도록 / 당신이 어디에 있는지."}, {"en": "There is also a Calm Mode / that dims the screen and softens the lights, / and Grok, the AI assistant, / is now available / in Robotaxi Model Y cars as well.", "ko": "또한 차분 모드도 있다 / 화면을 어둡게 하고 조명을 부드럽게 하는, / 그리고 AI 비서인 그록이 / 이제 이용 가능하다 / 로보택시 모델 Y 차량에서도."}, {"en": "However, Tesla did not say / which cities the new hours apply to, / so for now / Austin is the safest guess, / even though the service also runs / in other cities in Texas and Florida.", "ko": "하지만 테슬라는 밝히지 않았다 / 새 운행 시간이 어느 도시에 적용되는지, / 그래서 현재로서는 / 오스틴이 가장 안전한 추측이다, / 비록 서비스가 운행되긴 하지만 / 텍사스와 플로리다의 다른 도시들에서도."}], "natural": ["미국의 테슬라 로보택시 서비스가 이제 하루 대부분 운영된다. 승객들은 아침 6시부터 새벽 2시까지 무인 자동차를 부를 수 있어, 하루 20시간 운행에 쉬는 시간은 4시간뿐이다.", "테슬라는 운행 시간을 늘리면서 승객용 새 기능도 여럿 추가했다. 화면으로 후방 카메라 영상을 볼 수 있고, 이동 공유 기능으로 친구가 내 위치를 따라볼 수 있다. 화면을 어둡게 하고 조명을 부드럽게 바꾸는 차분 모드도 생겼고, AI 비서 그록도 이제 로보택시 모델 Y에서 쓸 수 있다.", "다만 테슬라는 새 운행 시간이 어느 도시에 적용되는지 밝히지 않았다. 서비스는 텍사스와 플로리다의 다른 도시에서도 운영되지만, 현재로서는 오스틴이라고 보는 것이 가장 무난하다."], "exprs": [{"en": "for most of the day", "ko": "하루 대부분", "ex": "now runs for most of the day"}, {"en": "add up to", "ko": "합쳐서 ~가 되다", "ex": "That adds up to twenty hours of service a day"}, {"en": "along with", "ko": "~와 함께", "ex": "Along with the longer hours, ..."}, {"en": "such as", "ko": "~ 같은, 예를 들어", "ex": "such as a rear camera view on the screen"}, {"en": "as well", "ko": "~도, 또한", "ex": "in Robotaxi Model Y cars as well"}, {"en": "apply to", "ko": "~에 적용되다", "ex": "which cities the new hours apply to"}, {"en": "for now", "ko": "현재로서는, 당분간은", "ex": "so for now Austin is the safest guess"}], "vocab": [{"w": "driverless", "pos": "형용사", "ko": "운전자가 없는, 무인의", "ex": "call a driverless car"}, {"w": "rider", "pos": "명사", "ko": "승객, 이용자", "ex": "riders can call a driverless car"}, {"w": "available", "pos": "형용사", "ko": "이용할 수 있는", "ex": "when the cars are not available"}, {"w": "feature", "pos": "명사", "ko": "기능, 특징", "ex": "several new features for passengers"}, {"w": "passenger", "pos": "명사", "ko": "승객", "ex": "new features for passengers"}, {"w": "rear", "pos": "형용사", "ko": "뒤쪽의, 후방의", "ex": "a rear camera view"}, {"w": "dim", "pos": "동사", "ko": "어둡게 하다", "ex": "dims the screen"}, {"w": "guess", "pos": "명사", "ko": "추측", "ex": "the safest guess"}], "source": {"title": "Tesla Robotaxi Now Runs Past Midnight: New Operating Hours and Rider Features Explained", "site": "NotATeslaKiller", "href": "https://notateslakiller.com/en/tesla-robotaxi-hours-past-midnight-rear-camera-calm-mode-grok/", "date": "2026-11-01"}, "image": {"src": "img/robotaxi.jpg", "w": 800, "h": 420, "alt": "A Tesla Robotaxi on the road", "caption": "하루 20시간 운행을 시작한 테슬라 로보택시", "credit": "Tesla / NotATeslaKiller", "creditUrl": "https://notateslakiller.com/en/tesla-robotaxi-hours-past-midnight-rear-camera-calm-mode-grok/"}}, "A2": {"id": "a2", "kicker": "기사 2 · 경제·시장", "headline": "A Busy Week Ahead for Wall Street", "koHeadline": "월가, 바쁜 한 주를 맞이하다", "pairs": [{"en": "Wall Street is heading into a busy week, / because Americans will vote / in the midterm elections on Tuesday, / and an important jobs report / will come out on Friday.", "ko": "월가는 바쁜 한 주에 접어들고 있다, / 미국인들이 투표할 것이기 때문에 / 화요일 중간선거에서, / 그리고 중요한 고용 보고서가 / 금요일에 나올 것이기 때문에."}, {"en": "Even so, many investors believe / the vote will matter less / than the AI trade, / which has been shaky lately.", "ko": "그런데도, 많은 투자자들은 믿는다 / 선거가 덜 중요할 것이라고 / AI 관련 투자보다, / 그것은 최근 흔들려 왔다."}, {"en": "Last week, the major stock indexes ended lower / after disappointing results from Amazon and Intel, / and Google's parent company Alphabet / fell twelve percent in a single day, / its worst drop on record.", "ko": "지난주, 주요 주가지수들은 하락 마감했다 / 아마존과 인텔의 실망스러운 실적 이후, / 그리고 구글의 모회사 알파벳은 / 하루 만에 12퍼센트 떨어졌다, / 기록상 최악의 하락이었다."}, {"en": "As a result, many traders moved their money / into safer areas such as health care and consumer staples, / so companies like Coca-Cola and Procter and Gamble / did better than the market.", "ko": "그 결과, 많은 트레이더들은 돈을 옮겼다 / 헬스케어와 필수소비재 같은 더 안전한 분야로, / 그래서 코카콜라와 P&G 같은 회사들이 / 시장보다 더 잘했다."}, {"en": "This week, one hundred thirty-eight companies in the S&P 500 / will report their results, / including Apple and Palantir, / and their numbers could decide / whether the sell-off continues.", "ko": "이번 주, S&P 500의 138개 기업이 / 실적을 발표한다, / 애플과 팔란티어를 포함해서, / 그리고 그들의 숫자가 결정할 수도 있다 / 매도세가 계속될지를."}], "natural": ["월가가 바쁜 한 주를 맞는다. 화요일에는 미국 중간선거 투표가 있고, 금요일에는 중요한 고용 보고서가 나온다. 그래도 많은 투자자들은 선거보다 최근 흔들리고 있는 AI 관련 투자가 시장에 더 중요하다고 본다.", "지난주 주요 지수들은 아마존과 인텔의 실망스러운 실적에 하락 마감했고, 구글 모회사 알파벳은 하루 만에 12% 떨어져 사상 최악의 하루를 기록했다. 그러자 많은 트레이더들이 헬스케어와 필수소비재 같은 안전한 업종으로 돈을 옮겼고, 코카콜라와 P&G 같은 종목이 시장보다 좋은 성과를 냈다.", "이번 주에는 애플과 팔란티어를 포함한 S&P 500 기업 138곳이 실적을 발표하는데, 이 숫자들이 매도세가 이어질지를 가를 수 있다."], "exprs": [{"en": "head into", "ko": "~에 접어들다, ~를 향해 가다", "ex": "Wall Street is heading into a busy week"}, {"en": "even so", "ko": "그런데도, 그렇다 해도", "ex": "Even so, many investors believe ..."}, {"en": "matter less than", "ko": "~보다 덜 중요하다", "ex": "the vote will matter less than the AI trade"}, {"en": "end lower", "ko": "하락 마감하다", "ex": "the major stock indexes ended lower"}, {"en": "on record", "ko": "기록상, 사상", "ex": "its worst drop on record"}, {"en": "as a result", "ko": "그 결과", "ex": "As a result, many traders moved their money ..."}, {"en": "do better than", "ko": "~보다 더 잘하다, 성과가 좋다", "ex": "did better than the market"}], "vocab": [{"w": "midterm election", "pos": "명사", "ko": "(미국) 중간선거", "ex": "the midterm elections on Tuesday"}, {"w": "investor", "pos": "명사", "ko": "투자자", "ex": "many investors believe"}, {"w": "shaky", "pos": "형용사", "ko": "흔들리는, 불안한", "ex": "which has been shaky lately"}, {"w": "index", "pos": "명사", "ko": "지수", "ex": "the major stock indexes"}, {"w": "disappointing", "pos": "형용사", "ko": "실망스러운", "ex": "disappointing results"}, {"w": "consumer staples", "pos": "명사", "ko": "필수소비재", "ex": "health care and consumer staples"}, {"w": "sell-off", "pos": "명사", "ko": "매도세, 대량 매도", "ex": "whether the sell-off continues"}], "source": {"title": "Midterms, Apple earnings, jobs report. Wall Street faces a big week ahead just as investors dump tech", "site": "CNBC", "href": "https://www.cnbc.com/2026/10/30/stock-market-next-week-outlook-for-nov-2-6-2026.html", "date": "2026-10-30"}, "image": {"src": "img/market-week.jpg", "w": 1200, "h": 676, "alt": "Traders at the New York Stock Exchange", "caption": "뉴욕증권거래소의 트레이더들", "credit": "AFP via Getty Images / CNBC", "creditUrl": "https://www.cnbc.com/2026/10/30/stock-market-next-week-outlook-for-nov-2-6-2026.html"}}, "QUIZ": [{"art": "a1", "q": "Q1. (기사 1) 로보택시는 하루에 몇 시간 운행하나요?", "opts": ["A. 12시간", "B. 20시간", "C. 24시간"], "ans": "B", "why": "아침 6시부터 새벽 2시까지라서 합쳐서 하루 20시간이고, 쉬는 시간은 4시간뿐입니다.", "quote": "That adds up to twenty hours of service a day"}, {"art": "a1", "q": "Q2. (기사 1) 테슬라가 밝히지 않은 것은 무엇인가요?", "opts": ["A. 새 기능의 이름", "B. 운행 시작 시각", "C. 새 운행 시간이 적용되는 도시"], "ans": "C", "why": "테슬라는 새 운행 시간이 어느 도시에 적용되는지 말하지 않아서, 지금은 오스틴으로 추측할 뿐입니다.", "quote": "Tesla did not say which cities the new hours apply to"}, {"art": "a2", "q": "Q3. (기사 2) 많은 투자자들이 선거보다 더 중요하다고 보는 것은?", "opts": ["A. AI 관련 투자 흐름", "B. 유가", "C. 환율"], "ans": "A", "why": "투자자들은 선거가 최근 흔들리는 AI 관련 투자보다 덜 중요할 거라고 봅니다.", "quote": "the vote will matter less than the AI trade, which has been shaky lately"}, {"art": "a2", "q": "Q4. (기사 2) 지난주 트레이더들은 돈을 어디로 옮겼나요?", "opts": ["A. 반도체 같은 기술주", "B. 헬스케어와 필수소비재 같은 안전한 분야", "C. 현금만 들고 있었다"], "ans": "B", "why": "기술주가 흔들리자 트레이더들이 헬스케어와 필수소비재 같은 안전한 분야로 돈을 옮겼습니다.", "quote": "many traders moved their money into safer areas such as health care and consumer staples"}], "HINTS": ["힌트: 기사 1의 두 번째 문장에서 adds up to 다음을 보세요.", "힌트: 기사 1의 마지막 문장에서 did not say 다음을 보세요.", "힌트: 기사 2의 두 번째 문장에서 matter less than 다음을 보세요.", "힌트: 기사 2의 네 번째 문장에서 As a result 다음을 보세요."], "RQ": [{"day": "10/30", "en": "at a yearly pace of", "opts": ["A. 해마다 줄어드는", "B. 연간 ~의 속도로", "C. 1년 만에 처음으로"], "ans": "B", "hint": "힌트: yearly는 '1년 단위', pace는 '속도'예요.", "tag": ""}, {"day": "10/30", "en": "a rate hike", "opts": ["A. 금리 인상", "B. 세율 인하", "C. 물가 하락"], "ans": "A", "hint": "힌트: rate는 금리, hike는 '크게 올림'이에요.", "tag": ""}, {"day": "10/30", "en": "pay off", "opts": ["A. 돈을 빌리다", "B. 포기하다", "C. 성과를 내다, 결실을 맺다"], "ans": "C", "hint": "힌트: 노력이 '보상받는' 장면을 떠올려 보세요.", "tag": ""}]};
@@ -342,7 +449,7 @@ const $wrap = () => document.querySelector(".wrap");
 const wrapY = () => { const w=$wrap(); return w ? w.scrollTop : (window.scrollY||0); };
 const wrapScrollTo = (top, opt) => { const w=$wrap(); const o=typeof top==="object"?top:{top, ...(opt||{})}; if(w) w.scrollTo(o); else window.scrollTo(o); };
 const wrapScrollBy = (o) => { const w=$wrap(); if(w) w.scrollBy(o); else window.scrollBy(o); };
-const META = {"date": "2026-11-02", "label": "11월 2일(월)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 2일 월요일 · 가벼운 뉴스 2편 · B1", "short": ["로보택시 하루 20시간 운행", "선거·실적·고용, 바쁜 한 주"], "marks": {"a1": [3.81, 14.37, 21.56, 32.76, 43.26], "a2": [2.35, 12.05, 18.92, 32.22, 44.46]}, "dur": {"a1": 54.7, "a2": 57.12}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a1-x7-en.mp3", "clips/a1-x7-ko.mp3", "clips/a1-x7.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/a2-x7-en.mp3", "clips/a2-x7-ko.mp3", "clips/a2-x7.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "market-week-expr.mp3", "market-week.mp3", "robotaxi-expr.mp3", "robotaxi.mp3"], "audioBytes": 5404752, "full": {"a1": "robotaxi.mp3", "a2": "market-week.mp3"}, "dialog": {}, "fullx": {"a1": "robotaxi-expr.mp3", "a2": "market-week-expr.mp3"}, "quizLang": "ko", "todayReview": [{"en": "add up to", "ko": "합쳐서 ~가 되다"}, {"en": "head into", "ko": "~에 접어들다, ~를 향해 가다"}, {"en": "end lower", "ko": "하락 마감하다"}], "reviewNote": "1·3·7·14·30일 뒤(11/3, 11/5, 11/9, 11/16, 12/2) 복습 퀴즈에 다시 나와요.", "build": "eb5bb9adda"};
+const META = {"date": "2026-11-02", "label": "11월 2일(월)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 2일 월요일 · 가벼운 뉴스 2편 · B1", "short": ["로보택시 하루 20시간 운행", "선거·실적·고용, 바쁜 한 주"], "marks": {"a1": [3.81, 14.37, 21.56, 32.76, 43.26], "a2": [2.35, 12.05, 18.92, 32.22, 44.46]}, "dur": {"a1": 54.7, "a2": 57.12}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a1-x7-en.mp3", "clips/a1-x7-ko.mp3", "clips/a1-x7.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/a2-x7-en.mp3", "clips/a2-x7-ko.mp3", "clips/a2-x7.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "market-week-expr.mp3", "market-week.mp3", "robotaxi-expr.mp3", "robotaxi.mp3"], "audioBytes": 5404752, "full": {"a1": "robotaxi.mp3", "a2": "market-week.mp3"}, "dialog": {}, "fullx": {"a1": "robotaxi-expr.mp3", "a2": "market-week-expr.mp3"}, "quizLang": "ko", "todayReview": [{"en": "add up to", "ko": "합쳐서 ~가 되다"}, {"en": "head into", "ko": "~에 접어들다, ~를 향해 가다"}, {"en": "end lower", "ko": "하락 마감하다"}], "reviewNote": "1·3·7·14·30일 뒤(11/3, 11/5, 11/9, 11/16, 12/2) 복습 퀴즈에 다시 나와요.", "build": "b70830b6eb"};
 const DUR = META.dur||{};   // full-article seconds from the build (audio is not preloaded)
 const MARKS = META.marks, FULL = META.full, FULLX = META.fullx;
 const HAS_WB = typeof WB !== "undefined";
@@ -354,6 +461,7 @@ const fulls = {};               // id -> audio element (full mp3 players)
 let seq = null;                 // active clip sequence {key, list, idx, single, timer}
 const seqs = {};                // key -> {list, idx, rate, shadow}
 const modes = {a1:"jik", a2:"jik"};
+if(typeof HL!=="undefined") HL.init({aids:()=>["a1","a2"].filter(a=>document.getElementById("lines-"+a)), box:a=>document.getElementById("lines-"+a), bar:a=>document.getElementById("mbar-"+a), scope:a=>({d:META.date,a}), onStart:()=>{ closeGloss(); clearSel(); }});
 const reveal = {};
 
 function stopWB(){ if(HAS_WB) WB.stop(); }
@@ -691,7 +799,7 @@ function linesHTML0(A, mode){
       <div class="row" style="margin:4px 0 0"><button onclick="tgl('${k}','${A.id}')">${reveal[k]?"뜻 숨기기":"뜻 보기"}</button></div>
       ${reveal[k]?`<div style="margin-top:4px">${esc(p.en)}</div><div class="ko">${esc(p.ko)}</div>`:""}`; }
     else if(mode==="jik"){ const an=anOn()&&A.an&&A.an[i];
-      inner=`<div>${i+1}. ${an?anText(A,i):glossText(A,i,true)}</div><div class="ko">${esc(p.ko)}</div>${an&&an.n.length?`<div class="anote">${an.n.map(t=>`<div>💡 ${esc(t)}</div>`).join("")}</div>`:""}`;
+      inner=`<div><span class="sn">${i+1}. </span>${an?anText(A,i):glossText(A,i,true)}</div><div class="ko">${esc(p.ko)}</div>${an&&an.n.length?`<div class="anote">${an.n.map(t=>`<div>💡 ${esc(t)}</div>`).join("")}</div>`:""}`;
       return `<div class="sent${an?" anl":""} jik" id="s-${k}"><button class="ico sp" data-sp="${A.id}s:${i}" aria-label="문장 듣기" onclick="spTap('${A.id}s',${i})">${spLbl(A.id+'s',i)}</button><div class="t">${inner}</div></div>`; }
     else inner=`<div>${glossText(A,i)}</div>`;
     return `<div class="sent" id="s-${k}"><button class="ico sp" data-sp="${A.id}s:${i}" aria-label="문장 듣기" onclick="spTap('${A.id}s',${i})">${spLbl(A.id+'s',i)}</button><div class="t">${inner}</div></div>`;
@@ -800,7 +908,7 @@ function keepPlace(aid, fn){ const box=document.getElementById("lines-"+aid); if
   wrapScrollBy({top:nk[j].getBoundingClientRect().top-stickyBottom()-off}); }
 function setMode(aid,m){ if(modes[aid]!==m && TAB.art===aid){ keepPlace(aid,()=>setMode0(aid,m)); return; } setMode0(aid,m); }
 function setMode0(aid,m){ modes[aid]=m; if(TAB.art===aid){ TAB.tab = m==="jik"?"jik":"en"; saveTab(); drawTabs(); } document.querySelectorAll(`#mode-${aid} button`).forEach(b=>b.classList.toggle("on",b.dataset.m===m)); drawLines(aid); }
-function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2, box=document.getElementById("lines-"+aid); box.classList.toggle("jiklines", modes[aid]==="jik"); box.innerHTML=linesHTML(A,modes[aid]); highlight();  const tc=document.getElementById("tc-"+aid); if(tc) tc.hidden = modes[aid]==="jik"||modes[aid]==="ko"; if(modes[aid]==="jik") requestAnimationFrame(()=>anFix(aid)); }
+function drawLines(aid){ const A=aid==="a1"?D.A1:D.A2, box=document.getElementById("lines-"+aid); box.classList.toggle("jiklines", modes[aid]==="jik"); box.innerHTML=linesHTML(A,modes[aid]); highlight();  const tc=document.getElementById("tc-"+aid); if(tc) tc.hidden = modes[aid]==="jik"||modes[aid]==="ko"; if(typeof HL!=="undefined") HL.draw(aid,modes[aid]); if(modes[aid]==="jik") requestAnimationFrame(()=>anFix(aid)); }
 
 /* quiz/review UI language: English for lessons from 2026-11-05 (META.quizLang), Korean before */
 const QEN = META.quizLang==="en";
