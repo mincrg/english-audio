@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=4d51e1d76f" defer></script>
+<script src="./pwa.js?v=81d1b620f0" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -374,8 +374,8 @@ body.wb-sel .item [data-del]{display:none}
 </div>
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
-<script src="./wb.js?v=7ca4fe584c"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="aa05f55243") freshen(v); }).catch(()=>{});</script>
+<script src="./wb.js?v=7ed08d2a54"></script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="48b2617f7c") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 const FILT_KEY="ea-wb-filt-v1", FILTS=["all","word","expr","conv"];
@@ -416,7 +416,36 @@ function drawCtl(){ const st=WB.listState(), items=WB.all().filter(x=>WB.matchFi
   document.getElementById("wbpp").textContent = st.active && !st.paused ? "⏸" : "▶";
   const it = st.active ? items.find(x=>x.id===st.id) : null;
   document.getElementById("wbnow").innerHTML = it ? `<b>${st.li+1}/${st.n}</b> ${esc(it.en)}` : `<b>전체 ${n}개</b> 듣기`;
-  document.querySelectorAll("#list .item[data-id]").forEach(r=>r.classList.toggle("on", WB.isPlaying(r.dataset.id))); }
+  document.querySelectorAll("#list .item[data-id]").forEach(r=>r.classList.toggle("on", WB.isPlaying(r.dataset.id)));
+  follow(st); }
+/* ▶ 전체 듣기: keep the word being read on screen. A manual scroll pauses this for 4 s (the next word after that
+   is followed again); reduced-motion users get an instant jump. */
+let followId=null, userScrollAt=0;
+const markUser=()=>{ userScrollAt=Date.now(); };
+["wheel","touchmove"].forEach(t=>addEventListener(t, markUser, {passive:true}));
+addEventListener("keydown", e=>{ if(["ArrowUp","ArrowDown","PageUp","PageDown","Home","End"," "].includes(e.key) && !/^(INPUT|TEXTAREA|BUTTON|SELECT)$/.test((e.target||{}).tagName||"")) markUser(); });
+function follow(st){
+  if(!st.active || mode!=="list"){ followId=null; return; }
+  if(st.id===followId) return;
+  if(Date.now()-userScrollAt < 4000) return;          // the user is looking elsewhere; try again on the next word
+  const row=[...document.querySelectorAll("#list .item[data-id]")].find(r=>r.dataset.id===st.id); if(!row) return;
+  followId=st.id;
+  const ctl=document.getElementById("wbctl"), cr=ctl && !ctl.hidden ? ctl.getBoundingClientRect() : null;
+  const top0 = cr && cr.top<=2 ? Math.max(0, cr.bottom) : 0;  // sticky play bar covers the top
+  // the page scrolls inside .wrap (body is overflow:hidden), so find the real scroller
+  let sc=row.parentElement; while(sc && sc!==document.body && !(/(auto|scroll)/.test(getComputedStyle(sc).overflowY) && sc.scrollHeight>sc.clientHeight)) sc=sc.parentElement;
+  if(!sc || sc===document.body) sc=document.scrollingElement || document.documentElement;
+  const win = sc===document.scrollingElement || sc===document.documentElement;
+  const box = win ? {top:0, bottom:innerHeight} : sc.getBoundingClientRect();
+  const vTop=Math.max(box.top, top0), vBot=Math.min(box.bottom, innerHeight), view=vBot-vTop;
+  const r=row.getBoundingClientRect();
+  if(r.top>=vTop+view*0.2 && r.bottom<=vBot-view*0.2) return;      // already comfortably in view
+  let d = r.top - vTop - Math.max(8, (view-r.height)/2);
+  if(r.height > view-16) d = r.top - vTop - 8;                     // tall row: show its start
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const y = Math.max(0, sc.scrollTop + d);
+  try{ sc.scrollTo({top:y, behavior: reduce ? "auto" : "smooth"}); }catch(e){ sc.scrollTop=y; }
+}
 /* clip-less rows: WB.ttsSay(en,ko,id) does EN→KO × reps with gap (see wb.js). */
 function ttsStop(){ WB.ttsStop(); }
 WB.onPlay = () => WB.ttsStop();

@@ -65,31 +65,99 @@ function finish(){ if(cur && cur.timer) clearTimeout(cur.timer); if(cur) cur.spr
 function afterPart(){ if(!cur) return;
   const more = cur.i+1 < cur.parts.length, next = cur.list && cur.li+1 < cur.list.length;
   if(more || next) cur.timer=setTimeout(advance, (more ? getGap() : ITEM_GAP)*1000); else finish(); }
+/* Library (wbclips) words live inside ~3-minute sprite mp3 packs. Seeking into the pack and stopping on
+   timeupdate is imprecise on iPhone/iPad Safari (stops mid-word or mid-뜻, or bleeds into the next word), so
+   the pack is decoded once with Web Audio and each word plays as its own small WAV (sample-exact, normal
+   'ended'). The seek path stays only as a fallback when decoding is unavailable or fails. */
+const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+const SEG_PRE = 0.07, SEG_POST = 0.09;      // packs keep 0.18 s of silence between words
+const packBuf = new Map(), segUrl = new Map();
+function lruTouch(m, k, v){ m.delete(k); m.set(k, v); }
+function decodeAB(ab){
+  return new Promise((res, rej) => {
+    let ctx; try{ ctx = new OAC(1, 1, 24000); }catch(e){ try{ ctx = new OAC(1, 1, 44100); }catch(e2){ rej(e2); return; } }
+    try{ const pr = ctx.decodeAudioData(ab, res, rej); if(pr && pr.then) pr.then(res, rej); }catch(e){ rej(e); }
+  });
+}
+function decodePack(src){
+  if(!OAC) return Promise.reject(new Error("no web audio"));
+  if(packBuf.has(src)){ const p=packBuf.get(src); lruTouch(packBuf, src, p); return p; }
+  const p = fetch(src).then(r => { if(!r.ok) throw new Error("pack " + r.status); return r.arrayBuffer(); }).then(decodeAB);
+  p.catch(() => { if(packBuf.get(src)===p) packBuf.delete(src); });
+  packBuf.set(src, p);
+  while(packBuf.size > 3) packBuf.delete(packBuf.keys().next().value);
+  return p;
+}
+function wavURL(buf, t0, t1){
+  const sr = buf.sampleRate, ch = buf.getChannelData(0);
+  const a = Math.max(0, Math.floor(t0*sr)), b = Math.min(ch.length, Math.ceil(t1*sr)), n = Math.max(1, b-a);
+  const v = new DataView(new ArrayBuffer(44 + n*2));
+  const str = (o, t) => { for(let i=0;i<t.length;i++) v.setUint8(o+i, t.charCodeAt(i)); };
+  str(0,"RIFF"); v.setUint32(4, 36+n*2, true); str(8,"WAVE"); str(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true);
+  v.setUint16(22,1,true); v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  str(36,"data"); v.setUint32(40, n*2, true);
+  const fade = Math.min(Math.floor(sr*0.008), n>>1);       // 8 ms fade in/out: no click at the cut
+  for(let i=0;i<n;i++){
+    let x = ch[a+i] || 0;
+    if(i < fade) x *= i/fade; else if(i >= n-fade) x *= (n-1-i)/fade;
+    v.setInt16(44 + i*2, Math.max(-1, Math.min(1, x)) * 0x7fff, true);
+  }
+  return URL.createObjectURL(new Blob([v.buffer], {type:"audio/wav"}));
+}
+function segmentURL(p){
+  const k = p.src + "|" + p.start + "|" + p.end;
+  if(segUrl.has(k)){ const u=segUrl.get(k); lruTouch(segUrl, k, u); return Promise.resolve(u); }
+  return decodePack(p.src).then(buf => {
+    if(segUrl.has(k)) return segUrl.get(k);
+    const u = wavURL(buf, p.start - SEG_PRE, p.end + SEG_POST);
+    segUrl.set(k, u);
+    while(segUrl.size > 150){ const [k0, u0] = segUrl.entries().next().value; if(sameSrc(audio.src, u0)) break; segUrl.delete(k0); try{ URL.revokeObjectURL(u0); }catch(e){} }
+    return u;
+  });
+}
+function prefetchItem(it){ try{ const ps = partsFor(it && it.url); ps.forEach(q => { if(isSprite(q)) segmentURL(q).catch(()=>{}); }); }catch(e){} }
+/* iOS only lets an element start audio later (after an async decode) if it was started inside a tap once */
+let unlocked = false, unlocking = false;
+const SILENT = "data:audio/wav;base64,UklGRgQCAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YeABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";   // 10 ms of silence
+function unlockAudio(){
+  if(unlocked) return; unlocked = true;
+  try{ if(!audio.paused) return; unlocking = true; audio.src = SILENT; const pr = audio.play(); if(pr && pr.catch) pr.catch(()=>{ unlocking=false; }); }catch(e){ unlocking = false; }
+}
+function playSpriteSeek(p){
+  cur.spriteEnd=p.end;
+  const kick=()=>{
+    const go=()=>{ if(!cur||cur.parts[cur.i]!==p) return; audio.play().catch(()=>{}); };
+    try{ audio.currentTime=p.start; }catch(e){}
+    if(Math.abs((audio.currentTime||0)-p.start)<0.12) go();
+    else audio.addEventListener("seeked", go, {once:true});
+  };
+  if(sameSrc(audio.src, p.src) && audio.readyState>=2) kick();
+  else { audio.src=p.src; audio.addEventListener("loadeddata", kick, {once:true}); audio.load(); }
+}
 function playPart(){
   if(!audio.paused) skipPause=true;
-  const p=cur.parts[cur.i];
+  const p=cur.parts[cur.i], me=cur;
   audio.defaultPlaybackRate=audio.playbackRate=getRate();
   cur.spriteEnd=null;
   if(isSprite(p)){
-    cur.spriteEnd=p.end;
-    const kick=()=>{
-      const go=()=>{ if(!cur||cur.parts[cur.i]!==p) return; audio.play().catch(()=>{}); };
-      try{ audio.currentTime=p.start; }catch(e){}
-      if(Math.abs((audio.currentTime||0)-p.start)<0.12) go();
-      else audio.addEventListener("seeked", go, {once:true});
-    };
-    if(sameSrc(audio.src, p.src) && audio.readyState>=2) kick();
-    else { audio.src=p.src; audio.addEventListener("loadeddata", kick, {once:true}); audio.load(); }
+    if(!OAC){ unlocking=false; playSpriteSeek(p); return; }
+    segmentURL(p).then(u => {
+      if(cur!==me || cur.parts[cur.i]!==p) return;
+      if(!audio.paused) skipPause=true;
+      unlocking=false; audio.src=u; audio.defaultPlaybackRate=audio.playbackRate=getRate();
+      if(!cur.paused) audio.play().catch(()=>{});      // paused while decoding: ▶ resumes this word
+    }, () => { if(cur===me && cur.parts[cur.i]===p){ unlocking=false; playSpriteSeek(p); } });
   } else {
-    audio.src=p; audio.play().catch(()=>{});
+    unlocking=false; audio.src=p; audio.play().catch(()=>{});
   }
 }
-function loadItem(li){ const it=cur.list[li]; cur.li=li; cur.id=it.id; cur.url=it.url; cur.parts=partsFor(it.url); cur.i=0; playingId=it.id; playPart(); changed(); }
+function loadItem(li){ const it=cur.list[li]; cur.li=li; cur.id=it.id; cur.url=it.url; cur.parts=partsFor(it.url); cur.i=0; playingId=it.id; playPart(); changed();
+  if(cur.list[li+1]) prefetchItem(cur.list[li+1]); }
 function advance(){ if(!cur) return; cur.timer=null;
   if(cur.i+1 < cur.parts.length){ cur.i++; playPart(); }
   else if(cur.list && cur.li+1 < cur.list.length) loadItem(cur.li+1);
   else finish(); }
-audio.addEventListener("ended", () => { if(!cur) return; if(cur.spriteEnd!=null) return; afterPart(); });
+audio.addEventListener("ended", () => { if(unlocking){ unlocking=false; return; } if(!cur) return; if(cur.spriteEnd!=null) return; afterPart(); });
 audio.addEventListener("timeupdate", () => {
   if(!cur || cur.spriteEnd==null || cur.paused) return;
   if(audio.currentTime >= cur.spriteEnd - 0.02){
@@ -97,8 +165,8 @@ audio.addEventListener("timeupdate", () => {
   }
 });
 let skipPause = false;
-audio.addEventListener("pause", () => { if(skipPause){ skipPause=false; return; } if(cur && cur.list) return; if(cur && !audio.ended && !cur.timer && cur.spriteEnd==null) finish(); });
-audio.addEventListener("error", () => { if(cur && cur.parts.length>1 && typeof cur.url==="string"){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
+audio.addEventListener("pause", () => { if(unlocking) return; if(skipPause){ skipPause=false; return; } if(cur && cur.list) return; if(cur && !audio.ended && !cur.timer && cur.spriteEnd==null) finish(); });
+audio.addEventListener("error", () => { if(unlocking){ unlocking=false; return; } if(cur && cur.parts.length>1 && typeof cur.url==="string"){ cur.parts=[cur.url]; cur.i=0; playPart(); } });   // older days: combined clip only
 window.addEventListener("storage", e => { if(e.key===GAP_KEY||e.key===REPS_KEY||e.key===RATE_KEY){ if(e.key===RATE_KEY) audio.playbackRate=getRate(); WB.refreshGap(); if(WB.onGap) WB.onGap(); } });
 
 /* Ava/SunHi mp3 library for rows saved without a day clip (glossary / 📖 사전 뜻 ☆). */
@@ -145,7 +213,7 @@ function hasClip(it){ return !!(it && (it.clip || resolveClip(it))); }
 
 /* speechSynthesis EN→KO for wordbook rows still missing mp3s. Ava/SunHi are Edge neural
    names for the day mp3s — iPhone/iPad Safari usually has Samantha / Yuna; we pick those first. */
-let ttsId = null, ttsTimer = null;
+let ttsId = null, ttsTimer = null, ttsKeep = null;
 function ttsClearTimer(){ if(ttsTimer){ clearTimeout(ttsTimer); ttsTimer=null; } }
 function ttsStop(){ ttsClearTimer(); try{ speechSynthesis.cancel(); }catch(e){} const was=ttsId; ttsId=null; if(was!==null) changed(); }
 function pickVoices(vs){
@@ -169,6 +237,7 @@ function ttsSay(en, ko, id){
   try{
     const ss = window.speechSynthesis; if(!ss) return;
     if(id!=null && ttsId===id){ ttsStop(); return; }
+    const busy = ss.speaking || ss.pending;      // Safari can drop/cut an utterance spoken right after cancel()
     ttsStop();
     if(cur) WB.stop();
     en = String(en||"").trim(); ko = String(ko||"").trim();
@@ -184,6 +253,7 @@ function ttsSay(en, ko, id){
       if(voice) u.voice = voice;
       const go = () => { if(ttsId===id) next(); };
       u.onend = go; u.onerror = go;
+      ttsKeep = u;                                 // keep a reference: a collected utterance stops mid-word (Chrome/Safari)
       ss.speak(u);
     }
     function afterGap(fn){
@@ -207,11 +277,13 @@ function ttsSay(en, ko, id){
       });
     }
     // voices may load async on Safari — kick a refresh then start
+    let started = false;
+    const start = ()=>{ if(started || ttsId!==id) return; started = true; round(); };
     if(!ss.getVoices().length){
-      const kick = ()=>{ if(ttsId===id) round(); };
-      ss.addEventListener("voiceschanged", kick, {once:true});
-      setTimeout(kick, 250);
-    } else round();
+      ss.addEventListener("voiceschanged", start, {once:true});
+      setTimeout(start, 250);
+    } else if(busy) setTimeout(start, 150);
+    else start();
   }catch(e){ ttsId=null; }
 }
 
@@ -244,13 +316,13 @@ const WB = {
   ttsSay, ttsStop, isTts: id => ttsId===id,
   loadClips, resolveClip, hasClip,
   playItem(it, id){ if(!it) return; const c=resolveClip(it); if(c) WB.play(c, id||it.id); else ttsSay(it.en, it.ko, id||it.id); },
-  play(url, id){ if(!url) return; ttsStop(); if(WB.onPlay) WB.onPlay();
+  play(url, id){ if(!url) return; ttsStop(); if(WB.onPlay) WB.onPlay(); unlockAudio();
     const pid=id|| (typeof url==="string"?url:"item");
     if(cur && cur.id===pid){ WB.stop(); return; }
     if(cur && cur.timer) clearTimeout(cur.timer);
     cur={id:pid, url, parts:partsFor(url), i:0, timer:null}; playingId=pid; playPart(); changed(); },
   /* play-all: list = [{id,url}] in display order */
-  playList(list, li=0){ list=(list||[]).filter(x=>x.url); if(!list.length) return; if(WB.onPlay) WB.onPlay();
+  playList(list, li=0){ list=(list||[]).filter(x=>x.url); if(!list.length) return; if(WB.onPlay) WB.onPlay(); unlockAudio();
     if(cur && cur.timer) clearTimeout(cur.timer);
     cur={list, li:0, timer:null}; loadItem(Math.max(0, Math.min(list.length-1, li))); },
   toggleList(list){ if(!cur || !cur.list){ WB.playList(list, 0); return; }
