@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=b9e021528a" defer></script>
+<script src="./pwa.js?v=4d51e1d76f" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -269,6 +269,26 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .ap{--c:#7f8c8d}.ap-S{--c:#1a5fd6}.ap-V{--c:#d93025}.ap-O{--c:#1e8e3e}.ap-C{--c:#8e44ad}.ap-M{--c:#7f8c8d}.ap-REL{--c:#00897b}.ap-PART{--c:#e67e22}.ap-CONJ{--c:#b8860b}
 @media (prefers-color-scheme:dark){.ap-S{--c:#8ab4f8}.ap-V{--c:#f28b82}.ap-O{--c:#81c995}.ap-C{--c:#c58af9}.ap-REL{--c:#4dd0c4}.ap-PART{--c:#fcad70}.ap-CONJ{--c:#e6c35c}}
 .apx{border-bottom:2.5px solid var(--c);padding-bottom:1px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* 🖍️ 형광펜 (templates/_hl.html): token spans .hw / gap spans .hg, color in data-c */
+.hw[data-c],.hg[data-c]{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.hw[data-c=y],.hg[data-c=y]{background:rgba(255,221,0,.5)}.hw[data-c=g],.hg[data-c=g]{background:rgba(70,215,115,.42)}.hw[data-c=p],.hg[data-c=p]{background:rgba(255,120,190,.42)}
+@media (prefers-color-scheme:dark){.hw[data-c=y],.hg[data-c=y]{background:rgba(255,214,0,.36)}.hw[data-c=g],.hg[data-c=g]{background:rgba(70,200,110,.36)}.hw[data-c=p],.hg[data-c=p]{background:rgba(255,110,180,.38)}}
+.hw.hlpv,.hg.hlpv{background:rgba(26,95,214,.22);box-shadow:inset 0 -2px 0 var(--acc)}
+.modebar.hlbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.hlw:not([hidden]){display:contents}
+.hlb{min-width:44px;min-height:44px;padding:0 8px;font-size:20px;line-height:1}
+.hlb.on{background:var(--acc);border-color:var(--acc)}
+.hlpal{display:flex;flex-wrap:wrap;align-items:center;gap:6px;width:100%}.hlpal[hidden]{display:none}
+.hlcs{display:inline-flex;gap:4px}
+.hlc{min-width:44px;min-height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.hlc i{display:block;width:24px;height:24px;border-radius:50%;border:1px solid rgba(0,0,0,.18)}
+.hlc.on{outline:3px solid var(--acc);outline-offset:-3px}
+.hl-y i{background:#ffdd00}.hl-g i{background:#46d773}.hl-p i{background:#ff78be}
+.hlclr{min-height:44px;font-size:14px}
+.hlhint{width:100%;font-size:12.5px;color:var(--tx2);line-height:1.35;padding-bottom:2px}
+.hlon .hlok .sent .t{cursor:text;touch-action:pan-y;touch-action:pan-y pinch-zoom}
+.hlon .hlok .sent .t .gw{text-decoration-color:transparent}
+.sn{color:inherit}
 .apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
 .anote{margin:6px 0 2px;padding:6px 10px;border-left:3px solid var(--acc);background:var(--accs);border-radius:0 8px 8px 0;font-size:calc(14px*var(--fs,1));line-height:1.5;color:var(--tx)}.anote div+div{margin-top:3px}
@@ -355,7 +375,7 @@ body.wb-sel .item [data-del]{display:none}
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=7ca4fe584c"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="70205d702f") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="aa05f55243") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 const FILT_KEY="ea-wb-filt-v1", FILTS=["all","word","expr","conv"];
