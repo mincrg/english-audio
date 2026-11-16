@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=81d1b620f0" defer></script>
+<script src="./pwa.js?v=038c6c84b8" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -288,6 +288,18 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .hlhint{width:100%;font-size:12.5px;color:var(--tx2);line-height:1.35;padding-bottom:2px}
 .hlon .hlok .sent .t{cursor:text;touch-action:pan-y;touch-action:pan-y pinch-zoom}
 .hlon .hlok .sent .t .gw{text-decoration-color:transparent}
+/* ✏️ 필기 (templates/_hl.html PEN): word underlines in data-u, ink in svg.inkl over the article block */
+.penok{position:relative}
+svg.inkl{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hw[data-u],.hg[data-u]{text-decoration-line:underline;text-decoration-thickness:2.5px;text-underline-offset:.22em;text-decoration-skip-ink:none;-webkit-text-decoration-skip:none}
+.hw[data-u=r],.hg[data-u=r]{text-decoration-color:#e0322b}.hw[data-u=b],.hg[data-u=b]{text-decoration-color:#1a5fd6}.hw[data-u=k],.hg[data-u=k]{text-decoration-color:#222}
+@media (prefers-color-scheme:dark){.hw[data-u=r],.hg[data-u=r]{text-decoration-color:#ff6b62}.hw[data-u=b],.hg[data-u=b]{text-decoration-color:#7fb0ff}.hw[data-u=k],.hg[data-u=k]{text-decoration-color:#e8e8e8}}
+.pc-r i{background:#e0322b}.pc-b i{background:#1a5fd6}.pc-k i{background:#222}
+@media (prefers-color-scheme:dark){.pc-r i{background:#ff6b62}.pc-b i{background:#7fb0ff}.pc-k i{background:#e8e8e8}}
+.pent{min-height:44px;min-width:52px;font-size:14px;padding:0 10px}.pent.on{outline:3px solid var(--acc);outline-offset:-3px;font-weight:700}
+.penclr:disabled,.penu:disabled{opacity:.45}
+.penon .penok .sent .t{cursor:crosshair;touch-action:pan-y pinch-zoom}
+.penon .penok .sent .t .gw{text-decoration-color:transparent}
 .sn{color:inherit}
 .apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
@@ -375,7 +387,7 @@ body.wb-sel .item [data-del]{display:none}
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=7ed08d2a54"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="48b2617f7c") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="8f67398873") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 const FILT_KEY="ea-wb-filt-v1", FILTS=["all","word","expr","conv"];
