@@ -14,7 +14,7 @@ function freshen(v){ try{ const u=new URL(location.href); if(u.searchParams.get(
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="../pwa.js?v=4d51e1d76f" defer></script>
+<script src="../pwa.js?v=038c6c84b8" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -289,6 +289,18 @@ button.ico.on{width:auto;min-width:44px;padding:0 10px;white-space:nowrap;backgr
 .hlhint{width:100%;font-size:12.5px;color:var(--tx2);line-height:1.35;padding-bottom:2px}
 .hlon .hlok .sent .t{cursor:text;touch-action:pan-y;touch-action:pan-y pinch-zoom}
 .hlon .hlok .sent .t .gw{text-decoration-color:transparent}
+/* ✏️ 필기 (templates/_hl.html PEN): word underlines in data-u, ink in svg.inkl over the article block */
+.penok{position:relative}
+svg.inkl{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hw[data-u],.hg[data-u]{text-decoration-line:underline;text-decoration-thickness:2.5px;text-underline-offset:.22em;text-decoration-skip-ink:none;-webkit-text-decoration-skip:none}
+.hw[data-u=r],.hg[data-u=r]{text-decoration-color:#e0322b}.hw[data-u=b],.hg[data-u=b]{text-decoration-color:#1a5fd6}.hw[data-u=k],.hg[data-u=k]{text-decoration-color:#222}
+@media (prefers-color-scheme:dark){.hw[data-u=r],.hg[data-u=r]{text-decoration-color:#ff6b62}.hw[data-u=b],.hg[data-u=b]{text-decoration-color:#7fb0ff}.hw[data-u=k],.hg[data-u=k]{text-decoration-color:#e8e8e8}}
+.pc-r i{background:#e0322b}.pc-b i{background:#1a5fd6}.pc-k i{background:#222}
+@media (prefers-color-scheme:dark){.pc-r i{background:#ff6b62}.pc-b i{background:#7fb0ff}.pc-k i{background:#e8e8e8}}
+.pent{min-height:44px;min-width:52px;font-size:14px;padding:0 10px}.pent.on{outline:3px solid var(--acc);outline-offset:-3px;font-weight:700}
+.penclr:disabled,.penu:disabled{opacity:.45}
+.penon .penok .sent .t{cursor:crosshair;touch-action:pan-y pinch-zoom}
+.penon .penok .sent .t .gw{text-decoration-color:transparent}
 .sn{color:inherit}
 .apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
@@ -387,17 +399,18 @@ const HL=(function(){
     box.querySelectorAll(".sent").forEach(se=>{ const i=sIdx(se); if(i<0) return; const M=sentMap(o,sc,i,false);
       se.querySelectorAll(".hw").forEach(w=>{ const c=M[w.dataset.t]; if(c) w.dataset.c=c; else delete w.dataset.c; });
       se.querySelectorAll(".hg").forEach(g=>{ const k=+g.dataset.g, c=M[k]; if(c&&M[k+1]===c) g.dataset.c=c; else delete g.dataset.c; }); });
+    if(typeof PEN!=="undefined") PEN.paint(aid);
     const n=count(aid), b=cfg.bar(aid); if(b){ const x=b.querySelector(".hlclr"); if(x){ x.disabled=!n; x.textContent=n?`🗑 모두 지우기 (${n})`:"🗑 모두 지우기"; } } }
   function count(aid){ const sc=cfg.scope(aid), d=all()[sc.d]||{}; let n=0; Object.keys(d).forEach(k=>{ if(k.startsWith(sc.a+"-")) n+=Object.keys(d[k]).length; }); return n; }
   function barHTML(aid){ const c=color();
     return `<button class="hlb${on?" on":""}" aria-pressed="${on}" aria-label="형광펜" title="형광펜" onclick="HL.toggle()">🖍️</button>
       <div class="hlpal"${on?"":" hidden"}><span class="hlcs">${COLORS.map(([k,l])=>`<button class="hlc hl-${k}${k===c?" on":""}" data-c="${k}" aria-label="${l}" aria-pressed="${k===c}" onclick="HL.setColor('${k}')"><i></i></button>`).join("")}</span>
-      <button class="hlclr" onclick="HL.clear('${aid}')">🗑 모두 지우기</button><div class="hlhint">단어 탭 = 칠하기 · 단어에서 단어로 끌기 = 범위 · 칠한 곳 탭 = 지우기</div></div>`; }
+      <button class="hlclr" onclick="HL.clear('${aid}')">🗑 모두 지우기</button><div class="hlhint">단어 탭 = 칠하기 · 단어에서 단어로 끌기 = 범위 · 칠한 곳 탭 = 지우기</div></div>${typeof PEN!=="undefined"?PEN.bar(aid):""}`; }
   function draw(aid,mode){ const box=cfg.box(aid); if(!box) return; const ok=mode==="en"||mode==="jik";
     const b=cfg.bar(aid); if(b){ let w=b.querySelector(".hlw"); if(!w){ w=document.createElement("span"); w.className="hlw"; b.appendChild(w); b.classList.add("hlbar"); } w.hidden=!ok; w.innerHTML=barHTML(aid); }
-    box.classList.toggle("hlok",ok); if(!ok) return; box.querySelectorAll(".sent").forEach(wrapSent); paint(aid); }
+    box.classList.toggle("hlok",ok); if(ok){ box.querySelectorAll(".sent").forEach(wrapSent); paint(aid); } if(typeof PEN!=="undefined") PEN.draw(aid,mode,ok); }
   function redrawBars(){ cfg.aids().forEach(aid=>{ const b=cfg.bar(aid), w=b&&b.querySelector(".hlw"); if(w) w.innerHTML=barHTML(aid); paint(aid); }); }
-  function toggle(){ on=!on; document.documentElement.classList.toggle("hlon",on); if(on&&cfg.onStart) cfg.onStart();
+  function toggle(){ on=!on; if(on&&typeof PEN!=="undefined"&&PEN.on) PEN.off(true); document.documentElement.classList.toggle("hlon",on); if(on&&cfg.onStart) cfg.onStart();
     if(on) document.addEventListener("touchmove",tmove,{passive:false}); else document.removeEventListener("touchmove",tmove,{passive:false});
     redrawBars(); }
   function setColor(c){ lsS(CKEY,c); redrawBars(); }
@@ -436,11 +449,125 @@ const HL=(function(){
   document.addEventListener("click",e=>{ if(!on) return; const inText=e.target.closest&&e.target.closest(".hlok .sent .t");
     if(inText||Date.now()-suppress<500){ if(inText){ e.stopPropagation(); e.preventDefault(); } } },true);
   document.addEventListener("contextmenu",e=>{ if(on&&e.target.closest&&e.target.closest(".hlok .sent .t")) e.preventDefault(); });
-  return {init(c){ cfg=c; }, draw, toggle, setColor, clear, get on(){ return on; }};
+  function off(){ if(on) toggle(); }
+  return {init(c){ cfg=c; }, draw, toggle, off, setColor, clear, redrawBars, get on(){ return on; }, get cfg(){ return cfg; }, sIdx};
+})();
+/* ✏️ 필기 (원문 · 직해, Apple Pencil): only pointerType 'pen' (and desktop mouse) draws; finger touches scroll as usual.
+   Tools: 밑줄 = a roughly horizontal stroke under words becomes a word-anchored CSS underline (ea-ul-v1 = {date:{"a1-3":{"5":"r"}}}, same
+   token keys as the highlighter, so it survives font size / rotation); 필기 = free ink in an SVG overlay per article + mode
+   (ea-ink-v1 = {date:{"a1:en":[{c,w,p:[[x,y],…]}]}}, x/y divided by the article block width); 지우개 = touch a stroke/underline to erase it.
+   ↶ undoes this session's changes; 🗑 clears the article (underlines + ink in 원문/직해) after a confirm. Saturday pages save under the source article. */
+const PEN=(function(){
+  const UK="ea-ul-v1", IK="ea-ink-v1", CK="ea-pen-color-v1", TK="ea-pen-tool-v1";
+  const COLORS=[["r","빨강","#e0322b","#ff6b62"],["b","파랑","#1a5fd6","#7fb0ff"],["k","검정","#222","#e8e8e8"]], TOOLS=[["ul","밑줄"],["ink","필기"],["er","지우개"]];
+  let on=false, cur=null, undo=[], suppress=0; const modes={};
+  const lsG=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } }, lsS=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+  const load=k=>{ try{ const o=JSON.parse(lsG(k)||"{}"); return o&&typeof o==="object"&&!Array.isArray(o)?o:{}; }catch(e){ return {}; } };
+  const color=()=>{ const c=lsG(CK); return COLORS.some(x=>x[0]===c)?c:"r"; }, tool=()=>{ const t=lsG(TK); return TOOLS.some(x=>x[0]===t)?t:"ul"; };
+  const dark=()=>window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;
+  const hex=c=>{ const x=COLORS.find(k=>k[0]===c)||COLORS[0]; return dark()?x[3]:x[2]; };
+  const cfg=()=>HL.cfg, box=aid=>cfg().box(aid), sc=aid=>cfg().scope(aid);
+  function tidy(o){ Object.keys(o).forEach(d=>{ Object.keys(o[d]).forEach(k=>{ const v=o[d][k]; if(Array.isArray(v)?!v.length:!Object.keys(v).length) delete o[d][k]; }); if(!Object.keys(o[d]).length) delete o[d]; }); return o; }
+  const saveU=o=>lsS(UK,JSON.stringify(tidy(o))), saveI=o=>lsS(IK,JSON.stringify(tidy(o)));
+  const inkKey=aid=>sc(aid).a+":"+(modes[aid]==="jik"?"jik":"en");
+  function snap(aid){ const s=sc(aid), U=load(UK)[s.d]||{}, I=load(IK)[s.d]||{}, u={}, i={};
+    Object.keys(U).forEach(k=>{ if(k.startsWith(s.a+"-")) u[k]=U[k]; }); Object.keys(I).forEach(k=>{ if(k.startsWith(s.a+":")) i[k]=I[k]; }); return JSON.stringify({u,i}); }
+  function restore(aid,js){ const s=sc(aid), v=JSON.parse(js), U=load(UK), I=load(IK); const du=U[s.d]||(U[s.d]={}), di=I[s.d]||(I[s.d]={});
+    Object.keys(du).forEach(k=>{ if(k.startsWith(s.a+"-")) delete du[k]; }); Object.keys(di).forEach(k=>{ if(k.startsWith(s.a+":")) delete di[k]; });
+    Object.assign(du,v.u); Object.assign(di,v.i); saveU(U); saveI(I); }
+  function push(aid){ undo.push([aid,snap(aid)]); if(undo.length>60) undo.shift(); }
+  function count(aid){ const s=sc(aid), U=load(UK)[s.d]||{}, I=load(IK)[s.d]||{}; let n=0;
+    Object.keys(U).forEach(k=>{ if(k.startsWith(s.a+"-")) n+=Object.keys(U[k]).length; }); Object.keys(I).forEach(k=>{ if(k.startsWith(s.a+":")) n+=I[k].length; }); return n; }
+  /* ---- render ---- */
+  function paint(aid){ const b=box(aid); if(!b) return; const s=sc(aid), d=load(UK)[s.d]||{};
+    b.querySelectorAll(".sent").forEach(se=>{ const i=HL.sIdx(se); if(i<0) return; const M=d[s.a+"-"+i]||{};
+      se.querySelectorAll(".hw").forEach(w=>{ const c=M[w.dataset.t]; if(c) w.dataset.u=c; else delete w.dataset.u; });
+      se.querySelectorAll(".hg").forEach(g=>{ const k=+g.dataset.g, c=M[k]; if(c&&M[k+1]===c) g.dataset.u=c; else delete g.dataset.u; }); }); }
+  function svgOf(aid){ const b=box(aid); return b&&b.querySelector(":scope > svg.inkl"); }
+  function pathD(p,W){ if(!p.length) return ""; const P=p.map(([x,y])=>[x*W,y*W]); if(P.length<3) return "M"+P.map(q=>q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" L")+(P.length===1?" l.1 0":"");
+    let d="M"+P[0][0].toFixed(1)+" "+P[0][1].toFixed(1); for(let i=1;i<P.length-1;i++){ const mx=(P[i][0]+P[i+1][0])/2, my=(P[i][1]+P[i+1][1])/2; d+=` Q${P[i][0].toFixed(1)} ${P[i][1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`; }
+    const L=P[P.length-1]; return d+` L${L[0].toFixed(1)} ${L[1].toFixed(1)}`; }
+  function render(aid){ const b=box(aid), svg=svgOf(aid); if(!b||!svg) return; const W=b.clientWidth||1, H=b.scrollHeight||1;
+    svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.setAttribute("width",W); svg.setAttribute("height",H);
+    const L=(load(IK)[sc(aid).d]||{})[inkKey(aid)]||[];
+    svg.innerHTML=L.map(s=>`<path d="${pathD(s.p,W)}" stroke="${hex(s.c)}" stroke-width="${(s.w*W).toFixed(2)}"/>`).join("")+`<path class="inkcur"/>`; }
+  const ro=window.ResizeObserver?new ResizeObserver(es=>es.forEach(e=>{ const aid=cfg().aids().find(a=>box(a)===e.target); if(aid) render(aid); })):null;
+  function draw(aid,mode,ok){ modes[aid]=mode; const b=box(aid); if(!b) return; let svg=svgOf(aid);
+    b.classList.toggle("penok",ok); if(!ok){ if(svg) svg.remove(); return; }
+    if(!svg){ svg=document.createElementNS("http://www.w3.org/2000/svg","svg"); svg.setAttribute("class","inkl"); svg.setAttribute("aria-hidden","true"); b.appendChild(svg); }
+    if(ro&&!b.dataset.inkro){ b.dataset.inkro="1"; ro.observe(b); } paint(aid); render(aid); }
+  function bar(aid){ const c=color(), t=tool(), n=count(aid);
+    return `<button class="hlb penb${on?" on":""}" aria-pressed="${on}" aria-label="필기" title="필기 (Apple Pencil)" onclick="PEN.toggle()">✏️</button>
+      <div class="hlpal penpal"${on?"":" hidden"}><span class="hlcs pents">${TOOLS.map(([k,l])=>`<button class="pent${k===t?" on":""}" aria-pressed="${k===t}" onclick="PEN.setTool('${k}')">${l}</button>`).join("")}</span>
+      <span class="hlcs">${COLORS.map(([k,l])=>`<button class="hlc pc-${k}${k===c?" on":""}" aria-label="${l}" aria-pressed="${k===c}" onclick="PEN.setColor('${k}')"><i></i></button>`).join("")}</span>
+      <button class="hlclr penu" onclick="PEN.undo()"${undo.some(u=>u[0]===aid)?"":" disabled"} aria-label="실행 취소">↶ 취소</button>
+      <button class="hlclr penclr" onclick="PEN.clear('${aid}')"${n?"":" disabled"}>🗑 모두 지우기${n?` (${n})`:""}</button>
+      <div class="hlhint">펜슬로 쓰고 손가락으로 스크롤 · 밑줄: 단어 아래 가로로 긋기, 밑줄 탭 = 지우기</div></div>`; }
+  const redraw=()=>HL.redrawBars();
+  function toggle(){ on=!on; if(on&&HL.on) HL.off(); document.documentElement.classList.toggle("penon",on); if(on&&cfg().onStart) cfg().onStart(); redraw(); }
+  function off(quiet){ if(!on) return; on=false; document.documentElement.classList.remove("penon"); if(!quiet) redraw(); }
+  function setColor(c){ lsS(CK,c); redraw(); } function setTool(t){ lsS(TK,t); redraw(); }
+  function doUndo(){ const u=undo.pop(); if(!u) return; restore(u[0],u[1]); paint(u[0]); render(u[0]); redraw(); }
+  function clear(aid){ const n=count(aid); if(!n||!confirm(`이 기사의 밑줄·필기 ${n}개를 모두 지울까요? (↶ 실행 취소로 되돌릴 수 있어요)`)) return;
+    push(aid); restore(aid,JSON.stringify({u:{},i:{}})); paint(aid); render(aid); redraw(); }
+  /* ---- input ---- */
+  const aidOf=el=>{ const b=el&&el.closest&&el.closest(".penok"); return b?cfg().aids().find(a=>box(a)===b):null; };
+  const rel=(b,x,y)=>{ const r=b.getBoundingClientRect(); return [x-r.left,y-r.top]; };
+  /* words under client points: per point, the word whose box (x ± pad.x, y from top+h·top to bottom+h·bot) holds it, nearest to its baseline */
+  function wordsAt(b,pts,pad){ const hit=new Map(); const R=[...b.querySelectorAll(".hw")].map(w=>[w,[...w.getClientRects()]]);
+    pts.forEach(([x,y])=>{ let best=null, bd=1e9; R.forEach(([w,rs])=>rs.forEach(r=>{ if(x>=r.left-pad.x&&x<=r.right+pad.x&&y>=r.top+r.height*pad.top&&y<=r.bottom+r.height*pad.bot){ const dd=Math.abs(y-r.bottom); if(dd<bd){ bd=dd; best=w; } } }));
+      if(best){ const s=HL.sIdx(best.closest(".sent")); if(s>=0) hit.set(s+":"+best.dataset.t,[s,+best.dataset.t]); } }); return [...hit.values()]; }
+  function setCur(aid,p,c,w){ const svg=svgOf(aid), el=svg&&svg.querySelector(".inkcur"); if(!el) return; const W=box(aid).clientWidth||1;
+    el.setAttribute("d",pathD(p.map(([x,y])=>[x/W,y/W]),W)); el.setAttribute("stroke",c); el.setAttribute("stroke-width",w); el.setAttribute("stroke-opacity",tool()==="ul"?".55":"1"); }
+  function erase(d,x,y){ const b=box(d.aid), [rx,ry]=rel(b,x,y), W=b.clientWidth||1, s=sc(d.aid), I=load(IK), L=(I[s.d]||{})[inkKey(d.aid)]||[];
+    const keep=L.filter(st=>!st.p.some(([px,py])=>Math.hypot(px*W-rx,py*W-ry)<14)); let ch=keep.length!==L.length;
+    if(ch){ if(!d.pushed){ push(d.aid); d.pushed=1; } I[s.d][inkKey(d.aid)]=keep; saveI(I); render(d.aid); }
+    const hits=wordsAt(b,[[x,y]],{x:2,top:0,bot:.55}); if(hits.length){ const U=load(UK); let any=false;
+      hits.forEach(([si,t])=>{ const M=(U[s.d]||{})[s.a+"-"+si]; if(M&&M[t]){ if(!d.pushed){ push(d.aid); d.pushed=1; } let a=t,z=t; const c=M[t]; while(M[a-1]===c) a--; while(M[z+1]===c) z++; for(let k=a;k<=z;k++) delete M[k]; any=true; } });
+      if(any){ saveU(U); paint(d.aid); } } }
+  function finishUL(d){ const b=box(d.aid), s=sc(d.aid), P=d.cp; if(!P.length) return;
+    const xs=P.map(p=>p[0]), ys=P.map(p=>p[1]), dx=Math.max(...xs)-Math.min(...xs), dy=Math.max(...ys)-Math.min(...ys);
+    if(dx<10&&dy<10){ /* tap on an underlined word = remove its run */
+      const h=wordsAt(b,[P[0]],{x:2,top:0,bot:.55}), U=load(UK); let any=false;
+      h.forEach(([si,t])=>{ const M=(U[s.d]||{})[s.a+"-"+si]; if(M&&M[t]){ if(!any) push(d.aid); any=true; const c=M[t]; let a=t,z=t; while(M[a-1]===c) a--; while(M[z+1]===c) z++; for(let k=a;k<=z;k++) delete M[k]; } });
+      if(any){ saveU(U); paint(d.aid); redraw(); } return; }
+    if(dy>Math.max(28,dx*.45)) return;   /* not a horizontal stroke: ignore */
+    const pts=[]; for(let i=0;i<P.length;i++){ pts.push(P[i]); if(i){ const [x0,y0]=P[i-1],[x1,y1]=P[i], n=Math.floor(Math.hypot(x1-x0,y1-y0)/4); for(let k=1;k<n;k++) pts.push([x0+(x1-x0)*k/n,y0+(y1-y0)*k/n]); } }
+    const h=wordsAt(b,pts,{x:0,top:.25,bot:.9}); if(!h.length) return; const c=color(), U=load(UK), dd=U[s.d]||(U[s.d]={});
+    push(d.aid); const all=h.every(([si,t])=>(dd[s.a+"-"+si]||{})[t]===c);
+    h.forEach(([si,t])=>{ const M=dd[s.a+"-"+si]||(dd[s.a+"-"+si]={}); if(all) delete M[t]; else M[t]=c; });
+    /* fill the gaps inside one sentence run so the underline is continuous */
+    if(!all){ const by={}; h.forEach(([si,t])=>(by[si]=by[si]||[]).push(t)); Object.keys(by).forEach(si=>{ const T=by[si], M=dd[s.a+"-"+si]; for(let t=Math.min(...T);t<=Math.max(...T);t++) if(!M[t]) M[t]=c; }); }
+    saveU(U); paint(d.aid); redraw(); }
+  function finishInk(d){ if(d.p.length<1) return; const b=box(d.aid), W=b.clientWidth||1, s=sc(d.aid), I=load(IK), di=I[s.d]||(I[s.d]={}), k=inkKey(d.aid);
+    const pr=d.pr.length?d.pr.reduce((a,v)=>a+v,0)/d.pr.length:.5, w=Math.max(1.2,Math.min(4.2,1.1+pr*3.2));
+    push(d.aid); (di[k]=di[k]||[]).push({c:color(),w:+(w/W).toFixed(5),p:d.p.map(([x,y])=>[+(x/W).toFixed(4),+(y/W).toFixed(4)])}); saveI(I); render(d.aid); redraw(); }
+  const draws=e=>e.pointerType==="pen"||(e.pointerType==="mouse"&&e.button===0);
+  document.addEventListener("pointerdown",e=>{ if(!on||!draws(e)) return; const aid=aidOf(e.target); if(!aid) return; if(e.target.closest("button,a,input,textarea,select")) return;
+    const b=box(aid), [x,y]=rel(b,e.clientX,e.clientY); cur={id:e.pointerId,aid,t:tool(),p:[[x,y]],cp:[[e.clientX,e.clientY]],pr:[],pushed:0};
+    if(e.pressure>0) cur.pr.push(e.pressure); try{ b.setPointerCapture(e.pointerId); }catch(_){}
+    e.preventDefault(); if(cur.t==="er") erase(cur,e.clientX,e.clientY); },{passive:false});
+  document.addEventListener("pointermove",e=>{ const d=cur; if(!d||e.pointerId!==d.id) return; const b=box(d.aid);
+    const evs=e.getCoalescedEvents?e.getCoalescedEvents():[]; (evs.length?evs:[e]).forEach(ev=>{
+      if(d.t==="er"){ erase(d,ev.clientX,ev.clientY); return; }
+      const [x,y]=rel(b,ev.clientX,ev.clientY), L=d.p[d.p.length-1]; if(Math.hypot(x-L[0],y-L[1])<1.2) return; d.p.push([x,y]); d.cp.push([ev.clientX,ev.clientY]); if(ev.pressure>0) d.pr.push(ev.pressure); });
+    if(d.t!=="er"){ const pr=d.pr.length?d.pr[d.pr.length-1]:.5; setCur(d.aid,d.p,hex(color()),d.t==="ul"?3:Math.max(1.2,Math.min(4.2,1.1+pr*3.2))); }
+    e.preventDefault(); },{passive:false});
+  function end(e,cancel){ const d=cur; if(!d||e.pointerId!==d.id) return; cur=null; setCur(d.aid,[],"none",0); suppress=Date.now(); if(cancel) return;
+    if(d.t==="ul") finishUL(d); else if(d.t==="ink") finishInk(d); else redraw(); }
+  document.addEventListener("pointerup",e=>end(e,false)); document.addEventListener("pointercancel",e=>end(e,true));
+  /* iPad: keep the Pencil from scrolling the page while fingers still scroll (Touch.touchType === 'stylus') */
+  const stylusIn=e=>on&&[...(e.changedTouches||[])].some(t=>t.touchType==="stylus")&&aidOf(e.target);
+  document.addEventListener("touchstart",e=>{ if(stylusIn(e)&&!e.target.closest("button,a")&&e.cancelable) e.preventDefault(); },{passive:false});
+  document.addEventListener("touchmove",e=>{ if((cur||stylusIn(e))&&[...(e.touches||[])].some(t=>t.touchType==="stylus")&&e.cancelable) e.preventDefault(); },{passive:false});
+  document.addEventListener("click",e=>{ if(!on) return; const inText=e.target.closest&&e.target.closest(".penok .sent .t"); if(inText||Date.now()-suppress<400&&aidOf(e.target)&&!e.target.closest("button")){ e.stopPropagation(); e.preventDefault(); } },true);
+  document.addEventListener("contextmenu",e=>{ if(on&&aidOf(e.target)) e.preventDefault(); });
+  if(window.matchMedia) try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>cfg()&&cfg().aids().forEach(render)); }catch(_){}
+  return {draw, paint, bar, toggle, off, setColor, setTool, clear, undo:doUndo, get on(){ return on; }};
 })();
 </script>
 
-<script src="../wb.js?v=7ca4fe584c"></script>
+<script src="../wb.js?v=7ed08d2a54"></script>
 <script src="../dict.js?v=7262349920"></script>
 <script>
 const D = {"A1": {"id": "a1", "kicker": "기사 1 · 동물", "headline": "A Zoo Welcomes Two Baby Antelopes in One Month", "koHeadline": "한 달 새 새끼 영양 두 마리를 맞이한 동물원", "pairs": [{"en": "Como Park Zoo in St. Paul, Minnesota, / has welcomed two baby nyalas, / a kind of African antelope, / and they were born / only twenty days apart.", "ko": "미네소타주 세인트폴의 코모 파크 동물원이 / 새끼 니알라 두 마리를 맞이했다, / 아프리카 영양의 일종인데, / 그리고 그들은 태어났다 / 불과 20일 간격으로."}, {"en": "A male calf named Hubert / was born on October third / to a four-year-old mother called Stevie, / and a female calf / arrived on October twenty-third.", "ko": "허버트라는 이름의 수컷 새끼가 / 10월 3일에 태어났다 / 스티비라는 네 살 어미에게서, / 그리고 암컷 새끼가 / 10월 23일에 태어났다."}, {"en": "What makes the story even sweeter / is that the second calf's mother, Meadow, / is Stevie's own daughter, / so Stevie became / a new mom and a new grandmother / in the same month.", "ko": "이 이야기를 더욱 훈훈하게 만드는 것은 / 두 번째 새끼의 어미 메도가 / 스티비의 친딸이라는 점이다, / 그래서 스티비는 되었다 / 새 엄마이자 새 할머니가 / 같은 달에."}, {"en": "Visitors chose Hubert's name / from the names of three zookeepers' grandfathers, / and Hubert won / with just over forty-one percent of the vote.", "ko": "관람객들이 허버트의 이름을 골랐다 / 사육사 세 명의 할아버지 이름 중에서, / 그리고 허버트가 이겼다 / 41퍼센트를 조금 넘는 득표로."}, {"en": "The zookeepers say / the calves are absolutely adorable / because of their huge ears and striped coats, / and the little female / will get her own name / on November fifth.", "ko": "사육사들은 말한다 / 새끼들이 정말 사랑스럽다고 / 커다란 귀와 줄무늬 털 때문에, / 그리고 어린 암컷은 / 자기 이름을 받게 된다 / 11월 5일에."}], "natural": ["미네소타주 세인트폴의 코모 파크 동물원에 아프리카 영양의 일종인 니알라 새끼 두 마리가 태어났다. 두 마리는 불과 20일 간격으로 태어났다. 수컷 허버트는 10월 3일 네 살 어미 스티비에게서 태어났고, 암컷 새끼는 10월 23일에 태어났다.", "더 훈훈한 점은 두 번째 새끼의 어미 메도가 바로 스티비의 딸이라는 것이다. 덕분에 스티비는 한 달 사이에 엄마이자 할머니가 됐다. 허버트라는 이름은 관람객들이 사육사 세 명의 할아버지 이름 가운데 투표로 골랐는데, 허버트가 41.5%의 표를 얻어 이겼다.", "사육사들은 커다란 귀와 줄무늬 털 덕분에 새끼들이 정말 사랑스럽다고 말한다. 어린 암컷은 11월 5일에 이름을 받을 예정이다."], "exprs": [{"en": "only twenty days apart", "ko": "불과 20일 간격으로", "ex": "they were born only twenty days apart"}, {"en": "a kind of", "ko": "~의 일종", "ex": "two baby nyalas, a kind of African antelope"}, {"en": "what makes it even sweeter is that", "ko": "더 훈훈한 점은 ~라는 것이다", "ex": "What makes the story even sweeter is that ..."}, {"en": "in the same month", "ko": "같은 달에, 한 달 사이에", "ex": "a new mom and a new grandmother in the same month"}, {"en": "with forty-one percent of the vote", "ko": "41퍼센트의 득표로", "ex": "Hubert won with just over forty-one percent of the vote"}], "vocab": [{"w": "antelope", "pos": "명사", "ko": "영양", "ex": "a kind of African antelope"}, {"w": "calf", "pos": "명사", "ko": "(동물의) 새끼, 송아지", "ex": "A male calf named Hubert"}, {"w": "zookeeper", "pos": "명사", "ko": "사육사", "ex": "three zookeepers' grandfathers"}, {"w": "vote", "pos": "명사", "ko": "투표, 득표", "ex": "forty-one percent of the vote"}, {"w": "adorable", "pos": "형용사", "ko": "사랑스러운", "ex": "the calves are absolutely adorable"}, {"w": "striped", "pos": "형용사", "ko": "줄무늬가 있는", "ex": "striped coats"}, {"w": "coat", "pos": "명사", "ko": "(동물의) 털", "ex": "their huge ears and striped coats"}], "source": {"title": "Zoo Welcomes 2 Baby Antelopes Just 3 Weeks Apart and Their Giant Ears Are Stealing the Show", "site": "Paw Nation (via Yahoo)", "href": "https://www.yahoo.com/lifestyle/articles/zoo-welcomes-2-baby-antelopes-183000241.html", "date": "2026-10-30"}, "image": {"src": "img/nyala.jpg", "w": 1200, "h": 1022, "alt": "A baby nyala antelope with big ears and white stripes", "caption": "코모 파크 동물원의 새끼 니알라", "credit": "Como Park Zoo & Conservatory / Paw Nation", "creditUrl": "https://www.yahoo.com/lifestyle/articles/zoo-welcomes-2-baby-antelopes-183000241.html"}}, "A2": {"id": "a2", "kicker": "기사 2 · 사람 이야기", "headline": "Eleven Strangers Turn a Lost Wedding into a Happy Trip", "koHeadline": "낯선 사람 11명이 무산된 결혼식을 행복한 여행으로 바꾸다", "pairs": [{"en": "When Bridget Devaney's fiancé / had a medical emergency, / their plan to get married / in Northern Ireland / fell apart, / and so did their relationship.", "ko": "브리짓 디베이니의 약혼자가 / 응급 의료 상황을 겪었을 때, / 그들의 결혼 계획은 / 북아일랜드에서의 / 무산되었다, / 그리고 그들의 관계도 마찬가지였다."}, {"en": "Instead of quietly giving up, / she posted an unusual idea online / and invited people / to come to Northern Ireland / and celebrate the wedding that never happened.", "ko": "조용히 포기하는 대신, / 그녀는 특이한 아이디어를 온라인에 올렸고 / 사람들을 초대했다 / 북아일랜드로 와서 / 열리지 못한 결혼식을 축하하자고."}, {"en": "Eleven women from around the world, / who had never met her in person, / answered the call, / and earlier this month / they spent a week together / exploring the north coast, / including the famous Giant's Causeway.", "ko": "전 세계에서 온 여성 열한 명이, / 그녀를 직접 만난 적은 없었는데, / 그 부름에 응했고, / 이달 초 / 그들은 일주일을 함께 보냈다 / 북부 해안을 둘러보며, / 유명한 자이언츠 코즈웨이를 포함해서."}, {"en": "Although some of them felt nervous at first, / the awkwardness disappeared quickly, / and one of them said / it felt like / they were all long-lost friends.", "ko": "몇몇은 처음에 긴장했지만, / 어색함은 금세 사라졌고, / 그중 한 명은 말했다 / 마치 ~ 같았다고 / 모두가 오랫동안 못 본 친구들인 것."}, {"en": "The week ended / with a special non-wedding day and a photo shoot, / and Bridget says / she has learned / that there is community / if you want to find it.", "ko": "그 일주일은 끝났다 / 특별한 '비(非)결혼식 날'과 사진 촬영으로, / 그리고 브리짓은 말한다 / 그녀는 배웠다고 / 공동체는 있다는 것을 / 찾고자 한다면."}], "natural": ["브리짓 디베이니는 약혼자가 응급 상황으로 쓰러지면서 북아일랜드에서 올리려던 결혼 계획이 무산됐고, 두 사람의 관계도 끝나고 말았다. 그녀는 조용히 포기하는 대신 온라인에 특이한 제안을 올렸다. 북아일랜드로 와서, 열리지 못한 결혼식을 함께 축하하자는 것이었다.", "그녀를 직접 만난 적 없는 전 세계 여성 11명이 이 제안에 응했고, 이달 초 일주일 동안 함께 자이언츠 코즈웨이를 비롯한 북부 해안을 여행했다. 처음에는 긴장한 사람도 있었지만 어색함은 금세 사라졌고, 한 참가자는 마치 오래전에 헤어진 친구들을 다시 만난 것 같았다고 말했다.", "여행은 특별한 '비결혼식 날'과 사진 촬영으로 마무리됐다. 브리짓은 찾으려고만 하면 함께할 사람들은 어디에나 있다는 것을 배웠다고 말한다."], "exprs": [{"en": "fall apart", "ko": "무산되다, 무너지다", "ex": "their plan to get married fell apart"}, {"en": "and so did", "ko": "~도 마찬가지였다", "ex": "and so did their relationship"}, {"en": "instead of", "ko": "~하는 대신", "ex": "Instead of quietly giving up, ..."}, {"en": "answer the call", "ko": "부름에 응하다", "ex": "Eleven women ... answered the call"}, {"en": "at first", "ko": "처음에는", "ex": "some of them felt nervous at first"}, {"en": "long-lost friends", "ko": "오랫동안 못 본 친구들", "ex": "they were all long-lost friends"}], "vocab": [{"w": "fiancé", "pos": "명사", "ko": "약혼자", "ex": "Bridget Devaney's fiancé"}, {"w": "emergency", "pos": "명사", "ko": "응급 상황, 비상", "ex": "a medical emergency"}, {"w": "unusual", "pos": "형용사", "ko": "특이한, 흔치 않은", "ex": "an unusual idea"}, {"w": "explore", "pos": "동사", "ko": "둘러보다, 탐험하다", "ex": "exploring the north coast"}, {"w": "coast", "pos": "명사", "ko": "해안", "ex": "the north coast"}, {"w": "nervous", "pos": "형용사", "ko": "긴장한, 불안한", "ex": "felt nervous at first"}, {"w": "awkwardness", "pos": "명사", "ko": "어색함", "ex": "the awkwardness disappeared quickly"}, {"w": "community", "pos": "명사", "ko": "공동체, 함께하는 사람들", "ex": "there is community if you want to find it"}], "source": {"title": "When a wedding fell apart, 11 strangers helped create something unforgettable", "site": "BBC News", "href": "https://www.bbc.com/news/articles/cx4g1vdyzem6o", "date": "2026-10-31"}, "image": {"src": "img/strangers.jpg", "w": 1200, "h": 676, "alt": "A group of women celebrating together on the Northern Ireland coast", "caption": "북아일랜드에서 브리짓의 '비결혼식'을 함께 축하한 여성들", "credit": "Rob Dight / Epic Love Photography (BBC News)", "creditUrl": "https://www.bbc.com/news/articles/cx4g1vdyzem6o"}}, "QUIZ": [{"art": "a1", "q": "Q1. (기사 1) 스티비가 같은 달에 엄마이자 할머니가 된 이유는?", "opts": ["A. 두 번째 새끼의 어미가 스티비의 딸이라서", "B. 스티비가 쌍둥이를 낳아서", "C. 사육사가 다른 새끼를 스티비에게 맡겨서"], "ans": "A", "why": "두 번째 새끼를 낳은 메도가 스티비의 딸이라서, 스티비는 같은 달에 새끼도 낳고 손주도 보게 됐습니다.", "quote": "the second calf's mother, Meadow, is Stevie's own daughter"}, {"art": "a1", "q": "Q2. (기사 1) 허버트라는 이름은 어떻게 정해졌나요?", "opts": ["A. 아프리카 전통 이름에서 따왔다", "B. 동물원 원장이 직접 지었다", "C. 사육사 할아버지 이름 중 관람객 투표로 골랐다"], "ans": "C", "why": "관람객들이 사육사 세 명의 할아버지 이름 중에서 투표로 골랐고, 허버트가 41% 남짓으로 이겼습니다.", "quote": "Visitors chose Hubert's name from the names of three zookeepers' grandfathers"}, {"art": "a2", "q": "Q3. (기사 2) 브리짓이 온라인에 올린 제안은 무엇이었나요?", "opts": ["A. 북아일랜드로 와서 열리지 못한 결혼식을 함께 축하하자", "B. 결혼식 비용을 함께 모금해 달라", "C. 새 약혼자를 소개해 달라"], "ans": "A", "why": "그녀는 사람들을 북아일랜드로 초대해 열리지 못한 결혼식을 축하하자고 했습니다.", "quote": "invited people to come to Northern Ireland and celebrate the wedding that never happened"}, {"art": "a2", "q": "Q4. (기사 2) 여성들의 분위기는 어떻게 바뀌었나요?", "opts": ["A. 끝까지 어색했다", "B. 처음엔 긴장했지만 곧 오랜 친구처럼 느꼈다", "C. 여행 중에 다투고 헤어졌다"], "ans": "B", "why": "처음엔 긴장한 사람도 있었지만 어색함이 금세 사라지고 오랜 친구 같았다고 합니다.", "quote": "the awkwardness disappeared quickly, and one of them said it felt like they were all long-lost friends"}], "HINTS": ["힌트: 기사 1의 세 번째 문장에서 Meadow가 누구인지 보세요.", "힌트: 기사 1의 네 번째 문장에서 Visitors chose 다음을 보세요.", "힌트: 기사 2의 두 번째 문장에서 invited people to 다음을 보세요.", "힌트: 기사 2의 네 번째 문장에서 at first와 long-lost friends를 찾아보세요."], "RQ": []};
@@ -449,7 +576,7 @@ const $wrap = () => document.querySelector(".wrap");
 const wrapY = () => { const w=$wrap(); return w ? w.scrollTop : (window.scrollY||0); };
 const wrapScrollTo = (top, opt) => { const w=$wrap(); const o=typeof top==="object"?top:{top, ...(opt||{})}; if(w) w.scrollTo(o); else window.scrollTo(o); };
 const wrapScrollBy = (o) => { const w=$wrap(); if(w) w.scrollBy(o); else window.scrollBy(o); };
-const META = {"date": "2026-11-01", "label": "11월 1일(일)", "ym": "2026-11", "sunday": true, "dateLine": "2026년 11월 1일 일요일 · 가벼운 뉴스 2편 · B1", "short": ["새끼 니알라 두 마리", "낯선 이 11명의 '비결혼식'"], "marks": {"a1": [3.42, 13.63, 23.31, 34.01, 43.0], "a2": [3.98, 13.35, 23.93, 37.5, 46.35]}, "dur": {"a1": 52.61, "a2": 54.58}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "nyala-expr.mp3", "nyala.mp3", "strangers-expr.mp3", "strangers.mp3"], "audioBytes": 4684824, "full": {"a1": "nyala.mp3", "a2": "strangers.mp3"}, "dialog": {}, "fullx": {"a1": "nyala-expr.mp3", "a2": "strangers-expr.mp3"}, "quizLang": "ko", "todayReview": [{"en": "what makes it even sweeter is that", "ko": "더 훈훈한 점은 ~라는 것이다"}, {"en": "fall apart", "ko": "무산되다, 무너지다"}, {"en": "answer the call", "ko": "부름에 응하다"}], "reviewNote": "1·3·7·14·30일 뒤(11/2, 11/4, 11/8, 11/15, 12/1) 복습 퀴즈에 다시 나와요.", "build": "8a277d99c9"};
+const META = {"date": "2026-11-01", "label": "11월 1일(일)", "ym": "2026-11", "sunday": true, "dateLine": "2026년 11월 1일 일요일 · 가벼운 뉴스 2편 · B1", "short": ["새끼 니알라 두 마리", "낯선 이 11명의 '비결혼식'"], "marks": {"a1": [3.42, 13.63, 23.31, 34.01, 43.0], "a2": [3.98, 13.35, 23.93, 37.5, 46.35]}, "dur": {"a1": 52.61, "a2": 54.58}, "audio": ["clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "nyala-expr.mp3", "nyala.mp3", "strangers-expr.mp3", "strangers.mp3"], "audioBytes": 4684824, "full": {"a1": "nyala.mp3", "a2": "strangers.mp3"}, "dialog": {}, "fullx": {"a1": "nyala-expr.mp3", "a2": "strangers-expr.mp3"}, "quizLang": "ko", "todayReview": [{"en": "what makes it even sweeter is that", "ko": "더 훈훈한 점은 ~라는 것이다"}, {"en": "fall apart", "ko": "무산되다, 무너지다"}, {"en": "answer the call", "ko": "부름에 응하다"}], "reviewNote": "1·3·7·14·30일 뒤(11/2, 11/4, 11/8, 11/15, 12/1) 복습 퀴즈에 다시 나와요.", "build": "767bae9a47"};
 const DUR = META.dur||{};   // full-article seconds from the build (audio is not preloaded)
 const MARKS = META.marks, FULL = META.full, FULLX = META.fullx;
 const HAS_WB = typeof WB !== "undefined";
