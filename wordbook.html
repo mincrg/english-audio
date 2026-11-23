@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="직독직해">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="./pwa.js?v=038c6c84b8" defer></script>
+<script src="./pwa.js?v=5595ef2ff6" defer></script>
 <style>html{background-color:var(--bg,#fafaf8)}</style>
 <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
@@ -298,8 +298,15 @@ svg.inkl{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-i
 @media (prefers-color-scheme:dark){.pc-r i{background:#ff6b62}.pc-b i{background:#7fb0ff}.pc-k i{background:#e8e8e8}}
 .pent{min-height:44px;min-width:52px;font-size:14px;padding:0 10px}.pent.on{outline:3px solid var(--acc);outline-offset:-3px;font-weight:700}
 .penclr:disabled,.penu:disabled{opacity:.45}
-.penon .penok .sent .t{cursor:crosshair;touch-action:pan-y pinch-zoom}
+.penok .sent .t{touch-action:pan-y pinch-zoom;-webkit-touch-callout:none}
+.penon .penok .sent .t{cursor:crosshair}
 .penon .penok .sent .t .gw{text-decoration-color:transparent}
+.pendrawing,.pendrawing *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;touch-action:none!important}
+/* iPadOS Scribble intercepts Pencil on selectable text; disable selection on the article on iOS */
+@supports (-webkit-touch-callout: none){.penok,.penok *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}}
+.pentoast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(8px);z-index:80;padding:8px 16px;border-radius:999px;background:rgba(20,20,20,.86);color:#fff;font-size:15px;font-weight:700;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
+.pentoast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-color-scheme:dark){.pentoast{background:rgba(240,240,240,.92);color:#111}}
 .sn{color:inherit}
 .apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
@@ -387,7 +394,7 @@ body.wb-sel .item [data-del]{display:none}
 <div id="sheetbg"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="설정"></div>
 <script src="./wb.js?v=7ed08d2a54"></script>
-<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="8f67398873") freshen(v); }).catch(()=>{});</script>
+<script>fetch("./days.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ const v=j&&j.assets&&j.assets.wordbook; if(v&&v!=="fe153b367d") freshen(v); }).catch(()=>{});</script>
 <script>
 const esc = WB.esc;
 const FILT_KEY="ea-wb-filt-v1", FILTS=["all","word","expr","conv"];
