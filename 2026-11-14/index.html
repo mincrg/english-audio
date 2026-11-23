@@ -302,6 +302,9 @@ svg.inkl{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-i
 .penon .penok .sent .t{cursor:crosshair}
 .penon .penok .sent .t .gw{text-decoration-color:transparent}
 .pendrawing,.pendrawing *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+.pentoast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(8px);z-index:80;padding:8px 16px;border-radius:999px;background:rgba(20,20,20,.86);color:#fff;font-size:15px;font-weight:700;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
+.pentoast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-color-scheme:dark){.pentoast{background:rgba(240,240,240,.92);color:#111}}
 .sn{color:inherit}
 .apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
@@ -460,20 +463,22 @@ const HL=(function(){
   function off(){ if(on) toggle(); }
   return {init(c){ cfg=c; }, draw, toggle, off, setColor, clear, redrawBars, get on(){ return on; }, get cfg(){ return cfg; }, sIdx};
 })();
-/* ✏️ 필기 (원문 · 직해, Apple Pencil) — pen-always-v1:
-   pointerType 'pen' always draws, even when the ✏️ tool panel is closed. Finger (touch) never draws — it scrolls and can tap words.
+/* ✏️ 필기 (원문 · 직해, Apple Pencil) — pen-ink-dbltap-v1:
+   pointerType 'pen' always writes freehand ink (필기) by default, even when the ✏️ tool panel is closed. Finger (touch) never draws — it scrolls and can tap words.
    Mouse draws only while the tool panel is open (desktop). If the highlighter is on, the pencil highlights instead (same as before).
+   Default tool is 필기 (free ink over the article, not snapped to words). 밑줄 is used only if the user picks it in the tool panel; the choice is saved in ea-pen-tool-v1.
+   Two quick pencil-tip taps (short, little movement, within ~350ms and ~25px) toggle 필기/밑줄 ↔ 지우개 without leaving ink or erasing; last drawing tool is saved in ea-pen-draw-tool-v1.
    Tools: 밑줄 = a roughly horizontal stroke under words becomes a word-anchored CSS underline (ea-ul-v1 = {date:{"a1-3":{"5":"r"}}}, same
    token keys as the highlighter, so it survives font size / rotation); 필기 = free ink in an SVG overlay per article + mode
    (ea-ink-v1 = {date:{"a1:en":[{c,w,p:[[x,y],…]}]}}, x/y divided by the article block width); 지우개 = touch a stroke/underline to erase it.
    ↶ undoes this session's changes; 🗑 clears the article (underlines + ink in 원문/직해) after a confirm. Saturday pages save under the source article. */
 const PEN=(function(){
-  const UK="ea-ul-v1", IK="ea-ink-v1", CK="ea-pen-color-v1", TK="ea-pen-tool-v1";
-  const COLORS=[["r","빨강","#e0322b","#ff6b62"],["b","파랑","#1a5fd6","#7fb0ff"],["k","검정","#222","#e8e8e8"]], TOOLS=[["ul","밑줄"],["ink","필기"],["er","지우개"]];
+  const UK="ea-ul-v1", IK="ea-ink-v1", CK="ea-pen-color-v1", TK="ea-pen-tool-v1", DK="ea-pen-draw-tool-v1";
+  const COLORS=[["r","빨강","#e0322b","#ff6b62"],["b","파랑","#1a5fd6","#7fb0ff"],["k","검정","#222","#e8e8e8"]], TOOLS=[["ink","필기"],["ul","밑줄"],["er","지우개"]];
   let on=false, cur=null, undo=[], suppress=0; const modes={};
   const lsG=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } }, lsS=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
   const load=k=>{ try{ const o=JSON.parse(lsG(k)||"{}"); return o&&typeof o==="object"&&!Array.isArray(o)?o:{}; }catch(e){ return {}; } };
-  const color=()=>{ const c=lsG(CK); return COLORS.some(x=>x[0]===c)?c:"r"; }, tool=()=>{ const t=lsG(TK); return TOOLS.some(x=>x[0]===t)?t:"ul"; };
+  const color=()=>{ const c=lsG(CK); return COLORS.some(x=>x[0]===c)?c:"r"; }, tool=()=>{ const t=lsG(TK); return TOOLS.some(x=>x[0]===t)?t:"ink"; };
   const dark=()=>window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;
   const hex=c=>{ const x=COLORS.find(k=>k[0]===c)||COLORS[0]; return dark()?x[3]:x[2]; };
   const cfg=()=>HL.cfg, box=aid=>cfg().box(aid), sc=aid=>cfg().scope(aid);
@@ -512,11 +517,17 @@ const PEN=(function(){
       <span class="hlcs">${COLORS.map(([k,l])=>`<button class="hlc pc-${k}${k===c?" on":""}" aria-label="${l}" aria-pressed="${k===c}" onclick="PEN.setColor('${k}')"><i></i></button>`).join("")}</span>
       <button class="hlclr penu" onclick="PEN.undo()"${undo.some(u=>u[0]===aid)?"":" disabled"} aria-label="실행 취소">↶ 취소</button>
       <button class="hlclr penclr" onclick="PEN.clear('${aid}')"${n?"":" disabled"}>🗑 모두 지우기${n?` (${n})`:""}</button>
-      <div class="hlhint">펜슬은 도구를 켜지 않아도 바로 필기 · 손가락은 스크롤·단어 탭 · 밑줄: 단어 아래 가로로 긋기, 밑줄 탭 = 지우기</div></div>`; }
+      <div class="hlhint">펜슬은 바로 자유롭게 필기 · 두 번 탭하면 지우개/필기 전환 · 손가락은 스크롤·단어 탭 · 밑줄은 ✏️에서 고르면 유지돼요</div></div>`; }
   const redraw=()=>HL.redrawBars();
   function toggle(){ on=!on; if(on&&HL.on) HL.off(); document.documentElement.classList.toggle("penon",on); if(on&&cfg().onStart) cfg().onStart(); redraw(); }
   function off(quiet){ if(!on) return; on=false; document.documentElement.classList.remove("penon"); if(!quiet) redraw(); }
-  function setColor(c){ lsS(CK,c); redraw(); } function setTool(t){ lsS(TK,t); redraw(); }
+  function setColor(c){ lsS(CK,c); redraw(); }
+  const lastDraw=()=>{ const t=lsG(DK); return t==="ul"||t==="ink"?t:"ink"; };
+  function setTool(t){ if(!TOOLS.some(x=>x[0]===t)) return; lsS(TK,t); if(t==="ink"||t==="ul") lsS(DK,t); redraw(); }
+  function toast(msg){ let el=document.getElementById("pen-toast"); if(!el){ el=document.createElement("div"); el.id="pen-toast"; el.className="pentoast"; el.setAttribute("role","status"); document.body.appendChild(el); }
+    el.textContent=msg; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("on"),1000); }
+  const toolLabel=t=>t==="er"?"지우개":t==="ul"?"밑줄":"필기";
+  function toggleErase(){ const next=tool()==="er"?lastDraw():"er"; setTool(next); toast(toolLabel(next)); }
   function doUndo(){ const u=undo.pop(); if(!u) return; restore(u[0],u[1]); paint(u[0]); render(u[0]); redraw(); }
   function clear(aid){ const n=count(aid); if(!n||!confirm(`이 기사의 밑줄·필기 ${n}개를 모두 지울까요? (↶ 실행 취소로 되돌릴 수 있어요)`)) return;
     push(aid); restore(aid,JSON.stringify({u:{},i:{}})); paint(aid); render(aid); redraw(); }
@@ -556,19 +567,28 @@ const PEN=(function(){
   const draws=e=>isPen(e)||(on&&e.pointerType==="mouse"&&e.button===0);
   const clrSel=()=>{ try{ const s=getSelection(); if(s) s.removeAllRanges(); }catch(_){} };
   const setDraw=v=>document.documentElement.classList.toggle("pendrawing",!!v);
+  let tap1=null; const TAP_MS=300, TAP_MOVE=12, DBL_MS=350, DBL_PX=25;
+  function becameStroke(d,x,y,now){ if(d.stroke) return false; if(Math.hypot(x-d.x0,y-d.y0)>=TAP_MOVE||now-d.t0>=TAP_MS){ d.stroke=true; return true; } return false; }
+  function noteTap(d,x,y){ const now=Date.now();
+    if(tap1&&now-tap1.t<=DBL_MS&&Math.hypot(x-tap1.x,y-tap1.y)<=DBL_PX&&tap1.aid===d.aid){ tap1=null; toggleErase(); return true; }
+    tap1={t:now,x,y,aid:d.aid}; return false; }
   document.addEventListener("pointerdown",e=>{ if(!draws(e)||(typeof HL!=="undefined"&&HL.on)) return; const aid=aidOf(e.target); if(!aid) return; if(e.target.closest("button,a,input,textarea,select")) return;
-    const b=box(aid), [x,y]=rel(b,e.clientX,e.clientY); cur={id:e.pointerId,aid,t:tool(),p:[[x,y]],cp:[[e.clientX,e.clientY]],pr:[],pushed:0};
+    const b=box(aid), [x,y]=rel(b,e.clientX,e.clientY); cur={id:e.pointerId,aid,t:tool(),p:[[x,y]],cp:[[e.clientX,e.clientY]],pr:[],pushed:0,t0:Date.now(),x0:e.clientX,y0:e.clientY,stroke:false,pen:isPen(e)};
     if(e.pressure>0) cur.pr.push(e.pressure); try{ b.setPointerCapture(e.pointerId); }catch(_){}
     setDraw(1); clrSel(); if(cfg()&&cfg().onStart) cfg().onStart();
-    e.preventDefault(); if(cur.t==="er") erase(cur,e.clientX,e.clientY); },{passive:false});
+    e.preventDefault(); },{passive:false});
   document.addEventListener("pointermove",e=>{ const d=cur; if(!d||e.pointerId!==d.id) return; const b=box(d.aid);
     const evs=e.getCoalescedEvents?e.getCoalescedEvents():[]; (evs.length?evs:[e]).forEach(ev=>{
+      const started=becameStroke(d,ev.clientX,ev.clientY,Date.now());
+      if(!d.stroke) return;
       if(d.t==="er"){ erase(d,ev.clientX,ev.clientY); return; }
-      const [x,y]=rel(b,ev.clientX,ev.clientY), L=d.p[d.p.length-1]; if(Math.hypot(x-L[0],y-L[1])<1.2) return; d.p.push([x,y]); d.cp.push([ev.clientX,ev.clientY]); if(ev.pressure>0) d.pr.push(ev.pressure); });
-    if(d.t!=="er"){ const pr=d.pr.length?d.pr[d.pr.length-1]:.5; setCur(d.aid,d.p,hex(color()),d.t==="ul"?3:Math.max(1.2,Math.min(4.2,1.1+pr*3.2))); }
+      const [x,y]=rel(b,ev.clientX,ev.clientY), L=d.p[d.p.length-1]; if(!started&&Math.hypot(x-L[0],y-L[1])<1.2) return; d.p.push([x,y]); d.cp.push([ev.clientX,ev.clientY]); if(ev.pressure>0) d.pr.push(ev.pressure); });
+    if(d.stroke&&d.t!=="er"){ const pr=d.pr.length?d.pr[d.pr.length-1]:.5; setCur(d.aid,d.p,hex(color()),d.t==="ul"?3:Math.max(1.2,Math.min(4.2,1.1+pr*3.2))); }
     e.preventDefault(); },{passive:false});
-  function end(e,cancel){ const d=cur; if(!d||e.pointerId!==d.id) return; cur=null; setCur(d.aid,[],"none",0); suppress=Date.now(); setDraw(0); clrSel(); if(cancel) return;
-    if(d.t==="ul") finishUL(d); else if(d.t==="ink") finishInk(d); else redraw(); }
+  function end(e,cancel){ const d=cur; if(!d||e.pointerId!==d.id) return; cur=null; setCur(d.aid,[],"none",0); suppress=Date.now(); setDraw(0); clrSel(); if(cancel){ tap1=null; return; }
+    const tap=!d.stroke&&(Date.now()-d.t0)<TAP_MS&&Math.hypot(e.clientX-d.x0,e.clientY-d.y0)<TAP_MOVE;
+    if(tap&&d.pen){ noteTap(d,e.clientX,e.clientY); return; }  /* short pencil taps never ink/erase; a second tap toggles 지우개 */
+    if(d.t==="ul") finishUL(d); else if(d.t==="ink") finishInk(d); else if(d.stroke) redraw(); }
   document.addEventListener("pointerup",e=>end(e,false)); document.addEventListener("pointercancel",e=>end(e,true));
   /* iPad: keep the Pencil from scrolling/selecting while fingers still scroll (Touch.touchType === 'stylus'). Stylus is blocked even when the tool panel is closed. */
   const stylusIn=e=>[...(e.changedTouches||[])].some(t=>t.touchType==="stylus")&&aidOf(e.target);
