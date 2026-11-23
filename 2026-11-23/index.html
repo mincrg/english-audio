@@ -302,7 +302,9 @@ svg.inkl{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-i
 .penok .sent .t{touch-action:pan-y pinch-zoom;-webkit-touch-callout:none}
 .penon .penok .sent .t{cursor:crosshair}
 .penon .penok .sent .t .gw{text-decoration-color:transparent}
-.pendrawing,.pendrawing *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+.pendrawing,.pendrawing *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;touch-action:none!important}
+/* iPadOS Scribble intercepts Pencil on selectable text; disable selection on the article on iOS */
+@supports (-webkit-touch-callout: none){.penok,.penok *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}}
 .pentoast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(8px);z-index:80;padding:8px 16px;border-radius:999px;background:rgba(20,20,20,.86);color:#fff;font-size:15px;font-weight:700;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease}
 .pentoast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (prefers-color-scheme:dark){.pentoast{background:rgba(240,240,240,.92);color:#111}}
@@ -457,11 +459,12 @@ const HL=(function(){
   function off(){ if(on) toggle(); }
   return {init(c){ cfg=c; }, draw, toggle, off, setColor, clear, redrawBars, get on(){ return on; }, get cfg(){ return cfg; }, sIdx};
 })();
-/* ✏️ 필기 (원문 · 직해, Apple Pencil) — pen-ink-dbltap-v1:
+/* ✏️ 필기 (원문 · 직해, Apple Pencil) — pen-stylus-v1:
    pointerType 'pen' always writes freehand ink (필기) by default, even when the ✏️ tool panel is closed. Finger (touch) never draws — it scrolls and can tap words.
    Mouse draws only while the tool panel is open (desktop). If the highlighter is on, the pencil highlights instead (same as before).
    Default tool is 필기 (free ink over the article, not snapped to words). 밑줄 is used only if the user picks it in the tool panel; the choice is saved in ea-pen-tool-v1.
    Two quick pencil-tip taps (short, little movement, within ~350ms and ~25px) toggle 필기/밑줄 ↔ 지우개 without leaving ink or erasing; last drawing tool is saved in ea-pen-draw-tool-v1.
+   iPad: draw from PointerEvent (pen) AND TouchEvent (touchType===stylus); preventDefault stylus touchstart/move in capture so .wrap does not pointercancel the stroke as a pan. ?pendebug=1 logs event types.
    Tools: 밑줄 = a roughly horizontal stroke under words becomes a word-anchored CSS underline (ea-ul-v1 = {date:{"a1-3":{"5":"r"}}}, same
    token keys as the highlighter, so it survives font size / rotation); 필기 = free ink in an SVG overlay per article + mode
    (ea-ink-v1 = {date:{"a1:en":[{c,w,p:[[x,y],…]}]}}, x/y divided by the article block width); 지우개 = touch a stroke/underline to erase it.
@@ -561,34 +564,74 @@ const PEN=(function(){
   const draws=e=>isPen(e)||(on&&e.pointerType==="mouse"&&e.button===0);
   const clrSel=()=>{ try{ const s=getSelection(); if(s) s.removeAllRanges(); }catch(_){} };
   const setDraw=v=>document.documentElement.classList.toggle("pendrawing",!!v);
+  const DEBUG=(()=>{ try{ return new URLSearchParams(location.search).get("pendebug")==="1"; }catch(e){ return false; } })();
+  function pdbg(msg){ if(!DEBUG) return; let el=document.getElementById("pen-dbg");
+    if(!el){ el=document.createElement("div"); el.id="pen-dbg"; el.setAttribute("style","position:fixed;left:8px;top:calc(8px + env(safe-area-inset-top,0px));z-index:99;max-width:92%;font:11px/1.35 ui-monospace,monospace;background:rgba(0,0,0,.84);color:#7CFF9E;padding:8px 10px;border-radius:8px;white-space:pre-wrap;pointer-events:none"); document.body.appendChild(el); el._n=[]; }
+    el._n.push((Date.now()%100000)+" "+msg); if(el._n.length>14) el._n.shift(); el.textContent=el._n.join("\n"); }
   let tap1=null; const TAP_MS=300, TAP_MOVE=12, DBL_MS=350, DBL_PX=25;
   function becameStroke(d,x,y,now){ if(d.stroke) return false; if(Math.hypot(x-d.x0,y-d.y0)>=TAP_MOVE||now-d.t0>=TAP_MS){ d.stroke=true; return true; } return false; }
   function noteTap(d,x,y){ const now=Date.now();
-    if(tap1&&now-tap1.t<=DBL_MS&&Math.hypot(x-tap1.x,y-tap1.y)<=DBL_PX&&tap1.aid===d.aid){ tap1=null; toggleErase(); return true; }
+    if(tap1&&now-tap1.t<=DBL_MS&&Math.hypot(x-tap1.x,y-tap1.y)<=DBL_PX&&tap1.aid===d.aid){ tap1=null; toggleErase(); pdbg("dbltap -> "+tool()); return true; }
     tap1={t:now,x,y,aid:d.aid}; return false; }
-  document.addEventListener("pointerdown",e=>{ if(!draws(e)||(typeof HL!=="undefined"&&HL.on)) return; const aid=aidOf(e.target); if(!aid) return; if(e.target.closest("button,a,input,textarea,select")) return;
-    const b=box(aid), [x,y]=rel(b,e.clientX,e.clientY); cur={id:e.pointerId,aid,t:tool(),p:[[x,y]],cp:[[e.clientX,e.clientY]],pr:[],pushed:0,t0:Date.now(),x0:e.clientX,y0:e.clientY,stroke:false,pen:isPen(e)};
-    if(e.pressure>0) cur.pr.push(e.pressure); try{ b.setPointerCapture(e.pointerId); }catch(_){}
-    setDraw(1); clrSel(); if(cfg()&&cfg().onStart) cfg().onStart();
-    e.preventDefault(); },{passive:false});
-  document.addEventListener("pointermove",e=>{ const d=cur; if(!d||e.pointerId!==d.id) return; const b=box(d.aid);
-    const evs=e.getCoalescedEvents?e.getCoalescedEvents():[]; (evs.length?evs:[e]).forEach(ev=>{
-      const started=becameStroke(d,ev.clientX,ev.clientY,Date.now());
-      if(!d.stroke) return;
-      if(d.t==="er"){ erase(d,ev.clientX,ev.clientY); return; }
-      const [x,y]=rel(b,ev.clientX,ev.clientY), L=d.p[d.p.length-1]; if(!started&&Math.hypot(x-L[0],y-L[1])<1.2) return; d.p.push([x,y]); d.cp.push([ev.clientX,ev.clientY]); if(ev.pressure>0) d.pr.push(ev.pressure); });
-    if(d.stroke&&d.t!=="er"){ const pr=d.pr.length?d.pr[d.pr.length-1]:.5; setCur(d.aid,d.p,hex(color()),d.t==="ul"?3:Math.max(1.2,Math.min(4.2,1.1+pr*3.2))); }
-    e.preventDefault(); },{passive:false});
-  function end(e,cancel){ const d=cur; if(!d||e.pointerId!==d.id) return; cur=null; setCur(d.aid,[],"none",0); suppress=Date.now(); setDraw(0); clrSel(); if(cancel){ tap1=null; return; }
-    const tap=!d.stroke&&(Date.now()-d.t0)<TAP_MS&&Math.hypot(e.clientX-d.x0,e.clientY-d.y0)<TAP_MOVE;
-    if(tap&&d.pen){ noteTap(d,e.clientX,e.clientY); return; }  /* short pencil taps never ink/erase; a second tap toggles 지우개 */
+  const stylusTouch=e=>[...(e.changedTouches||[])].find(t=>t.touchType==="stylus")||[...(e.touches||[])].find(t=>t.touchType==="stylus");
+  const aidAt=(el,x,y)=>aidOf(el)||aidOf(document.elementFromPoint(x,y));
+  function startStroke(id,aid,cx,cy,pr,penLike,src){
+    if(typeof HL!=="undefined"&&HL.on) return false; if(cur) return false;
+    const b=box(aid), [x,y]=rel(b,cx,cy);
+    cur={id,aid,t:tool(),p:[[x,y]],cp:[[cx,cy]],pr:pr>0?[pr]:[],pushed:0,t0:Date.now(),x0:cx,y0:cy,stroke:false,pen:!!penLike,src};
+    try{ if(typeof id==="number") b.setPointerCapture(id); }catch(_){}
+    setDraw(1); clrSel(); try{ if(cfg()&&cfg().onStart) cfg().onStart(); }catch(_){}
+    pdbg("start "+src+" tool="+cur.t+" aid="+aid); return true; }
+  function moveStroke(cx,cy,pr){ const d=cur; if(!d) return; const b=box(d.aid);
+    const started=becameStroke(d,cx,cy,Date.now()); if(!d.stroke) return;
+    if(d.t==="er"){ erase(d,cx,cy); return; }
+    const [x,y]=rel(b,cx,cy), L=d.p[d.p.length-1]; if(!started&&Math.hypot(x-L[0],y-L[1])<1.2) return;
+    d.p.push([x,y]); d.cp.push([cx,cy]); if(pr>0) d.pr.push(pr);
+    setCur(d.aid,d.p,hex(color()),d.t==="ul"?3:Math.max(1.2,Math.min(4.2,1.1+(d.pr.length?d.pr[d.pr.length-1]:.5)*3.2))); }
+  function endStroke(cx,cy,cancel,why){ const d=cur; if(!d) return; cur=null; setCur(d.aid,[],"none",0); suppress=Date.now(); setDraw(0); clrSel();
+    pdbg("end "+why+" cancel="+!!cancel+" stroke="+d.stroke+" n="+d.p.length+" tool="+d.t);
+    if(cancel){ tap1=null; return; }
+    const tap=!d.stroke&&(Date.now()-d.t0)<TAP_MS&&Math.hypot(cx-d.x0,cy-d.y0)<TAP_MOVE;
+    if(tap&&d.pen){ noteTap(d,cx,cy); return; }
     if(d.t==="ul") finishUL(d); else if(d.t==="ink") finishInk(d); else if(d.stroke) redraw(); }
-  document.addEventListener("pointerup",e=>end(e,false)); document.addEventListener("pointercancel",e=>end(e,true));
-  /* iPad: keep the Pencil from scrolling/selecting while fingers still scroll (Touch.touchType === 'stylus'). Stylus is blocked even when the tool panel is closed. */
-  const stylusIn=e=>[...(e.changedTouches||[])].some(t=>t.touchType==="stylus")&&aidOf(e.target);
-  document.addEventListener("touchstart",e=>{ if(stylusIn(e)&&!e.target.closest("button,a")&&e.cancelable) e.preventDefault(); },{passive:false});
-  document.addEventListener("touchmove",e=>{ if((cur||stylusIn(e))&&[...(e.touches||[])].some(t=>t.touchType==="stylus")&&e.cancelable) e.preventDefault(); },{passive:false});
-  /* After a pen/mouse stroke, swallow the leftover click so a word popup does not open. Finger taps are not blocked (the ✏️ button is only a tool panel). */
+
+  document.addEventListener("pointerdown",e=>{ pdbg("pd type="+e.pointerType+" btn="+e.button);
+    if(!draws(e)){ if(aidOf(e.target)) pdbg("pd ignored type="+e.pointerType); return; }
+    if(typeof HL!=="undefined"&&HL.on) return; const aid=aidAt(e.target,e.clientX,e.clientY); if(!aid) return;
+    if(e.target.closest("button,a,input,textarea,select")) return;
+    if(e.cancelable) e.preventDefault();
+    startStroke(e.pointerId,aid,e.clientX,e.clientY,e.pressure,isPen(e),"pointer"); },{passive:false});
+  document.addEventListener("pointermove",e=>{ if(!cur) return;
+    if(cur.src==="pointer"&&e.pointerId!==cur.id&&e.pointerType!=="pen") return;
+    if(e.cancelable&&(isPen(e)||cur.pen)) e.preventDefault();
+    const evs=e.getCoalescedEvents?e.getCoalescedEvents():[]; (evs.length?evs:[e]).forEach(ev=>moveStroke(ev.clientX,ev.clientY,ev.pressure)); },{passive:false});
+  document.addEventListener("pointerup",e=>{ if(!cur) return;
+    if(cur.src==="pointer"&&e.pointerId!==cur.id&&e.pointerType!=="pen") return;
+    endStroke(e.clientX,e.clientY,false,"pointerup"); });
+  /* iOS Safari often pointercancel-s a Pencil stroke when .wrap starts a pan. Keep the stroke alive; touchend/pointerup will finish it. */
+  document.addEventListener("pointercancel",e=>{ pdbg("pcancel type="+e.pointerType+" pen="+(cur&&cur.pen));
+    if(!cur) return; if(isPen(e)||cur.pen) return; endStroke(e.clientX,e.clientY,true,"pointercancel"); });
+
+  /* Capture + non-passive: stop the Pencil being treated as a finger pan, and draw even if pointerType is not 'pen'. */
+  document.addEventListener("touchstart",e=>{ const t=stylusTouch(e);
+    if(!t){ if(DEBUG) pdbg("ts types="+[...(e.changedTouches||[])].map(x=>x.touchType||"?").join(",")); return; }
+    if(e.target.closest("button,a,input,textarea,select")) return;
+    const aid=aidAt(e.target,t.clientX,t.clientY); pdbg("ts stylus aid="+aid+" cancelable="+e.cancelable);
+    if(!aid) return; if(e.cancelable) e.preventDefault();
+    if(typeof HL!=="undefined"&&HL.on) return;
+    startStroke("stylus-"+t.identifier,aid,t.clientX,t.clientY,t.force,true,"touch"); },{passive:false,capture:true});
+  document.addEventListener("touchmove",e=>{ const t=stylusTouch(e); if(!t) return;
+    if((cur||aidAt(e.target,t.clientX,t.clientY))&&e.cancelable) e.preventDefault();
+    if(!cur) return;
+    [...(e.changedTouches||[])].filter(x=>x.touchType==="stylus").forEach(x=>moveStroke(x.clientX,x.clientY,x.force));
+    if(!(e.changedTouches||[]).length) moveStroke(t.clientX,t.clientY,t.force); },{passive:false,capture:true});
+  document.addEventListener("touchend",e=>{ const t=stylusTouch(e);
+    if(!cur||!cur.pen) return; if([...(e.touches||[])].some(x=>x.touchType==="stylus")) return;
+    if(e.cancelable) e.preventDefault();
+    const x=t?t.clientX:cur.cp[cur.cp.length-1][0], y=t?t.clientY:cur.cp[cur.cp.length-1][1];
+    endStroke(x,y,false,"touchend"); },{passive:false,capture:true});
+  document.addEventListener("touchcancel",e=>{ pdbg("tcancel"); if(!cur||!cur.pen) return;
+    const t=stylusTouch(e); endStroke(t?t.clientX:cur.x0,t?t.clientY:cur.y0,true,"touchcancel"); },{passive:false,capture:true});
   document.addEventListener("click",e=>{ if(Date.now()-suppress<400&&aidOf(e.target)&&!e.target.closest("button,a")){ e.stopPropagation(); e.preventDefault(); } },true);
   document.addEventListener("contextmenu",e=>{ if((cur||Date.now()-suppress<400)&&aidOf(e.target)) e.preventDefault(); });
   if(window.matchMedia) try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>cfg()&&cfg().aids().forEach(render)); }catch(_){}
@@ -605,7 +648,7 @@ const $wrap = () => document.querySelector(".wrap");
 const wrapY = () => { const w=$wrap(); return w ? w.scrollTop : (window.scrollY||0); };
 const wrapScrollTo = (top, opt) => { const w=$wrap(); const o=typeof top==="object"?top:{top, ...(opt||{})}; if(w) w.scrollTo(o); else window.scrollTo(o); };
 const wrapScrollBy = (o) => { const w=$wrap(); if(w) w.scrollBy(o); else window.scrollBy(o); };
-const META = {"date": "2026-11-23", "build": "c7175af241", "label": "11월 23일(월)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 23일 월요일 · 뉴스 2편 · B2", "short": ["HSBC가 목표주가를 두 배 넘게 올렸는데도 테슬라 7.6% 급락…스페이스X 합병 의구심", "AI 기술주 폭락에 월가 '안전자산·가치주'로 대피…S&P 500 조정 국면 진입"], "marks": {"a1": [5.54, 15.3, 30.21, 44.22, 55.73, 67.71, 77.84], "a2": [3.98, 13.92, 24.93, 36.69, 47.75, 59.79, 71.47, 81.86]}, "dur": {"a1": 91.49, "a2": 90.05}, "audio": ["ai-rout-value-stocks-dialogue.mp3", "ai-rout-value-stocks-expr.mp3", "ai-rout-value-stocks.mp3", "clips/a1-c1-en.mp3", "clips/a1-c1-ko.mp3", "clips/a1-c1.mp3", "clips/a1-c2-en.mp3", "clips/a1-c2-ko.mp3", "clips/a1-c2.mp3", "clips/a1-c3-en.mp3", "clips/a1-c3-ko.mp3", "clips/a1-c3.mp3", "clips/a1-cm.mp3", "clips/a1-cq.mp3", "clips/a1-d1.mp3", "clips/a1-d2.mp3", "clips/a1-d3.mp3", "clips/a1-d4.mp3", "clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-s6.mp3", "clips/a1-s7.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a2-c1-en.mp3", "clips/a2-c1-ko.mp3", "clips/a2-c1.mp3", "clips/a2-c2-en.mp3", "clips/a2-c2-ko.mp3", "clips/a2-c2.mp3", "clips/a2-c3-en.mp3", "clips/a2-c3-ko.mp3", "clips/a2-c3.mp3", "clips/a2-cm.mp3", "clips/a2-cq.mp3", "clips/a2-d1.mp3", "clips/a2-d2.mp3", "clips/a2-d3.mp3", "clips/a2-d4.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-s6.mp3", "clips/a2-s7.mp3", "clips/a2-s8.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "clips/rq4-en.mp3", "clips/rq4-ko.mp3", "clips/rq4.mp3", "clips/rq5-en.mp3", "clips/rq5-ko.mp3", "clips/rq5.mp3", "clips/rq6-en.mp3", "clips/rq6-ko.mp3", "clips/rq6.mp3", "tesla-hsbc-upgrade-slide-dialogue.mp3", "tesla-hsbc-upgrade-slide-expr.mp3", "tesla-hsbc-upgrade-slide.mp3"], "audioBytes": 8891636, "full": {"a1": "tesla-hsbc-upgrade-slide.mp3", "a2": "ai-rout-value-stocks.mp3"}, "dialog": {"a1": "tesla-hsbc-upgrade-slide-dialogue.mp3", "a2": "ai-rout-value-stocks-dialogue.mp3"}, "fullx": {"a1": "tesla-hsbc-upgrade-slide-expr.mp3", "a2": "ai-rout-value-stocks-expr.mp3"}, "quizLang": "en", "todayReview": [{"en": "add to the selling pressure", "ko": "매도 압력을 키우다"}, {"en": "a high hurdle", "ko": "넘기 힘든 장벽"}, {"en": "a flight to safety", "ko": "안전자산 선호 (현상)"}], "reviewNote": "1·3·7·14·30일 뒤(11/24, 11/26, 11/30, 12/7, 12/23) 복습 퀴즈에 다시 나와요."};
+const META = {"date": "2026-11-23", "build": "c6f9f1777d", "label": "11월 23일(월)", "ym": "2026-11", "sunday": false, "dateLine": "2026년 11월 23일 월요일 · 뉴스 2편 · B2", "short": ["HSBC가 목표주가를 두 배 넘게 올렸는데도 테슬라 7.6% 급락…스페이스X 합병 의구심", "AI 기술주 폭락에 월가 '안전자산·가치주'로 대피…S&P 500 조정 국면 진입"], "marks": {"a1": [5.54, 15.3, 30.21, 44.22, 55.73, 67.71, 77.84], "a2": [3.98, 13.92, 24.93, 36.69, 47.75, 59.79, 71.47, 81.86]}, "dur": {"a1": 91.49, "a2": 90.05}, "audio": ["ai-rout-value-stocks-dialogue.mp3", "ai-rout-value-stocks-expr.mp3", "ai-rout-value-stocks.mp3", "clips/a1-c1-en.mp3", "clips/a1-c1-ko.mp3", "clips/a1-c1.mp3", "clips/a1-c2-en.mp3", "clips/a1-c2-ko.mp3", "clips/a1-c2.mp3", "clips/a1-c3-en.mp3", "clips/a1-c3-ko.mp3", "clips/a1-c3.mp3", "clips/a1-cm.mp3", "clips/a1-cq.mp3", "clips/a1-d1.mp3", "clips/a1-d2.mp3", "clips/a1-d3.mp3", "clips/a1-d4.mp3", "clips/a1-s1.mp3", "clips/a1-s2.mp3", "clips/a1-s3.mp3", "clips/a1-s4.mp3", "clips/a1-s5.mp3", "clips/a1-s6.mp3", "clips/a1-s7.mp3", "clips/a1-v1-en.mp3", "clips/a1-v1-ko.mp3", "clips/a1-v1.mp3", "clips/a1-v2-en.mp3", "clips/a1-v2-ko.mp3", "clips/a1-v2.mp3", "clips/a1-v3-en.mp3", "clips/a1-v3-ko.mp3", "clips/a1-v3.mp3", "clips/a1-v4-en.mp3", "clips/a1-v4-ko.mp3", "clips/a1-v4.mp3", "clips/a1-v5-en.mp3", "clips/a1-v5-ko.mp3", "clips/a1-v5.mp3", "clips/a1-v6-en.mp3", "clips/a1-v6-ko.mp3", "clips/a1-v6.mp3", "clips/a1-v7-en.mp3", "clips/a1-v7-ko.mp3", "clips/a1-v7.mp3", "clips/a1-v8-en.mp3", "clips/a1-v8-ko.mp3", "clips/a1-v8.mp3", "clips/a1-x1-en.mp3", "clips/a1-x1-ko.mp3", "clips/a1-x1.mp3", "clips/a1-x2-en.mp3", "clips/a1-x2-ko.mp3", "clips/a1-x2.mp3", "clips/a1-x3-en.mp3", "clips/a1-x3-ko.mp3", "clips/a1-x3.mp3", "clips/a1-x4-en.mp3", "clips/a1-x4-ko.mp3", "clips/a1-x4.mp3", "clips/a1-x5-en.mp3", "clips/a1-x5-ko.mp3", "clips/a1-x5.mp3", "clips/a1-x6-en.mp3", "clips/a1-x6-ko.mp3", "clips/a1-x6.mp3", "clips/a2-c1-en.mp3", "clips/a2-c1-ko.mp3", "clips/a2-c1.mp3", "clips/a2-c2-en.mp3", "clips/a2-c2-ko.mp3", "clips/a2-c2.mp3", "clips/a2-c3-en.mp3", "clips/a2-c3-ko.mp3", "clips/a2-c3.mp3", "clips/a2-cm.mp3", "clips/a2-cq.mp3", "clips/a2-d1.mp3", "clips/a2-d2.mp3", "clips/a2-d3.mp3", "clips/a2-d4.mp3", "clips/a2-s1.mp3", "clips/a2-s2.mp3", "clips/a2-s3.mp3", "clips/a2-s4.mp3", "clips/a2-s5.mp3", "clips/a2-s6.mp3", "clips/a2-s7.mp3", "clips/a2-s8.mp3", "clips/a2-v1-en.mp3", "clips/a2-v1-ko.mp3", "clips/a2-v1.mp3", "clips/a2-v2-en.mp3", "clips/a2-v2-ko.mp3", "clips/a2-v2.mp3", "clips/a2-v3-en.mp3", "clips/a2-v3-ko.mp3", "clips/a2-v3.mp3", "clips/a2-v4-en.mp3", "clips/a2-v4-ko.mp3", "clips/a2-v4.mp3", "clips/a2-v5-en.mp3", "clips/a2-v5-ko.mp3", "clips/a2-v5.mp3", "clips/a2-v6-en.mp3", "clips/a2-v6-ko.mp3", "clips/a2-v6.mp3", "clips/a2-v7-en.mp3", "clips/a2-v7-ko.mp3", "clips/a2-v7.mp3", "clips/a2-v8-en.mp3", "clips/a2-v8-ko.mp3", "clips/a2-v8.mp3", "clips/a2-x1-en.mp3", "clips/a2-x1-ko.mp3", "clips/a2-x1.mp3", "clips/a2-x2-en.mp3", "clips/a2-x2-ko.mp3", "clips/a2-x2.mp3", "clips/a2-x3-en.mp3", "clips/a2-x3-ko.mp3", "clips/a2-x3.mp3", "clips/a2-x4-en.mp3", "clips/a2-x4-ko.mp3", "clips/a2-x4.mp3", "clips/a2-x5-en.mp3", "clips/a2-x5-ko.mp3", "clips/a2-x5.mp3", "clips/a2-x6-en.mp3", "clips/a2-x6-ko.mp3", "clips/a2-x6.mp3", "clips/rq1-en.mp3", "clips/rq1-ko.mp3", "clips/rq1.mp3", "clips/rq2-en.mp3", "clips/rq2-ko.mp3", "clips/rq2.mp3", "clips/rq3-en.mp3", "clips/rq3-ko.mp3", "clips/rq3.mp3", "clips/rq4-en.mp3", "clips/rq4-ko.mp3", "clips/rq4.mp3", "clips/rq5-en.mp3", "clips/rq5-ko.mp3", "clips/rq5.mp3", "clips/rq6-en.mp3", "clips/rq6-ko.mp3", "clips/rq6.mp3", "tesla-hsbc-upgrade-slide-dialogue.mp3", "tesla-hsbc-upgrade-slide-expr.mp3", "tesla-hsbc-upgrade-slide.mp3"], "audioBytes": 8891636, "full": {"a1": "tesla-hsbc-upgrade-slide.mp3", "a2": "ai-rout-value-stocks.mp3"}, "dialog": {"a1": "tesla-hsbc-upgrade-slide-dialogue.mp3", "a2": "ai-rout-value-stocks-dialogue.mp3"}, "fullx": {"a1": "tesla-hsbc-upgrade-slide-expr.mp3", "a2": "ai-rout-value-stocks-expr.mp3"}, "quizLang": "en", "todayReview": [{"en": "add to the selling pressure", "ko": "매도 압력을 키우다"}, {"en": "a high hurdle", "ko": "넘기 힘든 장벽"}, {"en": "a flight to safety", "ko": "안전자산 선호 (현상)"}], "reviewNote": "1·3·7·14·30일 뒤(11/24, 11/26, 11/30, 12/7, 12/23) 복습 퀴즈에 다시 나와요."};
 const DUR = META.dur||{};   // full-article seconds from the build (audio is not preloaded)
 const MARKS = META.marks, FULL = META.full, FULLX = META.fullx;
 const HAS_WB = typeof WB !== "undefined";
