@@ -298,8 +298,10 @@ svg.inkl{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-i
 @media (prefers-color-scheme:dark){.pc-r i{background:#ff6b62}.pc-b i{background:#7fb0ff}.pc-k i{background:#e8e8e8}}
 .pent{min-height:44px;min-width:52px;font-size:14px;padding:0 10px}.pent.on{outline:3px solid var(--acc);outline-offset:-3px;font-weight:700}
 .penclr:disabled,.penu:disabled{opacity:.45}
-.penon .penok .sent .t{cursor:crosshair;touch-action:pan-y pinch-zoom}
+.penok .sent .t{touch-action:pan-y pinch-zoom;-webkit-touch-callout:none}
+.penon .penok .sent .t{cursor:crosshair}
 .penon .penok .sent .t .gw{text-decoration-color:transparent}
+.pendrawing,.pendrawing *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
 .sn{color:inherit}
 .apt{position:absolute;margin-top:calc(37px*var(--fs,1));font-size:calc(11px*var(--fs,1));line-height:1.15;font-weight:700;color:var(--c);white-space:nowrap;letter-spacing:-.01em;background:var(--card);padding:0 2px 0 0;border-radius:3px;pointer-events:none;user-select:none;-webkit-user-select:none}
 .sent.anl .t>div:first-child{line-height:2.4;position:relative}
@@ -458,7 +460,9 @@ const HL=(function(){
   function off(){ if(on) toggle(); }
   return {init(c){ cfg=c; }, draw, toggle, off, setColor, clear, redrawBars, get on(){ return on; }, get cfg(){ return cfg; }, sIdx};
 })();
-/* ✏️ 필기 (원문 · 직해, Apple Pencil): only pointerType 'pen' (and desktop mouse) draws; finger touches scroll as usual.
+/* ✏️ 필기 (원문 · 직해, Apple Pencil) — pen-always-v1:
+   pointerType 'pen' always draws, even when the ✏️ tool panel is closed. Finger (touch) never draws — it scrolls and can tap words.
+   Mouse draws only while the tool panel is open (desktop). If the highlighter is on, the pencil highlights instead (same as before).
    Tools: 밑줄 = a roughly horizontal stroke under words becomes a word-anchored CSS underline (ea-ul-v1 = {date:{"a1-3":{"5":"r"}}}, same
    token keys as the highlighter, so it survives font size / rotation); 필기 = free ink in an SVG overlay per article + mode
    (ea-ink-v1 = {date:{"a1:en":[{c,w,p:[[x,y],…]}]}}, x/y divided by the article block width); 지우개 = touch a stroke/underline to erase it.
@@ -503,12 +507,12 @@ const PEN=(function(){
     if(!svg){ svg=document.createElementNS("http://www.w3.org/2000/svg","svg"); svg.setAttribute("class","inkl"); svg.setAttribute("aria-hidden","true"); b.appendChild(svg); }
     if(ro&&!b.dataset.inkro){ b.dataset.inkro="1"; ro.observe(b); } paint(aid); render(aid); }
   function bar(aid){ const c=color(), t=tool(), n=count(aid);
-    return `<button class="hlb penb${on?" on":""}" aria-pressed="${on}" aria-label="필기" title="필기 (Apple Pencil)" onclick="PEN.toggle()">✏️</button>
+    return `<button class="hlb penb${on?" on":""}" aria-pressed="${on}" aria-label="필기 도구" title="필기 도구 — 펜슬은 바로 필기, 손가락은 스크롤" onclick="PEN.toggle()">✏️</button>
       <div class="hlpal penpal"${on?"":" hidden"}><span class="hlcs pents">${TOOLS.map(([k,l])=>`<button class="pent${k===t?" on":""}" aria-pressed="${k===t}" onclick="PEN.setTool('${k}')">${l}</button>`).join("")}</span>
       <span class="hlcs">${COLORS.map(([k,l])=>`<button class="hlc pc-${k}${k===c?" on":""}" aria-label="${l}" aria-pressed="${k===c}" onclick="PEN.setColor('${k}')"><i></i></button>`).join("")}</span>
       <button class="hlclr penu" onclick="PEN.undo()"${undo.some(u=>u[0]===aid)?"":" disabled"} aria-label="실행 취소">↶ 취소</button>
       <button class="hlclr penclr" onclick="PEN.clear('${aid}')"${n?"":" disabled"}>🗑 모두 지우기${n?` (${n})`:""}</button>
-      <div class="hlhint">펜슬로 쓰고 손가락으로 스크롤 · 밑줄: 단어 아래 가로로 긋기, 밑줄 탭 = 지우기</div></div>`; }
+      <div class="hlhint">펜슬은 도구를 켜지 않아도 바로 필기 · 손가락은 스크롤·단어 탭 · 밑줄: 단어 아래 가로로 긋기, 밑줄 탭 = 지우기</div></div>`; }
   const redraw=()=>HL.redrawBars();
   function toggle(){ on=!on; if(on&&HL.on) HL.off(); document.documentElement.classList.toggle("penon",on); if(on&&cfg().onStart) cfg().onStart(); redraw(); }
   function off(quiet){ if(!on) return; on=false; document.documentElement.classList.remove("penon"); if(!quiet) redraw(); }
@@ -548,10 +552,14 @@ const PEN=(function(){
   function finishInk(d){ if(d.p.length<1) return; const b=box(d.aid), W=b.clientWidth||1, s=sc(d.aid), I=load(IK), di=I[s.d]||(I[s.d]={}), k=inkKey(d.aid);
     const pr=d.pr.length?d.pr.reduce((a,v)=>a+v,0)/d.pr.length:.5, w=Math.max(1.2,Math.min(4.2,1.1+pr*3.2));
     push(d.aid); (di[k]=di[k]||[]).push({c:color(),w:+(w/W).toFixed(5),p:d.p.map(([x,y])=>[+(x/W).toFixed(4),+(y/W).toFixed(4)])}); saveI(I); render(d.aid); redraw(); }
-  const draws=e=>e.pointerType==="pen"||(e.pointerType==="mouse"&&e.button===0);
-  document.addEventListener("pointerdown",e=>{ if(!on||!draws(e)) return; const aid=aidOf(e.target); if(!aid) return; if(e.target.closest("button,a,input,textarea,select")) return;
+  const isPen=e=>e.pointerType==="pen";
+  const draws=e=>isPen(e)||(on&&e.pointerType==="mouse"&&e.button===0);
+  const clrSel=()=>{ try{ const s=getSelection(); if(s) s.removeAllRanges(); }catch(_){} };
+  const setDraw=v=>document.documentElement.classList.toggle("pendrawing",!!v);
+  document.addEventListener("pointerdown",e=>{ if(!draws(e)||(typeof HL!=="undefined"&&HL.on)) return; const aid=aidOf(e.target); if(!aid) return; if(e.target.closest("button,a,input,textarea,select")) return;
     const b=box(aid), [x,y]=rel(b,e.clientX,e.clientY); cur={id:e.pointerId,aid,t:tool(),p:[[x,y]],cp:[[e.clientX,e.clientY]],pr:[],pushed:0};
     if(e.pressure>0) cur.pr.push(e.pressure); try{ b.setPointerCapture(e.pointerId); }catch(_){}
+    setDraw(1); clrSel(); if(cfg()&&cfg().onStart) cfg().onStart();
     e.preventDefault(); if(cur.t==="er") erase(cur,e.clientX,e.clientY); },{passive:false});
   document.addEventListener("pointermove",e=>{ const d=cur; if(!d||e.pointerId!==d.id) return; const b=box(d.aid);
     const evs=e.getCoalescedEvents?e.getCoalescedEvents():[]; (evs.length?evs:[e]).forEach(ev=>{
@@ -559,15 +567,16 @@ const PEN=(function(){
       const [x,y]=rel(b,ev.clientX,ev.clientY), L=d.p[d.p.length-1]; if(Math.hypot(x-L[0],y-L[1])<1.2) return; d.p.push([x,y]); d.cp.push([ev.clientX,ev.clientY]); if(ev.pressure>0) d.pr.push(ev.pressure); });
     if(d.t!=="er"){ const pr=d.pr.length?d.pr[d.pr.length-1]:.5; setCur(d.aid,d.p,hex(color()),d.t==="ul"?3:Math.max(1.2,Math.min(4.2,1.1+pr*3.2))); }
     e.preventDefault(); },{passive:false});
-  function end(e,cancel){ const d=cur; if(!d||e.pointerId!==d.id) return; cur=null; setCur(d.aid,[],"none",0); suppress=Date.now(); if(cancel) return;
+  function end(e,cancel){ const d=cur; if(!d||e.pointerId!==d.id) return; cur=null; setCur(d.aid,[],"none",0); suppress=Date.now(); setDraw(0); clrSel(); if(cancel) return;
     if(d.t==="ul") finishUL(d); else if(d.t==="ink") finishInk(d); else redraw(); }
   document.addEventListener("pointerup",e=>end(e,false)); document.addEventListener("pointercancel",e=>end(e,true));
-  /* iPad: keep the Pencil from scrolling the page while fingers still scroll (Touch.touchType === 'stylus') */
-  const stylusIn=e=>on&&[...(e.changedTouches||[])].some(t=>t.touchType==="stylus")&&aidOf(e.target);
+  /* iPad: keep the Pencil from scrolling/selecting while fingers still scroll (Touch.touchType === 'stylus'). Stylus is blocked even when the tool panel is closed. */
+  const stylusIn=e=>[...(e.changedTouches||[])].some(t=>t.touchType==="stylus")&&aidOf(e.target);
   document.addEventListener("touchstart",e=>{ if(stylusIn(e)&&!e.target.closest("button,a")&&e.cancelable) e.preventDefault(); },{passive:false});
   document.addEventListener("touchmove",e=>{ if((cur||stylusIn(e))&&[...(e.touches||[])].some(t=>t.touchType==="stylus")&&e.cancelable) e.preventDefault(); },{passive:false});
-  document.addEventListener("click",e=>{ if(!on) return; const inText=e.target.closest&&e.target.closest(".penok .sent .t"); if(inText||Date.now()-suppress<400&&aidOf(e.target)&&!e.target.closest("button")){ e.stopPropagation(); e.preventDefault(); } },true);
-  document.addEventListener("contextmenu",e=>{ if(on&&aidOf(e.target)) e.preventDefault(); });
+  /* After a pen/mouse stroke, swallow the leftover click so a word popup does not open. Finger taps are not blocked (the ✏️ button is only a tool panel). */
+  document.addEventListener("click",e=>{ if(Date.now()-suppress<400&&aidOf(e.target)&&!e.target.closest("button,a")){ e.stopPropagation(); e.preventDefault(); } },true);
+  document.addEventListener("contextmenu",e=>{ if((cur||Date.now()-suppress<400)&&aidOf(e.target)) e.preventDefault(); });
   if(window.matchMedia) try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>cfg()&&cfg().aids().forEach(render)); }catch(_){}
   return {draw, paint, bar, toggle, off, setColor, setTool, clear, undo:doUndo, get on(){ return on; }};
 })();
