@@ -10925,6 +10925,431 @@
    77.146,
    77.768,
    "wbclips/en-16.mp3"
+  ],
+  "bloc-wide": [
+   0.221,
+   0.967,
+   "wbclips/en-17.mp3"
+  ],
+  "supervision": [
+   1.147,
+   2.092,
+   "wbclips/en-17.mp3"
+  ],
+  "preliminary": [
+   2.272,
+   3.234,
+   "wbclips/en-17.mp3"
+  ],
+  "rollout": [
+   3.414,
+   3.987,
+   "wbclips/en-17.mp3"
+  ],
+  "setback": [
+   4.167,
+   4.878,
+   "wbclips/en-17.mp3"
+  ],
+  "push back": [
+   5.058,
+   5.81,
+   "wbclips/en-17.mp3"
+  ],
+  "raise concerns about": [
+   5.99,
+   7.2,
+   "wbclips/en-17.mp3"
+  ],
+  "follow the lead": [
+   7.38,
+   8.336,
+   "wbclips/en-17.mp3"
+  ],
+  "be hard-hit": [
+   8.516,
+   9.296,
+   "wbclips/en-17.mp3"
+  ],
+  "stand to benefit": [
+   9.476,
+   10.638,
+   "wbclips/en-17.mp3"
+  ],
+  "turn around": [
+   10.818,
+   11.628,
+   "wbclips/en-17.mp3"
+  ],
+  "it's not the end of the world.": [
+   11.808,
+   13.381,
+   "wbclips/en-17.mp3"
+  ],
+  "i have a feeling…": [
+   13.561,
+   14.604,
+   "wbclips/en-17.mp3"
+  ],
+  "consider": [
+   14.784,
+   15.434,
+   "wbclips/en-17.mp3"
+  ],
+  "driver-assistance": [
+   15.614,
+   16.858,
+   "wbclips/en-17.mp3"
+  ],
+  "rename": [
+   17.038,
+   17.678,
+   "wbclips/en-17.mp3"
+  ],
+  "accelerate": [
+   17.858,
+   18.649,
+   "wbclips/en-17.mp3"
+  ],
+  "brake": [
+   18.829,
+   19.322,
+   "wbclips/en-17.mp3"
+  ],
+  "constant supervision": [
+   19.502,
+   20.893,
+   "wbclips/en-17.mp3"
+  ],
+  "grant": [
+   21.073,
+   21.598,
+   "wbclips/en-17.mp3"
+  ],
+  "nearly a dozen": [
+   21.778,
+   22.83,
+   "wbclips/en-17.mp3"
+  ],
+  "populous": [
+   23.01,
+   23.843,
+   "wbclips/en-17.mp3"
+  ],
+  "eu-wide": [
+   24.023,
+   24.736,
+   "wbclips/en-17.mp3"
+  ],
+  "backing": [
+   24.916,
+   25.531,
+   "wbclips/en-17.mp3"
+  ],
+  "member state": [
+   25.711,
+   26.518,
+   "wbclips/en-17.mp3"
+  ],
+  "represent": [
+   26.698,
+   27.543,
+   "wbclips/en-17.mp3"
+  ],
+  "population": [
+   27.723,
+   28.58,
+   "wbclips/en-17.mp3"
+  ],
+  "reject": [
+   28.76,
+   29.506,
+   "wbclips/en-17.mp3"
+  ],
+  "at eu level": [
+   29.686,
+   30.827,
+   "wbclips/en-17.mp3"
+  ],
+  "no longer": [
+   31.007,
+   31.865,
+   "wbclips/en-17.mp3"
+  ],
+  "particularly": [
+   32.045,
+   32.935,
+   "wbclips/en-17.mp3"
+  ],
+  "hard-hit": [
+   33.115,
+   33.729,
+   "wbclips/en-17.mp3"
+  ],
+  "early trading": [
+   33.909,
+   34.864,
+   "wbclips/en-17.mp3"
+  ],
+  "broader": [
+   35.044,
+   35.586,
+   "wbclips/en-17.mp3"
+  ],
+  "potential": [
+   35.766,
+   36.488,
+   "wbclips/en-17.mp3"
+  ],
+  "previously": [
+   36.668,
+   37.522,
+   "wbclips/en-17.mp3"
+  ],
+  "necessary": [
+   37.702,
+   38.597,
+   "wbclips/en-17.mp3"
+  ],
+  "decline": [
+   38.777,
+   39.427,
+   "wbclips/en-17.mp3"
+  ],
+  "car sales": [
+   39.607,
+   40.552,
+   "wbclips/en-17.mp3"
+  ],
+  "assist": [
+   40.732,
+   41.406,
+   "wbclips/en-17.mp3"
+  ],
+  "driving": [
+   41.586,
+   42.271,
+   "wbclips/en-17.mp3"
+  ],
+  "constant": [
+   42.451,
+   43.17,
+   "wbclips/en-17.mp3"
+  ],
+  "dozen": [
+   43.35,
+   43.896,
+   "wbclips/en-17.mp3"
+  ],
+  "dutch": [
+   44.076,
+   44.678,
+   "wbclips/en-17.mp3"
+  ],
+  "bloc": [
+   44.858,
+   45.357,
+   "wbclips/en-17.mp3"
+  ],
+  "member": [
+   45.537,
+   46.148,
+   "wbclips/en-17.mp3"
+  ],
+  "eu": [
+   46.328,
+   46.882,
+   "wbclips/en-17.mp3"
+  ],
+  "questioning": [
+   47.062,
+   47.808,
+   "wbclips/en-17.mp3"
+  ],
+  "declining": [
+   47.988,
+   48.792,
+   "wbclips/en-17.mp3"
+  ],
+  "europe": [
+   48.972,
+   49.567,
+   "wbclips/en-17.mp3"
+  ],
+  "dividend": [
+   49.747,
+   50.445,
+   "wbclips/en-17.mp3"
+  ],
+  "payout": [
+   50.625,
+   51.191,
+   "wbclips/en-17.mp3"
+  ],
+  "guidance": [
+   51.371,
+   52.155,
+   "wbclips/en-17.mp3"
+  ],
+  "free cash flow": [
+   52.335,
+   53.394,
+   "wbclips/en-17.mp3"
+  ],
+  "buck the sell-off": [
+   53.574,
+   54.505,
+   "wbclips/en-17.mp3"
+  ],
+  "on an adjusted basis": [
+   54.685,
+   56.276,
+   "wbclips/en-17.mp3"
+  ],
+  "take a conservative approach": [
+   56.456,
+   57.919,
+   "wbclips/en-17.mp3"
+  ],
+  "stand out": [
+   58.099,
+   58.873,
+   "wbclips/en-17.mp3"
+  ],
+  "be caught in the downdraft": [
+   59.053,
+   60.435,
+   "wbclips/en-17.mp3"
+  ],
+  "win over": [
+   60.615,
+   61.284,
+   "wbclips/en-17.mp3"
+  ],
+  "say what you want about…, but…": [
+   61.464,
+   63.171,
+   "wbclips/en-17.mp3"
+  ],
+  "that's not nothing.": [
+   63.351,
+   64.51,
+   "wbclips/en-17.mp3"
+  ],
+  "go figure.": [
+   64.69,
+   65.443,
+   "wbclips/en-17.mp3"
+  ],
+  "buck": [
+   65.623,
+   66.106,
+   "wbclips/en-17.mp3"
+  ],
+  "tech sell-off": [
+   66.286,
+   67.142,
+   "wbclips/en-17.mp3"
+  ],
+  "fourth-quarter": [
+   67.322,
+   68.118,
+   "wbclips/en-17.mp3"
+  ],
+  "computer maker": [
+   68.298,
+   69.287,
+   "wbclips/en-17.mp3"
+  ],
+  "a share": [
+   69.467,
+   70.165,
+   "wbclips/en-17.mp3"
+  ],
+  "post a profit": [
+   70.345,
+   71.355,
+   "wbclips/en-17.mp3"
+  ],
+  "storage": [
+   71.535,
+   72.305,
+   "wbclips/en-17.mp3"
+  ],
+  "at one point": [
+   72.485,
+   73.428,
+   "wbclips/en-17.mp3"
+  ],
+  "spending boom": [
+   73.608,
+   74.636,
+   "wbclips/en-17.mp3"
+  ],
+  "enterprise": [
+   74.816,
+   75.661,
+   "wbclips/en-17.mp3"
+  ],
+  "even after": [
+   75.841,
+   76.659,
+   "wbclips/en-17.mp3"
+  ],
+  "contrast": [
+   76.839,
+   77.606,
+   "wbclips/en-17.mp3"
+  ],
+  "not always": [
+   77.786,
+   78.833,
+   "wbclips/en-17.mp3"
+  ],
+  "hp": [
+   79.013,
+   79.739,
+   "wbclips/en-17.mp3"
+  ],
+  "cent": [
+   79.919,
+   80.47,
+   "wbclips/en-17.mp3"
+  ],
+  "adjust": [
+   80.65,
+   81.411,
+   "wbclips/en-17.mp3"
+  ],
+  "basis": [
+   81.591,
+   82.29,
+   "wbclips/en-17.mp3"
+  ],
+  "conservative": [
+   82.47,
+   83.353,
+   "wbclips/en-17.mp3"
+  ],
+  "reporting": [
+   83.533,
+   84.317,
+   "wbclips/en-17.mp3"
+  ],
+  "cash": [
+   84.497,
+   85.051,
+   "wbclips/en-17.mp3"
+  ],
+  "flow": [
+   85.231,
+   85.766,
+   "wbclips/en-17.mp3"
+  ],
+  "beating": [
+   85.946,
+   86.502,
+   "wbclips/en-17.mp3"
   ]
  },
  "ko": {
@@ -27652,6 +28077,796 @@
    226.304,
    229.17,
    "wbclips/ko-37.mp3"
+  ],
+  "(승인 등을 얻으려는) 시도, 신청": [
+   0.211,
+   3.218,
+   "wbclips/ko-38.mp3"
+  ],
+  "(EU 같은) 블록 전체의": [
+   3.398,
+   5.609,
+   "wbclips/ko-38.mp3"
+  ],
+  "감독, 지켜봄": [
+   5.789,
+   7.364,
+   "wbclips/ko-38.mp3"
+  ],
+  "예비의, 사전의": [
+   7.544,
+   9.164,
+   "wbclips/ko-38.mp3"
+  ],
+  "(제품·서비스의) 출시, 도입": [
+   9.344,
+   12.195,
+   "wbclips/ko-38.mp3"
+  ],
+  "유효한, 효력 있는": [
+   12.375,
+   14.167,
+   "wbclips/ko-38.mp3"
+  ],
+  "차질, 악재": [
+   14.347,
+   15.854,
+   "wbclips/ko-38.mp3"
+  ],
+  "(일정을) 미루다, 연기하다": [
+   16.034,
+   19.143,
+   "wbclips/ko-38.mp3"
+  ],
+  "~에 대한 우려를 제기하다": [
+   19.323,
+   21.237,
+   "wbclips/ko-38.mp3"
+  ],
+  "~의 선례를 따르다": [
+   21.417,
+   22.94,
+   "wbclips/ko-38.mp3"
+  ],
+  "큰 타격을 입다": [
+   23.12,
+   24.327,
+   "wbclips/ko-38.mp3"
+  ],
+  "이득을 볼 처지에 있다": [
+   24.507,
+   26.169,
+   "wbclips/ko-38.mp3"
+  ],
+  "(부진을) 반전시키다, 회복시키다": [
+   26.349,
+   29.733,
+   "wbclips/ko-38.mp3"
+  ],
+  "~일 법도 한데 (그렇지 않네)": [
+   29.913,
+   32.2,
+   "wbclips/ko-38.mp3"
+  ],
+  "세상이 끝나는 것도 아니잖아. / 큰일 아니야.": [
+   32.38,
+   36.013,
+   "wbclips/ko-38.mp3"
+  ],
+  "왠지 ~할 것 같아": [
+   36.193,
+   37.765,
+   "wbclips/ko-38.mp3"
+  ],
+  "~할 것으로 예상된": [
+   37.945,
+   39.592,
+   "wbclips/ko-38.mp3"
+  ],
+  "검토하다": [
+   39.772,
+   40.609,
+   "wbclips/ko-38.mp3"
+  ],
+  "신청, 시도": [
+   40.789,
+   42.34,
+   "wbclips/ko-38.mp3"
+  ],
+  "EU 전역의": [
+   42.52,
+   43.566,
+   "wbclips/ko-38.mp3"
+  ],
+  "주행 보조의": [
+   43.746,
+   44.789,
+   "wbclips/ko-38.mp3"
+  ],
+  "(일정이) 미뤄진": [
+   44.969,
+   46.531,
+   "wbclips/ko-38.mp3"
+  ],
+  "이름을 바꿨다": [
+   46.711,
+   47.825,
+   "wbclips/ko-38.mp3"
+  ],
+  "~에 우려를 제기했다": [
+   48.005,
+   49.756,
+   "wbclips/ko-38.mp3"
+  ],
+  "조향하다": [
+   49.936,
+   50.736,
+   "wbclips/ko-38.mp3"
+  ],
+  "가속하다": [
+   50.916,
+   51.689,
+   "wbclips/ko-38.mp3"
+  ],
+  "제동하다": [
+   51.869,
+   52.621,
+   "wbclips/ko-38.mp3"
+  ],
+  "지속적인 감독": [
+   52.801,
+   54.068,
+   "wbclips/ko-38.mp3"
+  ],
+  "(승인을) 내줬다": [
+   54.248,
+   55.782,
+   "wbclips/ko-38.mp3"
+  ],
+  "예비의": [
+   55.962,
+   56.695,
+   "wbclips/ko-38.mp3"
+  ],
+  "12개 가까이": [
+   56.875,
+   58.005,
+   "wbclips/ko-38.mp3"
+  ],
+  "네덜란드의 선례를 따랐다": [
+   58.185,
+   59.968,
+   "wbclips/ko-38.mp3"
+  ],
+  "인구가 많은": [
+   60.148,
+   61.17,
+   "wbclips/ko-38.mp3"
+  ],
+  "도입, 출시": [
+   61.35,
+   62.696,
+   "wbclips/ko-38.mp3"
+  ],
+  "지지": [
+   62.876,
+   63.491,
+   "wbclips/ko-38.mp3"
+  ],
+  "최소한": [
+   63.671,
+   64.398,
+   "wbclips/ko-38.mp3"
+  ],
+  "회원국": [
+   64.578,
+   65.204,
+   "wbclips/ko-38.mp3"
+  ],
+  "~에 해당하는": [
+   65.384,
+   66.557,
+   "wbclips/ko-38.mp3"
+  ],
+  "인구": [
+   66.737,
+   67.402,
+   "wbclips/ko-38.mp3"
+  ],
+  "거부된": [
+   67.582,
+   68.297,
+   "wbclips/ko-38.mp3"
+  ],
+  "EU 차원에서": [
+   68.477,
+   69.65,
+   "wbclips/ko-38.mp3"
+  ],
+  "국가의, 각국의": [
+   69.83,
+   71.577,
+   "wbclips/ko-38.mp3"
+  ],
+  "(승인이) 내려진": [
+   71.757,
+   73.365,
+   "wbclips/ko-38.mp3"
+  ],
+  "더 이상 ~않다": [
+   73.545,
+   74.804,
+   "wbclips/ko-38.mp3"
+  ],
+  "큰 타격을 입은": [
+   74.984,
+   76.174,
+   "wbclips/ko-38.mp3"
+  ],
+  "장 초반 거래": [
+   76.354,
+   77.427,
+   "wbclips/ko-38.mp3"
+  ],
+  "더 광범위한": [
+   77.607,
+   78.739,
+   "wbclips/ko-38.mp3"
+  ],
+  "의문을 제기하는": [
+   78.919,
+   80.133,
+   "wbclips/ko-38.mp3"
+  ],
+  "잠재적인, ~가능성이 있는": [
+   80.313,
+   82.801,
+   "wbclips/ko-38.mp3"
+  ],
+  "발표된": [
+   82.981,
+   83.777,
+   "wbclips/ko-38.mp3"
+  ],
+  "앞서, 이전에": [
+   83.957,
+   85.505,
+   "wbclips/ko-38.mp3"
+  ],
+  "꼭 필요한": [
+   85.685,
+   86.577,
+   "wbclips/ko-38.mp3"
+  ],
+  "반전시키다, 회복시키다": [
+   86.757,
+   89.337,
+   "wbclips/ko-38.mp3"
+  ],
+  "줄어드는": [
+   89.517,
+   90.282,
+   "wbclips/ko-38.mp3"
+  ],
+  "자동차 판매": [
+   90.462,
+   91.592,
+   "wbclips/ko-38.mp3"
+  ],
+  "지연, 연기": [
+   91.772,
+   93.218,
+   "wbclips/ko-38.mp3"
+  ],
+  "~이 되다, 나타내다": [
+   93.398,
+   95.416,
+   "wbclips/ko-38.mp3"
+  ],
+  "고려하다, 헤아리다": [
+   95.596,
+   98.263,
+   "wbclips/ko-38.mp3"
+  ],
+  "개명하다, 다시 이름짓다": [
+   98.443,
+   100.966,
+   "wbclips/ko-38.mp3"
+  ],
+  "돕다, 옆에서 돕다": [
+   101.146,
+   103.108,
+   "wbclips/ko-38.mp3"
+  ],
+  "운전, 조종": [
+   103.288,
+   104.774,
+   "wbclips/ko-38.mp3"
+  ],
+  "무엇을 빨리 시키다, 촉진하다": [
+   104.954,
+   107.617,
+   "wbclips/ko-38.mp3"
+  ],
+  "브레이크, 제동기": [
+   107.797,
+   109.532,
+   "wbclips/ko-38.mp3"
+  ],
+  "변하지 않는 것, 상수": [
+   109.712,
+   111.636,
+   "wbclips/ko-38.mp3"
+  ],
+  "감독, 관리": [
+   111.816,
+   113.142,
+   "wbclips/ko-38.mp3"
+  ],
+  "주다, 요구": [
+   113.322,
+   115.517,
+   "wbclips/ko-38.mp3"
+  ],
+  "예비의, 임시의": [
+   115.697,
+   117.265,
+   "wbclips/ko-38.mp3"
+  ],
+  "다스, 타": [
+   117.445,
+   118.702,
+   "wbclips/ko-38.mp3"
+  ],
+  "네덜란드의, 네덜란드어": [
+   118.882,
+   120.903,
+   "wbclips/ko-38.mp3"
+  ],
+  "이끌다, 선두, 우위": [
+   121.083,
+   124.301,
+   "wbclips/ko-38.mp3"
+  ],
+  "배서 보증, 후원자 단체": [
+   124.481,
+   126.72,
+   "wbclips/ko-38.mp3"
+  ],
+  "연합, 블록": [
+   126.9,
+   128.145,
+   "wbclips/ko-38.mp3"
+  ],
+  "회원, 어떤 단체의 회원": [
+   128.325,
+   130.697,
+   "wbclips/ko-38.mp3"
+  ],
+  "대표하다, 대변하다": [
+   130.877,
+   133.351,
+   "wbclips/ko-38.mp3"
+  ],
+  "인구, 주민": [
+   133.531,
+   134.991,
+   "wbclips/ko-38.mp3"
+  ],
+  "거절하다, 거부하다": [
+   135.171,
+   137.891,
+   "wbclips/ko-38.mp3"
+  ],
+  "유럽연합": [
+   138.071,
+   138.816,
+   "wbclips/ko-38.mp3"
+  ],
+  "특별히, 특히": [
+   138.996,
+   140.462,
+   "wbclips/ko-38.mp3"
+  ],
+  "취조": [
+   140.642,
+   141.244,
+   "wbclips/ko-38.mp3"
+  ],
+  "가능성, 잠재적인": [
+   141.424,
+   143.351,
+   "wbclips/ko-38.mp3"
+  ],
+  "이전에": [
+   143.531,
+   144.173,
+   "wbclips/ko-38.mp3"
+  ],
+  "필요하다, 필요한 행동": [
+   144.353,
+   146.811,
+   "wbclips/ko-38.mp3"
+  ],
+  "영락": [
+   146.991,
+   147.534,
+   "wbclips/ko-38.mp3"
+  ],
+  "유럽": [
+   147.714,
+   148.156,
+   "wbclips/ko-38.mp3"
+  ],
+  "방해, 좌절": [
+   148.336,
+   149.759,
+   "wbclips/ko-38.mp3"
+  ],
+  "급등하다": [
+   149.939,
+   150.758,
+   "wbclips/ko-38.mp3"
+  ],
+  "배당금": [
+   150.938,
+   151.7,
+   "wbclips/ko-38.mp3"
+  ],
+  "지급금, (주주에게 주는) 배당": [
+   151.88,
+   154.642,
+   "wbclips/ko-38.mp3"
+  ],
+  "(기업의) 실적 전망": [
+   154.822,
+   156.755,
+   "wbclips/ko-38.mp3"
+  ],
+  "잉여현금흐름": [
+   156.935,
+   158.117,
+   "wbclips/ko-38.mp3"
+  ],
+  "매도세를 거스르다": [
+   158.297,
+   159.577,
+   "wbclips/ko-38.mp3"
+  ],
+  "조정 기준으로": [
+   159.757,
+   160.843,
+   "wbclips/ko-38.mp3"
+  ],
+  "보수적으로 접근하다": [
+   161.023,
+   162.618,
+   "wbclips/ko-38.mp3"
+  ],
+  "두드러지다, 눈에 띄다": [
+   162.798,
+   165.472,
+   "wbclips/ko-38.mp3"
+  ],
+  "하락세에 휘말리다": [
+   165.652,
+   167.015,
+   "wbclips/ko-38.mp3"
+  ],
+  "(마음을) 사로잡다, 설득하다": [
+   167.195,
+   169.897,
+   "wbclips/ko-38.mp3"
+  ],
+  "~에 대해 뭐라 하든, 그래도…": [
+   170.077,
+   172.405,
+   "wbclips/ko-38.mp3"
+  ],
+  "그거 무시할 게 아니야. / 그것도 꽤 의미 있어.": [
+   172.585,
+   176.42,
+   "wbclips/ko-38.mp3"
+  ],
+  "참 알다가도 모르겠네. / 희한하네.": [
+   176.6,
+   179.89,
+   "wbclips/ko-38.mp3"
+  ],
+  "거슬렀다": [
+   180.07,
+   180.964,
+   "wbclips/ko-38.mp3"
+  ],
+  "기술주 매도세": [
+   181.144,
+   182.349,
+   "wbclips/ko-38.mp3"
+  ],
+  "급등하는": [
+   182.529,
+   183.398,
+   "wbclips/ko-38.mp3"
+  ],
+  "장중 거래": [
+   183.578,
+   184.528,
+   "wbclips/ko-38.mp3"
+  ],
+  "4분기의": [
+   184.708,
+   185.648,
+   "wbclips/ko-38.mp3"
+  ],
+  "예상": [
+   185.828,
+   186.463,
+   "wbclips/ko-38.mp3"
+  ],
+  "컴퓨터 제조사": [
+   186.643,
+   187.797,
+   "wbclips/ko-38.mp3"
+  ],
+  "주당": [
+   187.977,
+   188.556,
+   "wbclips/ko-38.mp3"
+  ],
+  "발표했다, 기록했다": [
+   188.736,
+   190.705,
+   "wbclips/ko-38.mp3"
+  ],
+  "지급금, 배당": [
+   190.885,
+   192.508,
+   "wbclips/ko-38.mp3"
+  ],
+  "이익을 냈다": [
+   192.688,
+   193.594,
+   "wbclips/ko-38.mp3"
+  ],
+  "보수적으로 접근하는": [
+   193.774,
+   195.27,
+   "wbclips/ko-38.mp3"
+  ],
+  "실적 전망": [
+   195.45,
+   196.535,
+   "wbclips/ko-38.mp3"
+  ],
+  "메모리 (반도체)": [
+   196.715,
+   198.261,
+   "wbclips/ko-38.mp3"
+  ],
+  "저장장치": [
+   198.441,
+   199.481,
+   "wbclips/ko-38.mp3"
+  ],
+  "상승(분)": [
+   199.661,
+   200.97,
+   "wbclips/ko-38.mp3"
+  ],
+  "두드러졌다": [
+   201.15,
+   202.041,
+   "wbclips/ko-38.mp3"
+  ],
+  "기술주 중심의": [
+   202.221,
+   203.53,
+   "wbclips/ko-38.mp3"
+  ],
+  "~만큼이나, 최대 ~": [
+   203.71,
+   205.844,
+   "wbclips/ko-38.mp3"
+  ],
+  "한때": [
+   206.024,
+   206.674,
+   "wbclips/ko-38.mp3"
+  ],
+  "의문을 품었다": [
+   206.854,
+   208.0,
+   "wbclips/ko-38.mp3"
+  ],
+  "투자(지출) 붐": [
+   208.18,
+   210.079,
+   "wbclips/ko-38.mp3"
+  ],
+  "결실을 맺다": [
+   210.259,
+   211.328,
+   "wbclips/ko-38.mp3"
+  ],
+  "기업(용)의": [
+   211.508,
+   213.075,
+   "wbclips/ko-38.mp3"
+  ],
+  "종목": [
+   213.255,
+   213.807,
+   "wbclips/ko-38.mp3"
+  ],
+  "하락세에 휘말린": [
+   213.987,
+   215.309,
+   "wbclips/ko-38.mp3"
+  ],
+  "떨어지는": [
+   215.489,
+   216.231,
+   "wbclips/ko-38.mp3"
+  ],
+  "~한 뒤에도": [
+   216.411,
+   217.496,
+   "wbclips/ko-38.mp3"
+  ],
+  "전망치": [
+   217.676,
+   218.573,
+   "wbclips/ko-38.mp3"
+  ],
+  "발표하는": [
+   218.753,
+   219.591,
+   "wbclips/ko-38.mp3"
+  ],
+  "~보다 낮은": [
+   219.771,
+   220.946,
+   "wbclips/ko-38.mp3"
+  ],
+  "대조": [
+   221.126,
+   221.667,
+   "wbclips/ko-38.mp3"
+  ],
+  "보여 주다, 시사하다": [
+   221.847,
+   224.537,
+   "wbclips/ko-38.mp3"
+  ],
+  "현재의": [
+   224.717,
+   225.458,
+   "wbclips/ko-38.mp3"
+  ],
+  "웃도는": [
+   225.638,
+   226.32,
+   "wbclips/ko-38.mp3"
+  ],
+  "예상치": [
+   226.5,
+   227.378,
+   "wbclips/ko-38.mp3"
+  ],
+  "늘 ~한 것은 아닌": [
+   227.558,
+   229.122,
+   "wbclips/ko-38.mp3"
+  ],
+  "마음을 사로잡다": [
+   229.302,
+   230.567,
+   "wbclips/ko-38.mp3"
+  ],
+  "불안한": [
+   230.747,
+   231.473,
+   "wbclips/ko-38.mp3"
+  ],
+  "전자 제품": [
+   231.653,
+   232.704,
+   "wbclips/ko-38.mp3"
+  ],
+  "불, 말이 등을 굽히고 날뛰다": [
+   232.884,
+   235.382,
+   "wbclips/ko-38.mp3"
+  ],
+  "센트, 전": [
+   235.562,
+   237.03,
+   "wbclips/ko-38.mp3"
+  ],
+  "조정하다, 조절하다": [
+   237.21,
+   239.905,
+   "wbclips/ko-38.mp3"
+  ],
+  "바탕, 기반": [
+   240.085,
+   241.571,
+   "wbclips/ko-38.mp3"
+  ],
+  "배당금, 배당": [
+   241.751,
+   243.28,
+   "wbclips/ko-38.mp3"
+  ],
+  "지불금": [
+   243.46,
+   244.23,
+   "wbclips/ko-38.mp3"
+  ],
+  "보수주의자, 보수파": [
+   244.41,
+   246.356,
+   "wbclips/ko-38.mp3"
+  ],
+  "지침, (기업의) 실적 전망": [
+   246.536,
+   249.453,
+   "wbclips/ko-38.mp3"
+  ],
+  "저장, 보관": [
+   249.633,
+   251.099,
+   "wbclips/ko-38.mp3"
+  ],
+  "사업, 기업": [
+   251.279,
+   252.523,
+   "wbclips/ko-38.mp3"
+  ],
+  "현찰, 현금으로 바꾸다": [
+   252.703,
+   254.825,
+   "wbclips/ko-38.mp3"
+  ],
+  "흐름, 계속적인 공급": [
+   255.005,
+   256.919,
+   "wbclips/ko-38.mp3"
+  ],
+  "대조, 대조하다": [
+   257.099,
+   258.567,
+   "wbclips/ko-38.mp3"
+  ],
+  "구타": [
+   258.747,
+   259.393,
+   "wbclips/ko-38.mp3"
+  ],
+  "to argue against or resist something": [
+   259.573,
+   262.339,
+   "wbclips/ko-38.mp3"
+  ],
+  "to gradually reduce and end something": [
+   262.519,
+   265.113,
+   "wbclips/ko-38.mp3"
+  ],
+  "to be examined very carefully and critically": [
+   265.293,
+   268.367,
+   "wbclips/ko-38.mp3"
+  ],
+  "to avoid dealing with a problem directly": [
+   268.547,
+   271.324,
+   "wbclips/ko-38.mp3"
+  ],
+  "the bad results that follow an event": [
+   271.504,
+   274.158,
+   "wbclips/ko-38.mp3"
   ]
  },
  "day": {
@@ -28974,7 +30189,73 @@
   "sever ties with|to cut off a relationship with someone": "2026-11-25/clips/rq1.mp3",
   "weigh on|to put pressure on something or make it worse": "2026-11-25/clips/rq3.mp3",
   "walk away (from)|to stop being involved in something": "2026-11-25/clips/rq4.mp3",
-  "brace for|to prepare for something bad or difficult": "2026-11-25/clips/rq6.mp3"
+  "brace for|to prepare for something bad or difficult": "2026-11-25/clips/rq6.mp3",
+  "bid|(승인 등을 얻으려는) 시도, 신청": "2026-11-26/clips/a1-v1.mp3",
+  "bloc-wide|(EU 같은) 블록 전체의": "2026-11-26/clips/a1-v2.mp3",
+  "bloc-wide": "2026-11-26/clips/a1-v2.mp3",
+  "spokesperson|대변인": "2026-11-26/clips/a1-v3.mp3",
+  "spokesperson": "2026-11-26/clips/a1-v3.mp3",
+  "supervision|감독, 지켜봄": "2026-11-26/clips/a1-v4.mp3",
+  "supervision": "2026-11-26/clips/a1-v4.mp3",
+  "preliminary|예비의, 사전의": "2026-11-26/clips/a1-v5.mp3",
+  "preliminary": "2026-11-26/clips/a1-v5.mp3",
+  "rollout|(제품·서비스의) 출시, 도입": "2026-11-26/clips/a1-v6.mp3",
+  "rollout": "2026-11-26/clips/a1-v6.mp3",
+  "valid|유효한, 효력 있는": "2026-11-26/clips/a1-v7.mp3",
+  "valid": "2026-11-26/clips/a1-v7.mp3",
+  "setback|차질, 악재": "2026-11-26/clips/a1-v8.mp3",
+  "setback": "2026-11-26/clips/a1-v8.mp3",
+  "push back|(일정을) 미루다, 연기하다": "2026-11-26/clips/a1-x1.mp3",
+  "push back": "2026-11-26/clips/a1-x1.mp3",
+  "raise concerns about|~에 대한 우려를 제기하다": "2026-11-26/clips/a1-x2.mp3",
+  "raise concerns about": "2026-11-26/clips/a1-x2.mp3",
+  "follow the lead|~의 선례를 따르다": "2026-11-26/clips/a1-x3.mp3",
+  "follow the lead": "2026-11-26/clips/a1-x3.mp3",
+  "be hard-hit|큰 타격을 입다": "2026-11-26/clips/a1-x4.mp3",
+  "be hard-hit": "2026-11-26/clips/a1-x4.mp3",
+  "stand to benefit|이득을 볼 처지에 있다": "2026-11-26/clips/a1-x6.mp3",
+  "stand to benefit": "2026-11-26/clips/a1-x6.mp3",
+  "turn around|(부진을) 반전시키다, 회복시키다": "2026-11-26/clips/a1-x7.mp3",
+  "turn around": "2026-11-26/clips/a1-x7.mp3",
+  "you'd think…|~일 법도 한데 (그렇지 않네)": "2026-11-26/clips/a1-c1.mp3",
+  "it's not the end of the world.|세상이 끝나는 것도 아니잖아. / 큰일 아니야.": "2026-11-26/clips/a1-c2.mp3",
+  "it's not the end of the world.": "2026-11-26/clips/a1-c2.mp3",
+  "i have a feeling…|왠지 ~할 것 같아": "2026-11-26/clips/a1-c3.mp3",
+  "i have a feeling…": "2026-11-26/clips/a1-c3.mp3",
+  "surge|급등하다": "2026-11-26/clips/a2-v1.mp3",
+  "surge": "2026-11-26/clips/a2-v1.mp3",
+  "dividend|배당금": "2026-11-26/clips/a2-v3.mp3",
+  "dividend": "2026-11-26/clips/a2-v3.mp3",
+  "payout|지급금, (주주에게 주는) 배당": "2026-11-26/clips/a2-v4.mp3",
+  "payout": "2026-11-26/clips/a2-v4.mp3",
+  "guidance|(기업의) 실적 전망": "2026-11-26/clips/a2-v5.mp3",
+  "guidance": "2026-11-26/clips/a2-v5.mp3",
+  "forecast|전망(치), 예측": "2026-11-26/clips/a2-v7.mp3",
+  "free cash flow|잉여현금흐름": "2026-11-26/clips/a2-v8.mp3",
+  "free cash flow": "2026-11-26/clips/a2-v8.mp3",
+  "buck the sell-off|매도세를 거스르다": "2026-11-26/clips/a2-x1.mp3",
+  "buck the sell-off": "2026-11-26/clips/a2-x1.mp3",
+  "on an adjusted basis|조정 기준으로": "2026-11-26/clips/a2-x3.mp3",
+  "on an adjusted basis": "2026-11-26/clips/a2-x3.mp3",
+  "take a conservative approach|보수적으로 접근하다": "2026-11-26/clips/a2-x4.mp3",
+  "take a conservative approach": "2026-11-26/clips/a2-x4.mp3",
+  "stand out|두드러지다, 눈에 띄다": "2026-11-26/clips/a2-x5.mp3",
+  "stand out": "2026-11-26/clips/a2-x5.mp3",
+  "be caught in the downdraft|하락세에 휘말리다": "2026-11-26/clips/a2-x6.mp3",
+  "be caught in the downdraft": "2026-11-26/clips/a2-x6.mp3",
+  "win over|(마음을) 사로잡다, 설득하다": "2026-11-26/clips/a2-x7.mp3",
+  "win over": "2026-11-26/clips/a2-x7.mp3",
+  "say what you want about…, but…|~에 대해 뭐라 하든, 그래도…": "2026-11-26/clips/a2-c1.mp3",
+  "say what you want about…, but…": "2026-11-26/clips/a2-c1.mp3",
+  "that's not nothing.|그거 무시할 게 아니야. / 그것도 꽤 의미 있어.": "2026-11-26/clips/a2-c2.mp3",
+  "that's not nothing.": "2026-11-26/clips/a2-c2.mp3",
+  "go figure.|참 알다가도 모르겠네. / 희한하네.": "2026-11-26/clips/a2-c3.mp3",
+  "go figure.": "2026-11-26/clips/a2-c3.mp3",
+  "push back on|to argue against or resist something": "2026-11-26/clips/rq1.mp3",
+  "wind down|to gradually reduce and end something": "2026-11-26/clips/rq2.mp3",
+  "come under scrutiny|to be examined very carefully and critically": "2026-11-26/clips/rq3.mp3",
+  "sidestep|to avoid dealing with a problem directly": "2026-11-26/clips/rq4.mp3",
+  "the fallout from|the bad results that follow an event": "2026-11-26/clips/rq6.mp3"
  },
  "packs": {
   "en": [
@@ -28993,7 +30274,8 @@
    "wbclips/en-13.mp3",
    "wbclips/en-14.mp3",
    "wbclips/en-15.mp3",
-   "wbclips/en-16.mp3"
+   "wbclips/en-16.mp3",
+   "wbclips/en-17.mp3"
   ],
   "ko": [
    "wbclips/ko-01.mp3",
@@ -29032,7 +30314,8 @@
    "wbclips/ko-34.mp3",
    "wbclips/ko-35.mp3",
    "wbclips/ko-36.mp3",
-   "wbclips/ko-37.mp3"
+   "wbclips/ko-37.mp3",
+   "wbclips/ko-38.mp3"
   ]
  }
 }
